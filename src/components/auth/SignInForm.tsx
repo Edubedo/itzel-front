@@ -7,6 +7,13 @@ import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 
 export default function SignInForm() {
+
+  const verifyAuthentication = async () => {
+    event.preventDefault();
+    console.log("verify")
+  }
+
+
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   return (
@@ -127,7 +134,7 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm">
+                  <Button className="w-full" size="sm" onClick={() => verifyAuthentication()}>
                     Sign in
                   </Button>
                 </div>

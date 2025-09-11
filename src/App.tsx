@@ -29,7 +29,7 @@ import FormularioClientes from "./views/catalogos/clientes/formulario/Formulario
 import ConsultaSucursales from "./views/catalogos/sucursales/consulta/ConsultaSucursales";
 import FormularioSucursales from "./views/catalogos/sucursales/formulario/FormularioSucursales";
 import ConsultaUsuarios from "./views/catalogos/usuarios/consulta/ConsultaUsuarios";
-import FormularioUsuarios from "./views/catalogos/usuarios/formularioUsuarios";
+import FormularioUsuarios from "./views/catalogos/usuarios/formulario/FormularioUsuarios";
 
 
 export default function App() {

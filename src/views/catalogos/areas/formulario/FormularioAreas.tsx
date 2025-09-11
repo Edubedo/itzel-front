@@ -23,9 +23,7 @@ function Areas() {
   return (
     <div>
       <h1 className='text-lg'>Areas</h1>
-      {areas.map((area, length) => (
-        <div key={length}>{area?.s_area}</div>
-      ))}
+      
     </div>
   )
 }

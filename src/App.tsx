@@ -18,7 +18,10 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
-import Areas from "./views/catalogos/areas/Areas";
+import Areas from "./views/catalogos/areas/formulario/FormularioAreas";
+
+import ConsultaAreas from "./views/catalogos/areas/consulta/ConsultaAreas";
+import FormularioAreas from "./views/catalogos/areas/formulario/FormularioAreas";
 
 export default function App() {
   return (
@@ -31,6 +34,11 @@ export default function App() {
             <Route index path="/" element={<Home />} />
 
             {/* Ruta de catalogos */}
+
+            {/* ÁREAS */}
+            <Route path="/catalogos/areas/consulta/" element={<ConsultaAreas />} />
+            <Route path="/catalogos/areas/formulario/" element={<FormularioAreas />} />
+
             <Route path="/catalogos/areas" element={<Areas />} />
 
             {/* Others Page */}

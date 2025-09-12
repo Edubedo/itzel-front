@@ -31,7 +31,6 @@ import FormularioSucursales from "./views/catalogos/sucursales/formulario/Formul
 import ConsultaUsuarios from "./views/catalogos/usuarios/consulta/ConsultaUsuarios";
 import FormularioUsuarios from "./views/catalogos/usuarios/formulario/FormularioUsuarios";
 
-
 export default function App() {
   return (
     <>
@@ -63,6 +62,9 @@ export default function App() {
             {/* USUARIOS */}
             <Route path="/catalogos/usuarios/consulta/" element={<ConsultaUsuarios />} />
             <Route path="/catalogos/usuarios/formulario/" element={<FormularioUsuarios />} />
+
+
+            <Route path="/catalogos/areas" element={<Areas />} />
 
 
             {/* Others Page */}

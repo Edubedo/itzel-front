@@ -34,7 +34,7 @@ const catalogosSecciones: NavItem[] = [
       { name: "Sucursales", path: "/catalogos/sucursales/consulta", pro: false },
       { name: "Usuarios", path: "/catalogos/usuarios/consulta", pro: false },
       { name: "Clientes", path: "/catalogos/clientes/consulta", pro: false }
-],}
+]}
 ]; 
 
 const othersItems: NavItem[] = [

@@ -19,7 +19,7 @@ import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import Areas from "./views/catalogos/areas/formulario/FormularioAreas";
-
+import Clientes from "./views/catalogos/clientes/Clientes"; 
 import ConsultaAreas from "./views/catalogos/areas/consulta/ConsultaAreas";
 import FormularioAreas from "./views/catalogos/areas/formulario/FormularioAreas";
 import ConsultaServicios from "./views/catalogos/servicios/consulta/ConsultaServicios";
@@ -97,6 +97,19 @@ export default function App() {
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
+
+         <Route element={<AppLayout />}>
+         <Route index path="/" element={<Home />} />
+
+        {/*Catalogos */}
+        <Route path="/catalogos/clientes" element={<Clientes />} /> 
+
+
+        <Route path="/catalogos/areas/consulta/" element={<ConsultaAreas />} />
+        <Route path="/catalogos/areas/formulario/" element={<FormularioAreas />} />
+        <Route path="/catalogos/areas" element={<Areas />} />
+
+          </Route>
         </Routes>
       </Router>
     </>

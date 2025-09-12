@@ -22,6 +22,14 @@ import Areas from "./views/catalogos/areas/formulario/FormularioAreas";
 
 import ConsultaAreas from "./views/catalogos/areas/consulta/ConsultaAreas";
 import FormularioAreas from "./views/catalogos/areas/formulario/FormularioAreas";
+import ConsultaServicios from "./views/catalogos/servicios/consulta/ConsultaServicios";
+import FormularioServicios from "./views/catalogos/servicios/formulario/FormularioServicios";
+import ConsultaClientes from "./views/catalogos/clientes/consulta/ConsultaClientes";
+import FormularioClientes from "./views/catalogos/clientes/formulario/FormularioClientes";
+import ConsultaSucursales from "./views/catalogos/sucursales/consulta/ConsultaSucursales";
+import FormularioSucursales from "./views/catalogos/sucursales/formulario/FormularioSucursales";
+import ConsultaUsuarios from "./views/catalogos/usuarios/consulta/ConsultaUsuarios";
+import FormularioUsuarios from "./views/catalogos/usuarios/formulario/FormularioUsuarios";
 
 export default function App() {
   return (
@@ -39,7 +47,25 @@ export default function App() {
             <Route path="/catalogos/areas/consulta/" element={<ConsultaAreas />} />
             <Route path="/catalogos/areas/formulario/" element={<FormularioAreas />} />
 
+            {/* SERVICIOS */}
+            <Route path="/catalogos/servicios/consulta/" element={<ConsultaServicios />} />
+            <Route path="/catalogos/servicios/formulario/" element={<FormularioServicios />} />
+        
+            {/* CLIENTES */}
+            <Route path="/catalogos/clientes/consulta/" element={<ConsultaClientes />} />
+            <Route path="/catalogos/clientes/formulario/" element={<FormularioClientes />} />
+            
+            {/* SUCURSALES */}
+            <Route path="/catalogos/sucursales/consulta/" element={<ConsultaSucursales />} />
+            <Route path="/catalogos/sucursales/formulario/" element={<FormularioSucursales />} />
+            
+            {/* USUARIOS */}
+            <Route path="/catalogos/usuarios/consulta/" element={<ConsultaUsuarios />} />
+            <Route path="/catalogos/usuarios/formulario/" element={<FormularioUsuarios />} />
+
+
             <Route path="/catalogos/areas" element={<Areas />} />
+
 
             {/* Others Page */}
             <Route path="/profile" element={<UserProfiles />} />

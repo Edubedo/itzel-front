@@ -30,25 +30,22 @@ const catalogosSecciones: NavItem[] = [
     icon: <GridIcon />,
     subItems: [
       { name: "Áreas", path: "/catalogos/areas/consulta", pro: false },
-      { name: "Servicios", path: "/catalogos/servicios", pro: false },
-      { name: "Sucursales", path: "/catalogos/sucursales", pro: false },
-      { name: "Usuarios", path: "/catalogos/usuarios", pro: false },
-      { name: "Clientes", path: "/catalogos/clientes", pro: false },
-    ],
-  },
- 
-
-
-];
+      { name: "Servicios", path: "/catalogos/servicios/consulta", pro: false },
+      { name: "Sucursales", path: "/catalogos/sucursales/consulta", pro: false },
+      { name: "Usuarios", path: "/catalogos/usuarios/consulta", pro: false },
+      { name: "Clientes", path: "/catalogos/clientes/consulta", pro: false }
+]}
+]; 
 
 const othersItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
     name: "Operaciones",
     subItems: [
-      { name: "Turnos", path: "/operaciones/turnos", pro: false },
-      { name: "Citas", path: "/operaciones/citas", pro: false },
-      { name: "Reportes", path: "/operaciones/reportes", pro: false },
+
+      { name: "Turnos", path: "/operaciones/turnos/consulta", pro: false },
+      { name: "Citas", path: "/operaciones/citas/consulta", pro: false },
+      { name: "Reportes", path: "/operaciones/reportes/consulta", pro: false },
     ],
   },
   

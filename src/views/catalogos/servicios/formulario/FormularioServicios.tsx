@@ -1,9 +1,9 @@
 import React from 'react'
 
-function Servicios() {
+function FormularioServicios() {
   return (
-    <div>Servicios</div>
+    <div>FormularioServicios</div>
   )
 }
 
-export default Servicios
+export default FormularioServicios

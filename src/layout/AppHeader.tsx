@@ -83,18 +83,18 @@ const AppHeader: React.FC = () => {
             {/* Cross Icon */}
           </button>
 
-          <Link to="/" className="lg:hidden">
-            <img
-              className="dark:hidden"
-              src="./images/logo/itzelLogoR.png"
-              alt="Logo"
-            />
-            <img
-              className="hidden dark:block"
-              src="./images/logo/logo-dark.svg"
-              alt="Logo"
-            />
-          </Link>
+        <Link to="/" className="lg:hidden">
+  <img
+    className="dark:hidden h-8 w-auto max-h-10"
+    src="./images/logo/itzelLogoR.png"
+    alt="Logo"
+  />
+  <img
+    className="hidden dark:block h-8 w-auto max-h-10"
+    src="./images/logo/logo-dark.svg"
+    alt="Logo"
+  />
+</Link>
 
           <button
             onClick={toggleApplicationMenu}

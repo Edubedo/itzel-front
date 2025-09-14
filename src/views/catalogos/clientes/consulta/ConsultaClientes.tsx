@@ -1,9 +1,10 @@
 import React from 'react'
+import AreaTables from '../../../../pages/Tables/ConsultasTables'
 
 function ConsultaClientes() {
   return (
-    <div>ConsultaClientes</div>
+    <AreaTables titleTable="Consulta de Clientes" />
   )
 }
 
-export default ConsultaClientes
+export default ConsultaClientes;

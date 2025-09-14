@@ -1,9 +1,13 @@
-import React from 'react'
+import React from 'react';
+import UsuariosTables from '../../../../pages/Tables/UsuarioTables'
 
-function ConsultaUsuarios() {
+function  ConsultaUsuarios() {
   return (
-    <div>ConsultaUsuarios</div>
+    
+    <UsuariosTables titleTable="Consulta de Usuarios" />
+
   )
 }
 
-export default ConsultaUsuarios
+
+export default ConsultaUsuarios;

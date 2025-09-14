@@ -3,7 +3,7 @@ import AreaTables from '../../../../pages/Tables/AreaTables'
 
 function ConsultaAreas() {
   return (
-    <AreaTables titleTable="Consulta de Áreas" />
+    <AreaTables titleTable="Consulta de Clientes" />
   )
 }
 

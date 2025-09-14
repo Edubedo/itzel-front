@@ -36,7 +36,7 @@ const tableData: Area[] = [
     s_area: "Facturacion",
     s_description_area: "Activo",
     ck_estatus: "Ultima Compra: 15/07/2025",
-    ck_sucursal: "suc-001"
+    ck_sucursal: "suc-002"
   },
   {
     id: 3,
@@ -45,7 +45,7 @@ const tableData: Area[] = [
     s_area: "Facturacion",
     s_description_area: "Activo",
     ck_estatus: "Ultima Compra: 15/07/2025",
-    ck_sucursal: "suc-001"
+    ck_sucursal: "suc-003"
   },
   {
     id: 4,
@@ -54,7 +54,7 @@ const tableData: Area[] = [
     s_area: "Facturacion",
     s_description_area: "Activo",
     ck_estatus: "Ultima Compra: 15/07/2025",
-    ck_sucursal: "suc-001"
+    ck_sucursal: "suc-004"
   },
   {
     id: 5,
@@ -63,7 +63,7 @@ const tableData: Area[] = [
     s_area: "Facturacion",
     s_description_area: "Activo",
     ck_estatus: "Ultima Compra: 15/07/2025",
-    ck_sucursal: "suc-001"
+    ck_sucursal: "suc-005"
   },
   {
     id: 6,
@@ -72,7 +72,7 @@ const tableData: Area[] = [
     s_area: "Facturacion",
     s_description_area: "Activo",
     ck_estatus: "Ultima Compra: 15/07/2025",
-    ck_sucursal: "suc-001"
+    ck_sucursal: "suc-006"
   },
   {
     id: 7,
@@ -81,7 +81,7 @@ const tableData: Area[] = [
     s_area: "Facturacion",
     s_description_area: "Activo",
     ck_estatus: "Ultima Compra: 15/07/2025",
-    ck_sucursal: "suc-001"
+    ck_sucursal: "suc-007"
   }
 ];
 
@@ -158,13 +158,19 @@ export default function AreaTableOne() {
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   {area.sucursal_nombre || area.ck_sucursal}
                 </TableCell>
-                <TableCell className="px-4 py-3 text-start">
-                  <Badge
-                    size="sm"
-                    color={area.ck_estatus === "ACTIVO" ? "success" : "error"}
-                  >
-                    {area.ck_estatus}
-                  </Badge>
+               
+                 <TableCell className="px-4 py-3 text-start">
+                  <div className="flex space-x-2">
+                    <button className="p-1 text-blue-600 hover:text-blue-800">
+                      Editar
+                    </button>
+                    <button className="p-1 text-red-600 hover:text-red-800">
+                      Eliminar
+                    </button>
+                    <button className="p-1 text-yellow-400 hover:text-yellow-600">
+                      Actualizar
+                    </button>
+                  </div>
                 </TableCell>
                 
               </TableRow>

@@ -33,7 +33,10 @@ import Dashboard from "./views/general/Dashboard/Dashboard";
 import Starter from "./views/general/Starter/Starter";
 import ConsultaCitas from "./views/operaciones/citas/consulta/ConsultaCitas";
 import FormularioCitas from "./views/operaciones/citas/formulario/FormularioCitas";
-
+import ConsultaReportes from "./views/operaciones/reportes/consulta/ConsultaReportes";
+import FormularioReportes from "./views/operaciones/reportes/formulario/FormularioReportes";
+import ConsultaTurnos from "./views/operaciones/turnos/consulta/ConsultaTurnos";
+import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTurnos";
 
 export default function App() {
   return (
@@ -72,6 +75,15 @@ export default function App() {
             {/* CITAS */}
             <Route path="/operaciones/citas/consulta/" element={<ConsultaCitas />} />
             <Route path="/operaciones/citas/formulario/" element={<FormularioCitas />} />
+
+            {/* REPORTES */}
+            <Route path="/operaciones/reportes/consulta/" element={<ConsultaReportes />} />
+            <Route path="/operaciones/reportes/formulario/" element={<FormularioReportes />} />
+
+            {/* TURNOS */}
+            <Route path="/operaciones/turnos/consulta/" element={<ConsultaTurnos />} />
+            <Route path="/operaciones/turnos/formulario/" element={<FormularioTurnos />} />
+
 
 
             {/* Others Page */}

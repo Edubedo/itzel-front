@@ -1,25 +1,77 @@
-// dashboard.tsx
-import React from "react";
+// dashboard.tsx   !!!!
+
+import React, { useState, useEffect } from "react";
 import { Clipboard, Volume2, Clock } from "lucide-react";
 
 const Dashboard: React.FC = () => {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval); // limpiar cuando se desmonte
+  }, []);
+
+  // Formato de hora (12h con AM/PM)
+  const formattedTime = time.toLocaleTimeString("es-MX", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  // Formato de fecha en español
+  const formattedDate = time.toLocaleDateString("es-MX", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  let consultaAPI = [
+    {
+      numeroTURNO: 82,    //hacer validacion para que no aparezcan lo turnos pasados (FINALI)
+      modulo: "A1",
+      estado: "FINALI",
+      prioritario: true,
+    },
+     {
+      numeroTURNO: 83,
+      modulo: "A5",
+      estado: "ATENDI",
+      prioritario: false
+
+    },
+     {
+      numeroTURNO: 84,
+      modulo: "A3",
+      estado: "ACTIVO",
+      prioritario: false
+    },
+     {
+      numeroTURNO: 85,
+      modulo: "A2",
+      estado: "ACTIVO",
+      prioritario: true
+    }
+  ]
+  console.log("consultaAPI; ", consultaAPI)
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex justify-between items-center bg-[#1b3528] text-white px-4 py-2">
         <span className="text-sm md:text-base">Manzanillo, Colima</span>
         <div className="flex items-center gap-2">
           <Clock className="w-5 h-5" />
           <div className="text-right leading-tight">
-            <div className="text-sm md:text-base font-semibold">10:41 AM</div>
-            <div className="text-xs md:text-sm">Sábado 30 de agosto 2025</div>
+            <div className="text-sm md:text-base font-semibold">{formattedTime}</div>
+            <div className="text-xs md:text-sm">{formattedDate}</div>
           </div>
         </div>
       </div>
 
-      {/* Main content */}
+      {/* MAIN CONTENT */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1 p-3">
-        {/* Columna izquierda */}
+        {/* Columna IZQUIERDA */}
         <div className="grid grid-rows-[auto_1fr_auto] gap-3">
           {/* TURNO */}
           <div className="flex justify-between items-center bg-[#E8E1C0] p-3 rounded-md shadow">
@@ -29,7 +81,19 @@ const Dashboard: React.FC = () => {
 
           {/* Número de turno */}
           <div className="flex items-center justify-center bg-[#E1EBCF] rounded-md shadow">
-            <span className="text-7xl md:text-8xl font-bold">82</span>
+            <span className="text-7xl md:text-8xl font-bold">
+              {
+                consultaAPI.map(e=>{
+                  if(e.estado=="ATENDI"){
+                    return(
+                    <>
+                      {e.numeroTURNO}
+                    </>
+                  )
+                  }
+                })
+              }
+            </span>
           </div>
 
           {/* Módulo */}
@@ -44,7 +108,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Columna derecha */}
+        {/* Columna DERECHA */}
         <div className="flex flex-col gap-3">
           {/* Encabezado turnos */}
           <div className="flex justify-between items-center bg-[#E8E1C0] p-3 rounded-md shadow">
@@ -54,19 +118,20 @@ const Dashboard: React.FC = () => {
 
           {/* Lista de turnos */}
           <div className="grid grid-rows-3 gap-3">
-            {[
-              { num: 83, modulo: "A5" },
-              { num: 84, modulo: "A3" },
-              { num: 85, modulo: "A1" },
-            ].map((t, i) => (
-              <div
+            {consultaAPI.map((t, i) => {
+              if(t.estado !== 'ATENDI') {
+                return (
+                <div
                 key={i}
                 className="flex justify-between items-center bg-[#E1EBCF] rounded-md shadow px-4 py-3"
-              >
-                <span className="text-5xl font-bold">{t.num}</span>
+              >3
+                <span className="text-5xl font-bold">{t.numeroTURNO}</span>
                 <span className="text-lg font-medium">{t.modulo}</span>
               </div>
-            ))}
+              )
+              } 
+              
+            })}
           </div>
         </div>
       </div>
@@ -74,7 +139,7 @@ const Dashboard: React.FC = () => {
       {/* Texto giratorio / publicidad */}
       <div className="bg-[#d5f2dd] overflow-hidden whitespace-nowrap">
         <p className="inline-block text-[#0d4633] font-bold text-sm md:text-base animate-marquee">
-          Texto giratorio en esta área con publicidad — Texto giratorio en esta área con publicidad — Texto giratorio en esta área con publicidad
+          Comisión Federal de Electricidad    —    Somos más que energia    —    Comision Federal de Electricidad
         </p>
       </div>
 

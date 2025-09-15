@@ -10,6 +10,10 @@ interface AreaTablesProps {
 }
 
 export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaTablesProps) {
+    // Función para navegar al formulario de añadir área
+  const handleAddArea = () => {
+    window.location.href = "/catalogos/areas/formulario/";
+  };
   return (
     <>
       <PageMeta
@@ -19,8 +23,11 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
       <PageBreadcrumb pageTitle={titleTable} />
       
       {/* Botón de añadir */}
-      <div className="mb-6 flex justify-end">
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+   <div className="mb-6 flex justify-end">
+        <button 
+          onClick={handleAddArea}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
+        >
           <span className="mr-2">+</span>
           Añadir Área
         </button>

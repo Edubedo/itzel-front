@@ -293,6 +293,9 @@ const AppSidebar: React.FC = () => {
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
+
+            
+            
             {/* Catálogos */}
             <div>
               <h2
@@ -310,6 +313,8 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(catalogosSecciones, "main")}
             </div>
+
+            
             {/* Operaciones */}
             <div className="">
               <h2

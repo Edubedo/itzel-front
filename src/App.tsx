@@ -18,8 +18,7 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
-import Areas from "./views/catalogos/areas/formulario/FormularioAreas";
-import Clientes from "./views/catalogos/clientes/Clientes"; 
+import Areas from "./views/catalogos/areas/consulta/ConsultaAreas";
 import ConsultaAreas from "./views/catalogos/areas/consulta/ConsultaAreas";
 import FormularioAreas from "./views/catalogos/areas/formulario/FormularioAreas";
 import ConsultaServicios from "./views/catalogos/servicios/consulta/ConsultaServicios";
@@ -30,18 +29,26 @@ import ConsultaSucursales from "./views/catalogos/sucursales/consulta/ConsultaSu
 import FormularioSucursales from "./views/catalogos/sucursales/formulario/FormularioSucursales";
 import ConsultaUsuarios from "./views/catalogos/usuarios/consulta/ConsultaUsuarios";
 import FormularioUsuarios from "./views/catalogos/usuarios/formulario/FormularioUsuarios";
+import Dashboard from "./views/general/Dashboard/Dashboard";
+import Starter from "./views/general/Starter/Starter";
+import ConsultaCitas from "./views/operaciones/citas/consulta/ConsultaCitas";
+import FormularioCitas from "./views/operaciones/citas/formulario/FormularioCitas";
+import ConsultaReportes from "./views/operaciones/reportes/consulta/ConsultaReportes";
+import FormularioReportes from "./views/operaciones/reportes/formulario/FormularioReportes";
+import ConsultaTurnos from "./views/operaciones/turnos/consulta/ConsultaTurnos";
+import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTurnos";
 
 export default function App() {
   return (
     <>
       <Router>
         <ScrollToTop />
-        <Routes>
+        <Routes>         
           {/* Dashboard Layout */}
           <Route element={<AppLayout />}>
-            <Route index path="/" element={<Home />} />
 
             {/* Ruta de catalogos */}
+          <Route index path="/" element={<Home />} />
 
             {/* ÁREAS */}
             <Route path="/catalogos/areas/consulta/" element={<ConsultaAreas />} />
@@ -49,7 +56,7 @@ export default function App() {
 
             {/* SERVICIOS */}
             <Route path="/catalogos/servicios/consulta/" element={<ConsultaServicios />} />
-            <Route path="/catalogos/servicios/formulario/" element={<FormularioServicios />} />
+            <Route path="/catalogos/serv6/icios/formulario/" element={<FormularioServicios />} />
         
             {/* CLIENTES */}
             <Route path="/catalogos/clientes/consulta/" element={<ConsultaClientes />} />
@@ -64,7 +71,19 @@ export default function App() {
             <Route path="/catalogos/usuarios/formulario/" element={<FormularioUsuarios />} />
 
 
-            <Route path="/catalogos/areas" element={<Areas />} />
+            
+            {/* CITAS */}
+            <Route path="/operaciones/citas/consulta/" element={<ConsultaCitas />} />
+            <Route path="/operaciones/citas/formulario/" element={<FormularioCitas />} />
+
+            {/* REPORTES */}
+            <Route path="/operaciones/reportes/consulta/" element={<ConsultaReportes />} />
+            <Route path="/operaciones/reportes/formulario/" element={<FormularioReportes />} />
+
+            {/* TURNOS */}
+            <Route path="/operaciones/turnos/consulta/" element={<ConsultaTurnos />} />
+            <Route path="/operaciones/turnos/formulario/" element={<FormularioTurnos />} />
+
 
 
             {/* Others Page */}
@@ -95,6 +114,11 @@ export default function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
 
+          {/* PANTALLA GENERAL */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route index path="/starter" element={<Starter />} />
+
+
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
 
@@ -102,9 +126,7 @@ export default function App() {
          <Route index path="/" element={<Home />} />
 
         {/*Catalogos */}
-        <Route path="/catalogos/clientes" element={<Clientes />} /> 
-
-
+        <Route path="/catalogos/clientes" element={<ConsultaClientes />} /> 
         <Route path="/catalogos/areas/consulta/" element={<ConsultaAreas />} />
         <Route path="/catalogos/areas/formulario/" element={<FormularioAreas />} />
         <Route path="/catalogos/areas" element={<Areas />} />

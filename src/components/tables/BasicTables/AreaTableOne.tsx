@@ -19,7 +19,16 @@ interface Area {
   sucursal_nombre?: string;
 }
 
-const tableData: Area[] = [
+interface AreaTableProps {
+  areas: Area[];
+  itemsPerPage?: number;
+  isLoading?: boolean;
+  onEdit?: (area: Area) => void;
+  onDelete?: (area: Area) => void;
+}
+
+// Datos de ejemplo por defecto (simula API)
+const defaultAreas: Area[] = [
   {
     id: 1,
     ck_area: "550e8400-e29b-41d4-a716-446655440000",
@@ -92,18 +101,23 @@ const tableData: Area[] = [
   }
 ];
 
-export default function AreaTableOne() {
+export default function AreaTableOne({
+  areas = defaultAreas,
+  itemsPerPage = 5,
+  isLoading = false,
+  onEdit,
+  onDelete
+}: AreaTableProps) {
   // ESTADOS PARA LA PAGINACIÓN
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
 
   // CALCULAR DATOS PAGINADOS
-  const totalItems = tableData.length;
+  const totalItems = areas.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = tableData.slice(startIndex, endIndex);
+  const currentData = areas.slice(startIndex, endIndex);
 
   // FUNCIONES PARA CAMBIAR PÁGINA
   const goToPage = (page: number) => {
@@ -121,6 +135,47 @@ export default function AreaTableOne() {
       setCurrentPage(currentPage - 1);
     }
   };
+
+  // MANEJAR ACCIONES
+  const handleEdit = (area: Area) => {
+    if (onEdit) {
+      onEdit(area);
+    } else {
+      console.log('Editando área:', area);
+    }
+  };
+
+  const handleDelete = (area: Area) => {
+    if (onDelete) {
+      onDelete(area);
+    } else {
+      console.log('Eliminando área:', area);
+    }
+  };
+
+  // MOSTRAR LOADING
+  if (isLoading) {
+    return (
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span className="ml-3 text-gray-600 dark:text-gray-400">Cargando áreas...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // MOSTRAR MENSAJE SI NO HAY DATOS
+  if (areas.length === 0) {
+    return (
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+        <div className="flex flex-col justify-center items-center py-12">
+          <p className="text-gray-500 dark:text-gray-400 text-lg">No hay áreas disponibles</p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">Los datos aparecerán aquí cuando estén disponibles</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -178,10 +233,16 @@ export default function AreaTableOne() {
                 </TableCell>
                 <TableCell className="px-4 py-3 text-start">
                   <div className="flex space-x-2">
-                    <button className="p-1 text-blue-600 hover:text-blue-800">
+                    <button 
+                      onClick={() => handleEdit(area)}
+                      className="p-1 text-blue-600 hover:text-blue-800 transition-colors"
+                    >
                       Editar
                     </button>
-                    <button className="p-1 text-red-600 hover:text-red-800">
+                    <button 
+                      onClick={() => handleDelete(area)}
+                      className="p-1 text-red-600 hover:text-red-800 transition-colors"
+                    >
                       Eliminar
                     </button>
                   </div>
@@ -191,44 +252,90 @@ export default function AreaTableOne() {
           </TableBody>
         </Table>
         
-        {/* PAGINACIÓN CON LÓGICA */}
-        <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200">
-          <span className="text-sm text-gray-600 dark:text-gray-400">
-            Mostrando {startIndex + 1}-{Math.min(endIndex, totalItems)} de {totalItems} áreas
-          </span>
-          <div className="flex space-x-2">
-            <button 
-              onClick={goToPrevPage}
-              disabled={currentPage === 1}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:hover:bg-gray-700"
-            >
-              Anterior
-            </button>
-            
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => goToPage(page)}
-                className={`px-3 py-1 rounded-md text-sm ${
-                  currentPage === page
-                    ? 'bg-blue-600 text-white'
-                    : 'border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700'
-                }`}
+        {/* PAGINACIÓN */}
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Mostrando {startIndex + 1}-{Math.min(endIndex, totalItems)} de {totalItems} áreas
+            </span>
+            <div className="flex space-x-2">
+              <button 
+                onClick={goToPrevPage}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:hover:bg-gray-700 transition-colors"
               >
-                {page}
+                Anterior
               </button>
-            ))}
-            
-            <button 
-              onClick={goToNextPage}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:hover:bg-gray-700"
-            >
-              Siguiente
-            </button>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => goToPage(page)}
+                  className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                    currentPage === page
+                      ? 'bg-blue-600 text-white'
+                      : 'border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              
+              <button 
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:hover:bg-gray-700 transition-colors"
+              >
+                Siguiente
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
 }
+
+// Hook personalizado para simular API (opcional)
+export const useAreas = () => {
+  const [areas, setAreas] = useState<Area[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simular llamada a API
+  const fetchAreas = async () => {
+    setIsLoading(true);
+    try {
+      // Simular delay de API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setAreas(defaultAreas);
+    } catch (error) {
+      console.error('Error fetching areas:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const addArea = (newArea: Omit<Area, 'id'>) => {
+    const id = Math.max(...areas.map(a => a.id)) + 1;
+    setAreas(prev => [...prev, { ...newArea, id }]);
+  };
+
+  const updateArea = (id: number, updatedArea: Partial<Area>) => {
+    setAreas(prev => prev.map(area => 
+      area.id === id ? { ...area, ...updatedArea } : area
+    ));
+  };
+
+  const deleteArea = (id: number) => {
+    setAreas(prev => prev.filter(area => area.id !== id));
+  };
+
+  return {
+    areas,
+    isLoading,
+    fetchAreas,
+    addArea,
+    updateArea,
+    deleteArea
+  };
+};

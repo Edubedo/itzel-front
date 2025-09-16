@@ -25,8 +25,7 @@ import ConsultaServicios from "./views/catalogos/servicios/consulta/ConsultaServ
 import FormularioServicios from "./views/catalogos/servicios/formulario/FormularioServicios";
 import ConsultaClientes from "./views/catalogos/clientes/consulta/ConsultaClientes";
 import FormularioClientes from "./views/catalogos/clientes/formulario/FormularioClientes";
-import ConsultaSucursales from "./views/catalogos/sucursales/consulta/ConsultaSucursales";
-import FormularioSucursales from "./views/catalogos/sucursales/formulario/FormularioSucursales";
+import Sucursales from "./views/catalogos/sucursales/Sucursales";
 import ConsultaUsuarios from "./views/catalogos/usuarios/consulta/ConsultaUsuarios";
 import FormularioUsuarios from "./views/catalogos/usuarios/formulario/FormularioUsuarios";
 import Dashboard from "./views/general/Dashboard/Dashboard";
@@ -63,9 +62,9 @@ export default function App() {
             <Route path="/catalogos/clientes/formulario/" element={<FormularioClientes />} />
             
             {/* SUCURSALES */}
-            <Route path="/catalogos/sucursales/consulta/" element={<ConsultaSucursales />} />
-            <Route path="/catalogos/sucursales/formulario/" element={<FormularioSucursales />} />
-            
+
+            <Route path="/catalogos/sucursales" element={<Sucursales />} />
+                        
             {/* USUARIOS */}
             <Route path="/catalogos/usuarios/consulta/" element={<ConsultaUsuarios />} />
             <Route path="/catalogos/usuarios/formulario/" element={<FormularioUsuarios />} />

@@ -98,7 +98,7 @@ const tableData: Usuario[] = [
     s_domicilio: "Barrio 4 Valle de las Garzas, Andador leo #48",
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
-    ck_estatus: "INACTIVO",
+    ck_estatus: "INACTI",
     i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
@@ -146,7 +146,7 @@ const tableData: Usuario[] = [
     s_domicilio: "Barrio 4 Valle de las Garzas, Andador leo #48",
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
-    ck_estatus: "INACTIVO",
+    ck_estatus: "INACTI",
     i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
@@ -194,7 +194,7 @@ const tableData: Usuario[] = [
     s_domicilio: "Barrio 4 Valle de las Garzas, Andador leo #48",
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
-    ck_estatus: "INACTIVO",
+    ck_estatus: "INACTI",
     i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
@@ -217,11 +217,11 @@ export default function UsuarioTableOne() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  //FILTRAR POR ACTIVO O INACTIVO
+  //FILTRAR POR ACTIVO O INACTI
 //   const [filtro] = useState<string>(""); 
 //   const usuariosFiltrados = tableData.filter((usuario) => {
 //   if (filtro === "ACTIVO") return usuario.ck_estatus === "ACTIVO";
-//   if (filtro === "INACTIVO") return usuario.ck_estatus === "INACTIVO";
+//   if (filtro === "INACTI") return usuario.ck_estatus === "INACTI";
 //   return true; // si filtro está vacío, devuelve todos
 // });
 

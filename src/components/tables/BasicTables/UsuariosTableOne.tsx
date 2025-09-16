@@ -75,15 +75,13 @@ export default function UsuariosTableOne({
     }
   }, [currentPage, searchTerm, tipoUsuarioFilter, estatusFilter, onStatsUpdate]);
 
-  // Cargar usuarios cuando cambian los filtros o la página
-  useEffect(() => {
-    loadUsuarios();
-  }, [loadUsuarios]);
-
-  // Reset página cuando cambian los filtros
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, tipoUsuarioFilter, estatusFilter]);
+  
+  useEffect(() => {
+    loadUsuarios();
+  }, [currentPage, searchTerm, tipoUsuarioFilter, estatusFilter]);
 
   // Funciones de paginación
   const goToPage = (page: number) => {

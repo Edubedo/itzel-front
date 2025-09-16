@@ -48,7 +48,7 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
         <select className="border rounded-lg px-3 py-2">
           <option value="">Todos los estados</option>
           <option value="ACTIVO">Activo</option>
-          <option value="INACTIVO">Inactivo</option>
+          <option value="INACTI">Inactivo</option>
         </select>
         
         {/* Filtro por Sucursal */}

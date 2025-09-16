@@ -23,7 +23,7 @@ interface UsuarioStats {
 export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: UsuariosTablesProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [tipoUsuarioFilter, setTipoUsuarioFilter] = useState("");
-  const [estatusFilter, setEstatusFilter] = useState("");
+  const [estatusFilter, setEstatusFilter] = useState("ACTIVO");
   const [stats, setStats] = useState<UsuarioStats>({
     total: 0,
     activos: 0,
@@ -124,7 +124,7 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
             >
               <option value="">Todos los estados</option>
               <option value="ACTIVO">Activo</option>
-              <option value="INACTIVO">Inactivo</option>
+              <option value="INACTI">Inactivo</option>
             </select>
           </div>
 
@@ -140,8 +140,22 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
         </div>
       </div>
 
+      
+
+      {/* Tabla de usuarios */}
+      <div className="space-y-6">
+        <ComponentCard title="Lista de Usuarios">
+          <UsuariosTableOne 
+            searchTerm={searchTerm}
+            tipoUsuarioFilter={tipoUsuarioFilter}
+            estatusFilter={estatusFilter}
+            onStatsUpdate={handleStatsUpdate}
+          />
+        </ComponentCard>
+      </div>
+
       {/* Estadísticas Resumidas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-6 shadow-md">
           <div className="flex items-center justify-between">
             <div>
@@ -185,18 +199,6 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
             <div className="text-4xl opacity-80">📊</div>
           </div>
         </div>
-      </div>
-
-      {/* Tabla de usuarios */}
-      <div className="space-y-6">
-        <ComponentCard title="Lista de Usuarios">
-          <UsuariosTableOne 
-            searchTerm={searchTerm}
-            tipoUsuarioFilter={tipoUsuarioFilter}
-            estatusFilter={estatusFilter}
-            onStatsUpdate={handleStatsUpdate}
-          />
-        </ComponentCard>
       </div>
     </>
   );

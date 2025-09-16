@@ -40,6 +40,8 @@ export default function UserDropdown() {
           {user.s_nombre.charAt(0).toUpperCase()}
         </span>
 
+        
+
         <div className="mr-1 text-left">
           <span className="block font-medium text-theme-sm">{user.s_nombre}</span>
           <span className="block text-xs text-gray-500 dark:text-gray-400">

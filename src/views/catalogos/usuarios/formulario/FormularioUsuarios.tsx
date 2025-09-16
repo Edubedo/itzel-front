@@ -153,6 +153,11 @@ function FormularioUsuarios() {
       newErrors.s_rfc = 'El RFC debe tener exactamente 13 caracteres';
     }
 
+    console.log("formData.d_fecha_nacimiento: ", formData.d_fecha_nacimiento)
+    if(!formData.d_fecha_nacimiento || formData.d_fecha_nacimiento === '  ') {
+      newErrors.d_fecha_nacimiento = 'La fecha de nacimiento es requerida';
+    }
+
     if (!formData.s_curp.trim()) {
       newErrors.s_curp = 'El CURP es requerido';
     } else if (formData.s_curp.length !== 18) {
@@ -244,7 +249,7 @@ function FormularioUsuarios() {
           <ComponentCard title="Información Personal">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label>Nombre *</Label>
+                <Label>Nombre <span className="text-red-500 text-sm">*</span></Label>
                 <Input
                   type="text"
                   value={formData.s_nombre}
@@ -279,7 +284,7 @@ function FormularioUsuarios() {
               </div>
 
               <div>
-                <Label>Fecha de Nacimiento</Label>
+                <Label>Fecha de Nacimiento <span className="text-red-500 text-sm">*</span></Label>
                 <Input
                   type="date"
                   value={formData.d_fecha_nacimiento}
@@ -308,7 +313,7 @@ function FormularioUsuarios() {
           <ComponentCard title="Información de Contacto y Acceso">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label>Correo Electrónico *</Label>
+                <Label>Correo Electrónico <span className="text-red-500 text-sm">*</span></Label>
                 <Input
                   type="email"
                   value={formData.s_correo_electronico}
@@ -339,7 +344,7 @@ function FormularioUsuarios() {
           <ComponentCard title="Información Oficial">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label>RFC *</Label>
+                <Label>RFC <span className="text-red-500 text-sm">*</span></Label>
                 <input
                   type="text"
                   value={formData.s_rfc}
@@ -353,7 +358,7 @@ function FormularioUsuarios() {
               </div>
 
               <div>
-                <Label>CURP *</Label>
+                <Label>CURP <span className="text-red-500 text-sm">*</span></Label>
                 <input
                   type="text"
                   value={formData.s_curp}
@@ -368,7 +373,7 @@ function FormularioUsuarios() {
             </div>
 
             <div className="mt-6">
-              <Label>Domicilio *</Label>
+              <Label>Domicilio <span className="text-red-500 text-sm">*</span></Label>
               <textarea
                 value={formData.s_domicilio}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => 
@@ -452,7 +457,7 @@ function FormularioUsuarios() {
                       type="checkbox"
                       checked={formData.ck_estatus === 'ACTIVO'}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
-                        handleInputChange('ck_estatus', e.target.checked ? 'ACTIVO' : 'INACTIVO')}
+                        handleInputChange('ck_estatus', e.target.checked ? 'ACTIVO' : 'INACTI')}
                       className="sr-only peer"
                     />
                     <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>

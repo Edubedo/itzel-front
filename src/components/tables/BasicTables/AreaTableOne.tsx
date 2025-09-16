@@ -46,7 +46,7 @@ const tableData: Area[] = [
     c_codigo_area: "CONTR",
     s_area: "Contratación",
     s_description_area: "Contratación de servicios",
-    ck_estatus: "INACTIVO",
+    ck_estatus: "INACTI",
     ck_sucursal: "suc-002",
     sucursal_nombre: "Secured Norte"
   },

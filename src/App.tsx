@@ -37,55 +37,117 @@ import FormularioReportes from "./views/operaciones/reportes/formulario/Formular
 import ConsultaTurnos from "./views/operaciones/turnos/consulta/ConsultaTurnos";
 import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTurnos";
 
+// Importar componentes de autenticación
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+
+// Definir constantes para tipos de usuario (basado en el backend)
+const USER_TYPES = {
+  ADMINISTRADOR: 1,
+  EJECUTIVO: 2,
+  CLIENTE: 3
+};
+
 export default function App() {
   return (
-    <>
+    <AuthProvider>
       <Router>
         <ScrollToTop />
-        <Routes>         
-          {/* Dashboard Layout */}
-          <Route element={<AppLayout />}>
+        <Routes>
+          {/* Rutas públicas */}
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/starter" element={<Starter />} />
 
-            {/* Ruta de catalogos */}
-          <Route index path="/" element={<Home />} />
+          {/* Rutas protegidas con layout */}
+          <Route element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }>
+            {/* Dashboard principal */}
+            <Route index path="/" element={<Home />} />
 
+            {/* CATÁLOGOS - Solo Administradores y Ejecutivos */}
+            
             {/* ÁREAS */}
-            <Route path="/catalogos/areas/consulta/" element={<ConsultaAreas />} />
-            <Route path="/catalogos/areas/formulario/" element={<FormularioAreas />} />
+            <Route path="/catalogos/areas/consulta/" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <ConsultaAreas />
+              </ProtectedRoute>
+            } />
+            <Route path="/catalogos/areas/formulario/" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <FormularioAreas />
+              </ProtectedRoute>
+            } />
 
             {/* SERVICIOS */}
-            <Route path="/catalogos/servicios/consulta/" element={<ConsultaServicios />} />
-            <Route path="/catalogos/serv6/icios/formulario/" element={<FormularioServicios />} />
+            <Route path="/catalogos/servicios/consulta/" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <ConsultaServicios />
+              </ProtectedRoute>
+            } />
+            <Route path="/catalogos/servicios/formulario/" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <FormularioServicios />
+              </ProtectedRoute>
+            } />
         
-            {/* CLIENTES */}
-            <Route path="/catalogos/clientes/consulta/" element={<ConsultaClientes />} />
-            <Route path="/catalogos/clientes/formulario/" element={<FormularioClientes />} />
+            {/* CLIENTES - Solo Administradores y Ejecutivos pueden ver todos los clientes */}
+            <Route path="/catalogos/clientes/consulta/" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <ConsultaClientes />
+              </ProtectedRoute>
+            } />
+            <Route path="/catalogos/clientes/formulario/" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <FormularioClientes />
+              </ProtectedRoute>
+            } />
             
             {/* SUCURSALES */}
-
-            <Route path="/catalogos/sucursales" element={<Sucursales />} />
+            <Route path="/catalogos/sucursales" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <Sucursales />
+              </ProtectedRoute>
+            } />
                         
-            {/* USUARIOS */}
-            <Route path="/catalogos/usuarios/consulta/" element={<ConsultaUsuarios />} />
-            <Route path="/catalogos/usuarios/formulario/" element={<FormularioUsuarios />} />
+            {/* USUARIOS - Solo Administradores */}
+            <Route path="/catalogos/usuarios/consulta/" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
+                <ConsultaUsuarios />
+              </ProtectedRoute>
+            } />
+            <Route path="/catalogos/usuarios/formulario/" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
+                <FormularioUsuarios />
+              </ProtectedRoute>
+            } />
 
-
+            {/* OPERACIONES - Accesibles por todos los usuarios autenticados */}
             
             {/* CITAS */}
             <Route path="/operaciones/citas/consulta/" element={<ConsultaCitas />} />
             <Route path="/operaciones/citas/formulario/" element={<FormularioCitas />} />
 
-            {/* REPORTES */}
-            <Route path="/operaciones/reportes/consulta/" element={<ConsultaReportes />} />
-            <Route path="/operaciones/reportes/formulario/" element={<FormularioReportes />} />
+            {/* REPORTES - Solo Administradores y Ejecutivos */}
+            <Route path="/operaciones/reportes/consulta/" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <ConsultaReportes />
+              </ProtectedRoute>
+            } />
+            <Route path="/operaciones/reportes/formulario/" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <FormularioReportes />
+              </ProtectedRoute>
+            } />
 
-            {/* TURNOS */}
+            {/* TURNOS - Accesibles por todos los usuarios autenticados */}
             <Route path="/operaciones/turnos/consulta/" element={<ConsultaTurnos />} />
             <Route path="/operaciones/turnos/formulario/" element={<FormularioTurnos />} />
 
-
-
-            {/* Others Page */}
+            {/* Páginas generales */}
             <Route path="/profile" element={<UserProfiles />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />
@@ -109,30 +171,31 @@ export default function App() {
             <Route path="/bar-chart" element={<BarChart />} />
           </Route>
 
-          {/* Auth Layout */}
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
+          {/* PANTALLA GENERAL - Protegida */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
 
-          {/* PANTALLA GENERAL */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route index path="/starter" element={<Starter />} />
-
+          {/* Rutas adicionales con layout protegido */}
+          <Route element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }>
+            {/* Catalogos duplicados - limpiar duplicados */}
+            <Route path="/catalogos/areas" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <Areas />
+              </ProtectedRoute>
+            } />
+          </Route>
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
-
-         <Route element={<AppLayout />}>
-         <Route index path="/" element={<Home />} />
-
-        {/*Catalogos */}
-        <Route path="/catalogos/clientes" element={<ConsultaClientes />} /> 
-        <Route path="/catalogos/areas/consulta/" element={<ConsultaAreas />} />
-        <Route path="/catalogos/areas/formulario/" element={<FormularioAreas />} />
-        <Route path="/catalogos/areas" element={<Areas />} />
-
-          </Route>
         </Routes>
       </Router>
-    </>
+    </AuthProvider>
   );
 }

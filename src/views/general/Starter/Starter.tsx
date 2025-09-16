@@ -1,8 +1,7 @@
 export default function Starter() {
   return (
     <>
-      <div>
-        eee
+      <div><a href="/signin">acceder</a>
       </div>
     </>
   );

@@ -2,19 +2,19 @@ import React from "react";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
-import AreaTableOne from "../../components/tables/BasicTables/ClientesTableOne";
+import ClienteTableOne from "../../components/tables/BasicTables/ClientesTableOne";
 
 // Define las props que recibe el componente
-interface AreaTablesProps {
+interface ClienteTablesProps {
   titleTable?: string;
 }
 
-export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaTablesProps) {
+export default function ClienteTables({ titleTable = "Catálogo de Clientes" }: ClienteTablesProps) {
   return (
     <>
       <PageMeta
         title="Sistema de Turnos - Catálogo de clientes"
-        description="Catálogo de áreas para el sistema de turnos"
+        description="Catálogo de Clientes para el sistema de turnos"
       />
       <PageBreadcrumb pageTitle={titleTable} />
       
@@ -29,7 +29,7 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
 
       <div className="space-y-6">
         <ComponentCard title="Consulta de Clientes">
-          <AreaTableOne />
+          <ClienteTableOne />
         </ComponentCard>
       </div>
 

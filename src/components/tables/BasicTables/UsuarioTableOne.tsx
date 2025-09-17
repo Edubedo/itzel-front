@@ -21,7 +21,7 @@ interface Usuario {
   d_fecha_de_nacimiento?: string;
   s_password?: string;
   ck_usuario?: string;
-  ck_tipo_usuario: string;
+  i_tipo_usuario: string;
   s_rfc?: string;
   s_curp?: string;
   ck_sistema?: string;
@@ -38,7 +38,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Cliente",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
 
@@ -51,7 +51,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Administrador",
+    i_tipo_usuario: "Administrador",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -63,7 +63,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Cliente",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -75,7 +75,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Ejecutivo",
+    i_tipo_usuario: "Ejecutivo",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -87,7 +87,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Cliente",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -98,8 +98,8 @@ const tableData: Usuario[] = [
     s_domicilio: "Barrio 4 Valle de las Garzas, Andador leo #48",
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
-    ck_estatus: "INACTIVO",
-    ck_tipo_usuario: "Cliente",
+    ck_estatus: "INACTI",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -111,7 +111,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Cliente",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -123,7 +123,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Ejecutivo",
+    i_tipo_usuario: "Ejecutivo",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -135,7 +135,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Cliente",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -146,8 +146,8 @@ const tableData: Usuario[] = [
     s_domicilio: "Barrio 4 Valle de las Garzas, Andador leo #48",
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
-    ck_estatus: "INACTIVO",
-    ck_tipo_usuario: "Cliente",
+    ck_estatus: "INACTI",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -159,7 +159,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Cliente",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-22.jpg"
   },
   {
@@ -171,7 +171,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Asesor",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -183,7 +183,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Cliente",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -194,8 +194,8 @@ const tableData: Usuario[] = [
     s_domicilio: "Barrio 4 Valle de las Garzas, Andador leo #48",
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
-    ck_estatus: "INACTIVO",
-    ck_tipo_usuario: "Cliente",
+    ck_estatus: "INACTI",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
   },
   {
@@ -207,7 +207,7 @@ const tableData: Usuario[] = [
     s_telefono: "3148364792",
     s_correo_electronico: "marta123@gmail.com",
     ck_estatus: "ACTIVO",
-    ck_tipo_usuario: "Cliente",
+    i_tipo_usuario: "Asesor",
     s_foto: "/images/user/user-17.jpg"
 }
 ];
@@ -217,11 +217,11 @@ export default function UsuarioTableOne() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  //FILTRAR POR ACTIVO O INACTIVO
+  //FILTRAR POR ACTIVO O INACTI
 //   const [filtro] = useState<string>(""); 
 //   const usuariosFiltrados = tableData.filter((usuario) => {
 //   if (filtro === "ACTIVO") return usuario.ck_estatus === "ACTIVO";
-//   if (filtro === "INACTIVO") return usuario.ck_estatus === "INACTIVO";
+//   if (filtro === "INACTI") return usuario.ck_estatus === "INACTI";
 //   return true; // si filtro está vacío, devuelve todos
 // });
 
@@ -318,7 +318,7 @@ export default function UsuarioTableOne() {
                   {Usuario.s_correo_electronico}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-800 text-start text-theme-sm dark:text-gray-400">
-                  {Usuario.ck_tipo_usuario}
+                  {Usuario.i_tipo_usuario}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-start">
                   <Badge

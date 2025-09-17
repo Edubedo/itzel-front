@@ -55,7 +55,7 @@ const defaultAreas: Area[] = [
     c_codigo_area: "CONTR",
     s_area: "Contratación",
     s_description_area: "Contratación de servicios",
-    ck_estatus: "INACTIVO",
+    ck_estatus: "INACTI",
     ck_sucursal: "suc-002",
     sucursal_nombre: "Secured Norte"
   },
@@ -73,7 +73,7 @@ const defaultAreas: Area[] = [
     id: 5,
     ck_area: "550e8400-e29b-41d4-a716-446655440004",
     c_codigo_area: "ATEN",
-    s_area: "Atención al Cliente",
+    s_area: "Atención al Asesor",
     s_description_area: "Área de atención al cliente y soporte",
     ck_estatus: "ACTIVO",
     ck_sucursal: "suc-002",

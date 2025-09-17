@@ -3,10 +3,20 @@
 import React, { useState, useEffect } from "react";
 import { Clipboard, Volume2, Clock, ChevronDown } from "lucide-react";
 
+interface Turno {
+  i_numero_turno: number;
+  ck_area: string;
+  ck_sucursal: string;
+  ck_estatus: string;
+}
+
 const Dashboard: React.FC = () => {
   const [time, setTime] = useState(new Date());
   const [sucursales, setSucursales] = useState<string[]>([]);
   const [sucursalActiva, setSucursalActiva] = useState<string>("");
+
+  const [turnoActual, setTurnoActual] = useState<Turno | null>(null);
+  const [turnosSiguientes, setTurnosSiguientes] = useState<Turno[]>([]);
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
@@ -42,22 +52,22 @@ const Dashboard: React.FC = () => {
     setSucursalActiva(data[0]); // primera por defecto
   }, []);
 
-  // (API simulada)
-  let consultaAPI = [
-    { numeroTURNO: 82, modulo: "A1", estado: "FINALI", prioritario: true },
-    { numeroTURNO: 83, modulo: "A5", estado: "ATENDI", prioritario: false },
-    { numeroTURNO: 84, modulo: "A3", estado: "ACTIVO", prioritario: false },
-    { numeroTURNO: 85, modulo: "A2", estado: "ACTIVO", prioritario: true },
-  ];
+  useEffect(() => {
+    if (!sucursalActiva) return;
 
-  console.log("consultaAPI:", consultaAPI);
+    fetch(`http://localhost:3000/api/operaciones/turnos/obtenerTurnos`)
+      .then((res) => res.json())
+      .then((data) => {
+        const actual = data.find((t: any) => t.ck_estatus === "ATENDI");
+        const siguientes = data.filter(
+          (t: any) => t.ck_estatus !== "FINALI" && t.ck_estatus !== "ATENDI"
+        );
+        setTurnoActual(actual || null);
+        setTurnosSiguientes(siguientes);
+      })
+      .catch((err) => console.error("Error cargando turnos:", err));
+  }, [sucursalActiva]);
 
-
-  
-  const turnoActual = consultaAPI.find((t) => t.estado === "ATENDI");
-  const turnosSiguientes = consultaAPI.filter(
-    (t) => t.estado !== "FINALI" && t.estado !== "ATENDI"
-  );
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -107,7 +117,7 @@ const Dashboard: React.FC = () => {
           <div className="flex flex-col items-center justify-center bg-gradient-to-b from-[#eaf4e2] to-[#d6e5c7] rounded shadow flex-1 py-10">
             <span className="text-lg font-semibold mb-2">TURNO ACTUAL</span>
             <span className="text-8xl font-bold text-black">
-              {turnoActual ? turnoActual.numeroTURNO : "--"}
+              {turnoActual ? turnoActual.i_numero_turno : "--"}
             </span>
           </div>
 
@@ -119,7 +129,7 @@ const Dashboard: React.FC = () => {
             </div>
             <div className="flex items-center justify-center bg-[#a7c08d] rounded shadow">
               <span className="text-3xl md:text-4xl font-bold text-white">
-                {turnoActual ? turnoActual.modulo : "--"}
+                {turnoActual ? turnoActual.ck_area : "--"}
               </span>
             </div>
           </div>
@@ -139,13 +149,13 @@ const Dashboard: React.FC = () => {
           <div className="flex flex-col gap-3">
             {turnosSiguientes.map((t) => (
               <div
-                key={t.numeroTURNO}
+                key={t.i_numero_turno}
                 className="flex justify-between items-center bg-[#a7c08d] hover:bg-[#91ab78] text-white rounded shadow px-6 py-4"
               >
-                <span className="text-5xl font-bold">{t.numeroTURNO}</span>
-                <span className="text-lg font-medium">{t.modulo}</span>
+                <span className="text-5xl font-bold">{t.i_numero_turno}</span>
+                <span className="text-lg font-medium">{t.ck_area}</span>
               </div>
-            ))}
+            ))}63
           </div>
         </div>
       </div>

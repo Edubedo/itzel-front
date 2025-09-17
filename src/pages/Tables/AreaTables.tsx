@@ -4,6 +4,7 @@ import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
 import AreaTableOne from "../../components/tables/BasicTables/AreaTableOne";
 
+
 // Define las props que recibe el componente
 interface AreaTablesProps {
   titleTable?: string;

@@ -29,6 +29,7 @@ export default function AreaTableOne({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statsLoaded, setStatsLoaded] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Trigger para forzar recarga
 
   const itemsPerPage = 5;
 
@@ -89,12 +90,10 @@ export default function AreaTableOne({
     return () => {
       isActive = false;
     };
-  }, [currentPage, searchTerm, estatusFilter, sucursalFilter]);
+  }, [currentPage, searchTerm, estatusFilter, sucursalFilter, refreshTrigger]); // Agregamos refreshTrigger
 
-  // Cargar estadísticas solo una vez al montar el componente
+  // Cargar estadísticas
   useEffect(() => {
-    if (statsLoaded) return;
-
     const loadStats = async () => {
       try {
         const statsResponse = await areasService.getAreasStats();
@@ -107,8 +106,11 @@ export default function AreaTableOne({
       }
     };
 
-    loadStats();
-  }, [onStatsUpdate, statsLoaded]);
+    // Cargar estadísticas al inicio o cuando se actualiza refreshTrigger
+    if (!statsLoaded || refreshTrigger > 0) {
+      loadStats();
+    }
+  }, [onStatsUpdate, statsLoaded, refreshTrigger]); // Agregamos refreshTrigger
 
   // Funciones de paginación
   const goToPage = (page: number) => {
@@ -129,26 +131,24 @@ export default function AreaTableOne({
     }
   };
 
-  // Manejar eliminación de área
-  const handleDelete = async (areaId: string, nombre: string) => {
-    if (window.confirm(`¿Está seguro de que desea eliminar el área "${nombre}"?`)) {
+  // Manejar inactivación de área (soft delete)
+  const handleInactivate = async (areaId: string, nombre: string) => {
+    if (window.confirm(`¿Está seguro de que desea inactivar el área "${nombre}"?\n\nEsta acción cambiará el estado del área a "INACTIVO" pero no la eliminará permanentemente.`)) {
       try {
-        await areasService.deleteArea(areaId);
-        alert('Área eliminada exitosamente');
+        setLoading(true);
         
-        // Recargar página actual o ir a la anterior si la actual queda vacía
-        const newTotal = totalItems - 1;
-        const newTotalPages = Math.ceil(newTotal / itemsPerPage);
+        await areasService.deleteArea(areaId); // El backend ya maneja esto como soft delete
         
-        if (currentPage > newTotalPages && newTotalPages > 0) {
-          setCurrentPage(newTotalPages);
-        } else {
-          // Forzar recarga manteniendo la página actual
-          setLoading(true);
-        }
+        // Forzar recarga de datos y estadísticas
+        setRefreshTrigger(prev => prev + 1);
+        setStatsLoaded(false); // Forzar recarga de estadísticas
+        
+        alert('Área inactivada exitosamente');
+
       } catch (error: any) {
-        console.error('Error al eliminar área:', error);
-        alert('Error al eliminar área: ' + error.message);
+        console.error('Error al inactivar área:', error);
+        alert('Error al inactivar área: ' + error.message);
+        setLoading(false);
       }
     }
   };
@@ -156,6 +156,12 @@ export default function AreaTableOne({
   // Manejar edición
   const handleEdit = (areaId: string) => {
     window.location.href = `/catalogos/areas/formulario/?id=${areaId}`;
+  };
+
+  // Función para reintentar carga
+  const handleRetry = () => {
+    setError(null);
+    setRefreshTrigger(prev => prev + 1);
   };
 
   // Mostrar loading
@@ -176,10 +182,7 @@ export default function AreaTableOne({
           <div className="text-red-600 mb-2">Error al cargar áreas</div>
           <div className="text-gray-600 text-sm mb-3">{error}</div>
           <button 
-            onClick={() => {
-              setLoading(true);
-              setError(null);
-            }}
+            onClick={handleRetry}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             disabled={loading}
           >
@@ -282,13 +285,13 @@ export default function AreaTableOne({
                         </svg>
                       </button>
                       <button 
-                        onClick={() => handleDelete(area.ck_area, area.s_area)}
-                        className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
-                        title="Eliminar área"
+                        onClick={() => handleInactivate(area.ck_area, area.s_area)}
+                        className="p-2 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded-md transition-colors"
+                        title="Inactivar área"
                         disabled={loading}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
                         </svg>
                       </button>
                     </div>

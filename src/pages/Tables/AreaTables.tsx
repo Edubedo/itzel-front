@@ -5,6 +5,7 @@ import PageMeta from "../../components/common/PageMeta";
 import AreaTableOne from "../../components/tables/BasicTables/AreaTableOne";
 import { AreaStats } from "../../services/areasService";
 
+
 interface AreaTablesProps {
   titleTable?: string;
 }

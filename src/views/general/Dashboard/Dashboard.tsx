@@ -55,7 +55,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     if (!sucursalActiva) return;
 
-    fetch(`http://localhost:3000/api/operaciones/turnos/obtenerTurnos`)
+    fetch(`http://localhost:3001/api/operaciones/turnos/obtenerTurnos`)
       .then((res) => res.json())
       .then((data) => {
         const actual = data.find((t: any) => t.ck_estatus === "ATENDI");
@@ -153,9 +153,9 @@ const Dashboard: React.FC = () => {
                 className="flex justify-between items-center bg-[#a7c08d] hover:bg-[#91ab78] text-white rounded shadow px-6 py-4"
               >
                 <span className="text-5xl font-bold">{t.i_numero_turno}</span>
-                <span className="text-lg font-medium">{t.ck_area}</span>
+                <span className="text-lg font-medium">{t.s_area}</span>
               </div>
-            ))}63
+            ))}
           </div>
         </div>
       </div>

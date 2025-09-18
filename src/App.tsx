@@ -72,24 +72,24 @@ export default function App() {
             
             {/* ÁREAS */}
             <Route path="/catalogos/areas/consulta/" element={
-              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
                 <ConsultaAreas />
               </ProtectedRoute>
             } />
             <Route path="/catalogos/areas/formulario/" element={
-              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
                 <FormularioAreas />
               </ProtectedRoute>
             } />
 
             {/* SERVICIOS */}
             <Route path="/catalogos/servicios/consulta/" element={
-              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
                 <ConsultaServicios />
               </ProtectedRoute>
             } />
             <Route path="/catalogos/servicios/formulario/" element={
-              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
                 <FormularioServicios />
               </ProtectedRoute>
             } />
@@ -108,7 +108,7 @@ export default function App() {
             
             {/* SUCURSALES */}
             <Route path="/catalogos/sucursales" element={
-              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
                 <Sucursales />
               </ProtectedRoute>
             } />

@@ -5,66 +5,84 @@ import ComponentCard from "../../../../components/common/ComponentCard";
 import Label from "../../../../components/form/Label";
 import Input from "../../../../components/form/input/InputField";
 import Select from "../../../../components/form/Select";
+import { areasService, AreaFormData, Sucursal } from '../../../../services/areasService';
 
-// Define la interfaz para los datos del área
-interface AreaData {
-  c_codigo_area: string;
-  s_area: string;
-  s_description_area: string;
-  ck_sucursal: string;
-  ck_estatus: string;
-}
-
-// Define las opciones de sucursal
-const sucursalesOptions = [
-  { value: 'suc-001', label: 'Secured Control' },
-  { value: 'suc-002', label: 'Secured Norte' },
-  { value: 'suc-003', label: 'Secured Sur' }
+// Define las opciones de estado
+const estatusOptions = [
+  { value: 'ACTIVO', label: 'Activo' },
+  { value: 'INACTI', label: 'Inactivo' }
 ];
 
 function FormularioAreas() {
-  const [formData, setFormData] = useState<AreaData>({
+  const [formData, setFormData] = useState<AreaFormData>({
     c_codigo_area: '',
     s_area: '',
-    s_description_area: '',
+    s_descripcion_area: '',
     ck_sucursal: '',
     ck_estatus: 'ACTIVO'
   });
 
+  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [errors, setErrors] = useState<Partial<AreaFormData>>({});
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const areaId = urlParams.get('id');
-      
-      if (areaId) {
-        setIsEditing(true);
-        fetchAreaData(areaId);
+    const initializeForm = async () => {
+      try {
+        setInitialLoading(true);
+
+        // Cargar sucursales
+        const sucursalesResponse = await areasService.getSucursales();
+        if (sucursalesResponse.success) {
+          setSucursales(sucursalesResponse.data);
+        }
+
+        // Verificar si estamos editando
+        if (typeof window !== 'undefined') {
+          const urlParams = new URLSearchParams(window.location.search);
+          const areaId = urlParams.get('id');
+          
+          if (areaId) {
+            setIsEditing(true);
+            await fetchAreaData(areaId);
+          }
+        }
+      } catch (error) {
+        console.error('Error al inicializar formulario:', error);
+        alert('Error al cargar los datos iniciales');
+      } finally {
+        setInitialLoading(false);
       }
-    }
+    };
+
+    initializeForm();
   }, []);
 
   const fetchAreaData = async (id: string) => {
     try {
-      setLoading(true);
-      const response = await fetch(`http://localhost:3001/api/catalogos/areas/getArea/${id}`);
-      const data = await response.json();
+      const response = await areasService.getAreaById(id);
       
-      if (data.success) {
-        setFormData(data.area);
+      if (response.success && response.data) {
+        // Mapear los datos del backend al formato del formulario
+        setFormData({
+          c_codigo_area: response.data.c_codigo_area || '',
+          s_area: response.data.s_area || '',
+          s_descripcion_area: response.data.s_descripcion_area || '',
+          ck_sucursal: response.data.ck_sucursal || '',
+          ck_estatus: response.data.ck_estatus || 'ACTIVO'
+        });
       }
     } catch (error) {
       console.error('Error al cargar datos del área:', error);
-    } finally {
-      setLoading(false);
+      alert('Error al cargar los datos del área');
     }
   };
 
-  const handleInputChange = (field: keyof AreaData, value: string) => {
-    // Validar longitud máxima para el código del área en el handler
-    if (field === 'c_codigo_area' && value.length > 10) {
+  const handleInputChange = (field: keyof AreaFormData, value: string) => {
+    // Validar longitud máxima para el código del área
+    if (field === 'c_codigo_area' && value.length > 6) {
       return;
     }
     
@@ -72,57 +90,72 @@ function FormularioAreas() {
       ...prev,
       [field]: value
     }));
+
+    // Limpiar error del campo si existe
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Partial<AreaFormData> = {};
+
+    if (!formData.c_codigo_area.trim()) {
+      newErrors.c_codigo_area = 'El código del área es obligatorio';
+    } else if (formData.c_codigo_area.length > 6) {
+      newErrors.c_codigo_area = 'El código no puede tener más de 6 caracteres';
+    }
+
+    if (!formData.s_area.trim()) {
+      newErrors.s_area = 'El nombre del área es obligatorio';
+    }
+
+    if (!formData.s_descripcion_area.trim()) {
+      newErrors.s_descripcion_area = 'La descripción del área es obligatoria';
+    }
+
+    if (!formData.ck_sucursal) {
+      newErrors.ck_sucursal = 'Debe seleccionar una sucursal';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.c_codigo_area || !formData.s_area || !formData.s_description_area || !formData.ck_sucursal) {
-      alert('Por favor, complete todos los campos obligatorios');
-      return;
-    }
-    
-    if (formData.c_codigo_area.length > 10) {
-      alert('El código del área no puede tener más de 10 caracteres');
+    if (!validateForm()) {
+      alert('Por favor, corrija los errores en el formulario');
       return;
     }
     
     try {
       setLoading(true);
-      let url: string;
-      let method: string;
       
       if (isEditing && typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
         const areaId = urlParams.get('id');
-        url = `http://localhost:3001/api/catalogos/areas/updateArea/${areaId}`;
-        method = 'PUT';
-      } else {
-        url = 'http://localhost:3001/api/catalogos/areas/createArea';
-        method = 'POST';
-      }
-      
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        alert(isEditing ? 'Área actualizada correctamente' : 'Área creada correctamente');
-        if (typeof window !== 'undefined') {
-          window.location.href = '/catalogos/areas/consulta/';
+        
+        if (areaId) {
+          await areasService.updateArea(areaId, formData);
+          alert('Área actualizada correctamente');
         }
       } else {
-        alert('Error: ' + result.message);
+        await areasService.createArea(formData);
+        alert('Área creada correctamente');
       }
-    } catch (error) {
+      
+      // Redirigir a la consulta
+      if (typeof window !== 'undefined') {
+        window.location.href = '/catalogos/areas/consulta/';
+      }
+    } catch (error: any) {
       console.error('Error al guardar el área:', error);
-      alert('Error al guardar el área');
+      alert('Error al guardar el área: ' + (error.message || 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -134,10 +167,17 @@ function FormularioAreas() {
     }
   };
 
-  if (loading) {
+  // Preparar opciones de sucursales para el Select
+  const sucursalesOptions = sucursales.map(sucursal => ({
+    value: sucursal.ck_sucursal,
+    label: sucursal.s_nombre
+  }));
+
+  if (initialLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <span className="ml-3 text-gray-600">Cargando formulario...</span>
       </div>
     );
   }
@@ -163,10 +203,14 @@ function FormularioAreas() {
                   type="text"
                   value={formData.c_codigo_area}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
-                    handleInputChange('c_codigo_area', e.target.value)}
+                    handleInputChange('c_codigo_area', e.target.value.toUpperCase())}
                   placeholder="Ej: CONTA, RECHUM"
+                  className={errors.c_codigo_area ? 'border-red-500' : ''}
                 />
-                <p className="text-xs text-gray-500 mt-1">Máximo 10 caracteres</p>
+                {errors.c_codigo_area && (
+                  <p className="text-red-500 text-sm mt-1">{errors.c_codigo_area}</p>
+                )}
+                <p className="text-xs text-gray-500 mt-1">Máximo 6 caracteres</p>
               </div>
 
               <div>
@@ -177,7 +221,11 @@ function FormularioAreas() {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
                     handleInputChange('s_area', e.target.value)}
                   placeholder="Ej: Contabilidad, Recursos Humanos"
+                  className={errors.s_area ? 'border-red-500' : ''}
                 />
+                {errors.s_area && (
+                  <p className="text-red-500 text-sm mt-1">{errors.s_area}</p>
+                )}
               </div>
             </div>
           </ComponentCard>
@@ -186,13 +234,18 @@ function FormularioAreas() {
             <div>
               <Label>Descripción del Área *</Label>
               <textarea
-                value={formData.s_description_area}
+                value={formData.s_descripcion_area}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => 
-                  handleInputChange('s_description_area', e.target.value)}
+                  handleInputChange('s_descripcion_area', e.target.value)}
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-vertical ${
+                  errors.s_descripcion_area ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="Describe las funciones y responsabilidades del área..."
               />
+              {errors.s_descripcion_area && (
+                <p className="text-red-500 text-sm mt-1">{errors.s_descripcion_area}</p>
+              )}
             </div>
           </ComponentCard>
 
@@ -200,11 +253,23 @@ function FormularioAreas() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label>Sucursal *</Label>
-                <Select
-                  options={sucursalesOptions}
-                  placeholder="Seleccionar sucursal"
-                  onChange={(value: string) => handleInputChange('ck_sucursal', value)}
-                />
+                <select
+                  value={formData.ck_sucursal}
+                  onChange={(e) => handleInputChange('ck_sucursal', e.target.value)}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${
+                    errors.ck_sucursal ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                >
+                  <option value="">Seleccionar sucursal</option>
+                  {sucursalesOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.ck_sucursal && (
+                  <p className="text-red-500 text-sm mt-1">{errors.ck_sucursal}</p>
+                )}
               </div>
 
               <div>

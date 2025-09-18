@@ -1,8 +1,15 @@
 import React from 'react';
-
+import PageMeta from '../../../components/common/PageMeta';
 
 export default function Starter() {
   return (
+    
+     <>
+      <PageMeta
+        title="Starter Users - ITZEL"
+        description="Sistema de gestión de turnos ITZEL - Página inicial de selección de tipo de cliente"
+      />
+
     <div className="h-screen flex flex-col overflow-hidden" 
          style={{ 
            background: 'linear-gradient(135deg, #F4F4F4 0%, #DFDFDF 50%, #CAC9C9 100%)'
@@ -116,5 +123,6 @@ export default function Starter() {
         </div>
       </div>
     </div>
+    </>
   );
 }

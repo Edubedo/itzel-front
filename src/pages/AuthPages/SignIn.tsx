@@ -6,7 +6,7 @@ export default function SignIn() {
   return (
     <>
       <PageMeta
-        title="React.js SignIn Dashboard | ITZEL - Next.js Admin Dashboard Template"
+        title="ITZEL - SignIn"
         description="This is React.js SignIn Tables Dashboard page for ITZEL - React.js Tailwind CSS Admin Dashboard Template"
       />
       <AuthLayout>

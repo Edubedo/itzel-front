@@ -63,7 +63,6 @@ const Dashboard: React.FC = () => {
     fetch(`http://localhost:3001/api/operaciones/turnos/obtenerTurnos`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("Turnos cargados:", data); // 👈 checa aquí
         // Turno en proceso (el que se está atendiendo)
         const actual = data.find((t: any) => t.ck_estatus === "PROCES");
         // Próximos turnos (los que aún esperan)

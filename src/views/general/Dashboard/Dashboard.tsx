@@ -7,7 +7,7 @@ interface Turno {
   i_numero_turno: number;
   ck_area: string;
   ck_sucursal: string;
-  ck_estatus: string;
+  ck_estatus: string; //activo, process atendi
 }
 
 const Dashboard: React.FC = () => {
@@ -17,6 +17,8 @@ const Dashboard: React.FC = () => {
 
   const [turnoActual, setTurnoActual] = useState<Turno | null>(null);
   const [turnosSiguientes, setTurnosSiguientes] = useState<Turno[]>([]);
+
+
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
@@ -52,21 +54,32 @@ const Dashboard: React.FC = () => {
     setSucursalActiva(data[0]); // primera por defecto
   }, []);
 
+
+
   useEffect(() => {
     if (!sucursalActiva) return;
 
+  const fetchTurnos = () => {
     fetch(`http://localhost:3001/api/operaciones/turnos/obtenerTurnos`)
       .then((res) => res.json())
       .then((data) => {
-        const actual = data.find((t: any) => t.ck_estatus === "ATENDI");
+        console.log("Turnos cargados:", data); // 👈 checa aquí
+        // Turno en proceso (el que se está atendiendo)
+        const actual = data.find((t: any) => t.ck_estatus === "PROCES");
+        // Próximos turnos (los que aún esperan)
         const siguientes = data.filter(
-          (t: any) => t.ck_estatus !== "FINALI" && t.ck_estatus !== "ATENDI"
-        );
+          (t: any) => t.ck_estatus === "ACTIVO");
         setTurnoActual(actual || null);
         setTurnosSiguientes(siguientes);
       })
       .catch((err) => console.error("Error cargando turnos:", err));
-  }, [sucursalActiva]);
+  }; 
+  fetchTurnos ();
+
+   // 🔄 refrescar cada 3 segundos
+  const interval = setInterval(fetchTurnos, 3000);
+  return () => clearInterval(interval);
+}, [sucursalActiva]);
 
 
   return (

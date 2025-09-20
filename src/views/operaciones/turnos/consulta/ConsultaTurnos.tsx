@@ -3,6 +3,7 @@ import { ClipboardList, CheckCircle } from "lucide-react";
 
 function ConsultaTurnos() {
   const [sucursales, setSucursales] = useState([]);
+   const [sucursalFilter, setSucursalFilter] = useState(""); // filtro seleccionado
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState(null);
   const [turnoActual, setTurnoActual] = useState(null);
   const [proximos, setProximos] = useState([]);
@@ -33,21 +34,24 @@ function ConsultaTurnos() {
   }, [sucursalSeleccionada]);
 
   // Funciones para botones
-  const atenderTurno = (id) => {
-    fetch(`http://localhost:3001/api/turnos/atender/${id}`, { method: "POST" })
+  const atenderTurno = (id: number) => {
+    console.log("id", id)
+    fetch(`http://localhost:3001/api/operaciones/turnos/atenderTurnoActual/${id}`, { method: "POST" })
       .then(() => {
         setTurnoActual(proximos[0] || null);
-        setProximos(proximos.slice(1));
+        setProximos(proximos.slice(turnoActual?.ck_turno));
       });
   };
 
-  const terminarTurno = (id) => {
-    fetch(`http://localhost:3001/api/turnos/terminar/${id}`, { method: "POST" })
+  const terminarTurno = (id: number) => {
+    console.log("id", id)
+    fetch(`http://localhost:3001/api/operaciones/turnos/terminarTurnoActual/${id}`, { method: "POST" })
       .then(() => setTurnoActual(null));
   };
 
-  const finalizarAtencion = (id) => {
-    fetch(`http://localhost:3001/api/turnos/finalizar/${id}`, { method: "POST" })
+  const finalizarAtencion = (id: number) => {
+    console.log("id", id)
+    fetch(`http://localhost:3001/api/operaciones/turnos/finalizarAtencion/${id}`, { method: "POST" })
       .then(() => setTurnoActual(null));
   };
 
@@ -57,18 +61,18 @@ function ConsultaTurnos() {
       <div className="flex justify-between items-center">
         <h1 className="text-[24px] font-bold">Consulta de Turnos</h1>
         <div className="flex items-center">
-          <label className="mr-2">Sucursal:</label>
-          <select
-            className="border px-20 py-2 rounded-lg"
-            value={sucursalSeleccionada || ""}
-            onChange={(e) => setSucursalSeleccionada(e.target.value)}
-          >
-            {sucursales.map((s) => (
-              <option key={s.ck_sucursal} value={s.ck_sucursal}>
-                {s.nombre}
-              </option>
-            ))}
-          </select>
+         <label className="block text-sm text-[20px] text-gray-700 mb-0.5 mr-2">
+              Sucursal
+            </label>
+            <select 
+              value={sucursalFilter}
+              onChange={(e) => setSucursalFilter(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-[16px]"
+>
+  <option value="">Todas las sucursales</option>
+  <option value="suc-001">Secured Control</option>
+  <option value="suc-002">Secured Norte</option>
+</select>
         </div>
       </div>
 
@@ -76,7 +80,9 @@ function ConsultaTurnos() {
         {/* Botones */}
         <div className="flex space-x-6 mb-15">
           <button
-            onClick={() => turnoActual && atenderTurno(turnoActual.ck_turno)}
+            onClick={() => {
+              atenderTurno(1)
+            }}
             className="bg-[#22AE69] hover:bg-[#20955B] text-white font-medium px-6 py-3 rounded-xl shadow-md w-64 text-[20px] mt-10"
           >
             Atender turno actual

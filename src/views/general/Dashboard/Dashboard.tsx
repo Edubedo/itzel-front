@@ -7,7 +7,7 @@ interface Turno {
   i_numero_turno: number;
   ck_area: string;
   ck_sucursal: string;
-  ck_estatus: string;
+  ck_estatus: string; //activo, process atendi
 }
 
 const Dashboard: React.FC = () => {
@@ -17,6 +17,8 @@ const Dashboard: React.FC = () => {
 
   const [turnoActual, setTurnoActual] = useState<Turno | null>(null);
   const [turnosSiguientes, setTurnosSiguientes] = useState<Turno[]>([]);
+
+
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
@@ -52,21 +54,31 @@ const Dashboard: React.FC = () => {
     setSucursalActiva(data[0]); // primera por defecto
   }, []);
 
+
+
   useEffect(() => {
     if (!sucursalActiva) return;
 
-    fetch(`http://localhost:3000/api/operaciones/turnos/obtenerTurnos`)
+  const fetchTurnos = () => {
+    fetch(`http://localhost:3001/api/operaciones/turnos/obtenerTurnos`)
       .then((res) => res.json())
       .then((data) => {
-        const actual = data.find((t: any) => t.ck_estatus === "ATENDI");
+        // Turno en proceso (el que se está atendiendo)
+        const actual = data.find((t: any) => t.ck_estatus === "PROCES");
+        // Próximos turnos (los que aún esperan)
         const siguientes = data.filter(
-          (t: any) => t.ck_estatus !== "FINALI" && t.ck_estatus !== "ATENDI"
-        );
+          (t: any) => t.ck_estatus === "ACTIVO");
         setTurnoActual(actual || null);
         setTurnosSiguientes(siguientes);
       })
       .catch((err) => console.error("Error cargando turnos:", err));
-  }, [sucursalActiva]);
+  }; 
+  fetchTurnos ();
+
+   // 🔄 refrescar cada 3 segundos
+  const interval = setInterval(fetchTurnos, 3000);
+  return () => clearInterval(interval);
+}, [sucursalActiva]);
 
 
   return (
@@ -153,9 +165,9 @@ const Dashboard: React.FC = () => {
                 className="flex justify-between items-center bg-[#a7c08d] hover:bg-[#91ab78] text-white rounded shadow px-6 py-4"
               >
                 <span className="text-5xl font-bold">{t.i_numero_turno}</span>
-                <span className="text-lg font-medium">{t.ck_area}</span>
+                <span className="text-lg font-medium">{t.s_area}</span>
               </div>
-            ))}63
+            ))}
           </div>
         </div>
       </div>

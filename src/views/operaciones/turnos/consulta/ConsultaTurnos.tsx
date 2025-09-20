@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ClipboardList, CheckCircle, Play, Square, RotateCcw, Filter } from "lucide-react";
 import { useSucursalActiva } from '../../../../components/header/Header';
 import { useAuth } from '../../../../contexts/AuthContext';
@@ -49,21 +49,19 @@ function ConsultaTurnos() {
     }
   }, [sucursalActiva]);
 
+  const cargarDatos = useCallback(async () => {
+    if (!sucursalActiva) return;
+    
+    await cargarTurnos();
+    await cargarEstadisticas();
+  }, [sucursalActiva, areaSeleccionada]); 
+
   // Cargar turnos cuando cambie el área seleccionada
   useEffect(() => {
     if (sucursalActiva) {
-      cargarTurnos();
-      cargarEstadisticas();
-      
-      // Actualizar cada 3 segundos
-      const interval = setInterval(() => {
-        cargarTurnos();
-        cargarEstadisticas();
-      }, 3000);
-      
-      return () => clearInterval(interval);
+      cargarDatos();
     }
-  }, [sucursalActiva, areaSeleccionada]);
+  }, [ cargarDatos]);
 
   const cargarAreas = async () => {
     if (!sucursalActiva) return;

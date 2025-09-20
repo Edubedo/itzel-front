@@ -302,7 +302,7 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center gap-2">
               <Clipboard className="w-5 h-5" />
               <span className="text-sm">
-                {loading ? 'Actualizando...' : `${turnosSiguientes.length} en espera`}
+                {loading ? `${turnosSiguientes.length} en espera` : `${turnosSiguientes.length} en espera`}
               </span>
             </div>
           </div>

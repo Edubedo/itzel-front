@@ -187,43 +187,42 @@ export default function Starter() {
     }
   };
 
-  const descargarTicket = () => {
+  const descargarTicket = async () => {
     if (!turnoCreado) return;
 
-    const ticketContent = `
-SISTEMA ITZEL - CFE
-========================
-TICKET DE TURNO
-========================
+    try {
+      // Realizar petición para descargar el PDF
+      const response = await fetch(
+        `http://localhost:3001/api/operaciones/turnos/ticket/${turnoCreado.ck_turno}/pdf`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/pdf',
+          },
+        }
+      );
 
-Turno No: ${turnoCreado.i_numero_turno}
-Área: ${turnoCreado.s_area}
-Servicio: ${turnoCreado.s_servicio}
-Sucursal: ${turnoCreado.s_nombre_sucursal}
-Dirección: ${turnoCreado.s_domicilio}
+      if (!response.ok) {
+        throw new Error('Error al descargar el ticket');
+      }
 
-Fecha: ${new Date().toLocaleDateString('es-MX')}
-Hora: ${new Date().toLocaleTimeString('es-MX')}
+      // Obtener el blob del PDF
+      const pdfBlob = await response.blob();
+      
+      // Crear URL para descarga
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ticket-turno-${turnoCreado.i_numero_turno}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
-Tipo de cliente: ${esCliente ? 'Cliente CFE' : 'No cliente'}
-
-========================
-Por favor conserve este ticket
-y espere a ser llamado.
-
-¡Gracias por usar ITZEL!
-========================
-    `.trim();
-
-    const blob = new Blob([ticketContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Ticket_Turno_${turnoCreado.i_numero_turno}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al descargar ticket:', error);
+      alert('Error al descargar el ticket. Por favor, intente nuevamente.');
+    }
   };
 
   const regresarAlInicio = () => {
@@ -259,8 +258,8 @@ y espere a ser llamado.
                   <img 
                     src="/images/icons/NoCliente.png" 
                     alt="No cliente" 
-                    className="w-full h-full object-contain"
-                  />
+                    className="w-32 h-32 object-contain"
+                  /> 
                 </div>
               </div>
               <span className="text-[#0A1310] font-bold text-center text-base">
@@ -279,7 +278,7 @@ y espere a ser llamado.
                   <img 
                     src="/images/icons/Cliente.png" 
                     alt="Cliente" 
-                    className="w-full h-full object-contain"
+                    className="w-16 h-16 object-contain"
                   />
                 </div>
               </div>
@@ -405,7 +404,7 @@ y espere a ser llamado.
             <img 
               src="/images/Logo2/Logo%20Itzel%20CFE%20Redondo.png" 
               alt="ITZEL Logo" 
-              className="w-16 h-16 mx-auto mb-2"
+              className="w-32 h-32 mx-auto mb-2"
             />
             <h3 className="font-bold text-lg text-[#0A1310]">SISTEMA ITZEL</h3>
             <p className="text-sm text-gray-600">Comisión Federal de Electricidad</p>

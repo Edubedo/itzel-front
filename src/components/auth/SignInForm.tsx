@@ -50,7 +50,7 @@ export default function SignInForm() {
       // Redirigir a la página desde donde vino o al dashboard
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión');
+      setError(err.message || 'Credenciales Incorrectas');
     } finally {
       setIsLoading(false);
     }

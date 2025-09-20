@@ -65,9 +65,10 @@ export const authService = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     try {
       const response = await api.post('/auth/login', credentials);
+      console.log('Response login:', response.data);
       return response.data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
+      throw new Error(error.response?.data?.message || 'Credenciales Incorrectas');
     }
   },
 

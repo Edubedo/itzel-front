@@ -22,7 +22,7 @@ export default function SignInForm() {
   const location = useLocation();
 
   // Obtener la ruta desde donde se redirigió al login
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from?.pathname || '/home';
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -60,7 +60,7 @@ export default function SignInForm() {
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-10 mx-auto">
         <Link
-          to="/starter"
+          to="/"
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
           <ChevronLeftIcon className="size-5" />
@@ -150,17 +150,6 @@ export default function SignInForm() {
             </div>
           </form>
 
-          <div className="mt-5">
-            <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-              ¿No tienes una cuenta? {""}
-              <Link
-                to="/signup"
-                className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
-              >
-                Regístrate
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>

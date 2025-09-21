@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "../../ui/table"; 
-import ActividadDiariaClientes from "./ActividadDiariaClientes"; 
+import ActividadDiariaClientes from "./ActividadDiariaClientes";
 
 interface Area {
   id: number;
@@ -16,41 +9,54 @@ interface Area {
   s_description_area: string;
   ck_estatus: string;
   ck_sucursal: string;
-  sucursal_nombre?: string; 
+  sucursal_nombre?: string;
 }
 
-const tableData: Area[] = [
-  { id: 1, ck_area: "550e...", c_codigo_area: "Juan Perez", s_area: "Facturación", s_description_area: "Activo", ck_estatus: "Ultima Compra: 15/07/2025", ck_sucursal: "suc-001" },
-  { id: 2, ck_area: "550e...", c_codigo_area: "Maria Lopez", s_area: "Ventas", s_description_area: "Pendiente", ck_estatus: "Ultima Compra: 10/07/2025", ck_sucursal: "suc-002" },
-  { id: 3, ck_area: "550e...", c_codigo_area: "Carlos Gomez", s_area: "Cobranza", s_description_area: "Activo", ck_estatus: "Ultima Compra: 20/07/2025", ck_sucursal: "suc-003" },
-];
+interface ClienteTableOneProps {
+  data: Area[];
+}
 
+export default function ClienteTableOne({ data }: ClienteTableOneProps) {
+  const [currentValue] = useState(56);
+  const [maxValue] = useState(200);
 
-
-export default function ClienteTableOne() {
-  const [currentValue] = useState(3240);
-  const [maxValue] = useState(5000);
   const progressPercentage = Math.min((currentValue / maxValue) * 100, 100);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-
-  const totalItems = tableData.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = tableData.slice(startIndex, endIndex);
-
-  const goToPage = (page: number) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
-  };
-
-  const goToNextPage = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
-  const goToPrevPage = () => currentPage > 1 && setCurrentPage(currentPage - 1);
 
   return (
     <>
+    {/* === Tabla de Clientes === */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <thead className="bg-gray-100 dark:bg-gray-700">
+            <tr>
+              <th className="px-4 py-2 text-left">Cliente</th>
+              <th className="px-4 py-2 text-left">Tipo contrato</th>
+              <th className="px-4 py-2 text-left">Status</th>
+              <th className="px-4 py-2 text-left">Fecha</th>
+              <th className="px-4 py-2 text-left">Codigo Cliente</th>
+              <th className="px-4 py-2 text-left">Nombre</th>
+              <th className="px-4 py-2 text-left">Apellido paterno</th>
+              <th className="px-4 py-2 text-left">Apellido materno</th>
+              <th className="px-4 py-2 text-left">Domicilio</th>
+              
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((cliente) => (
+              <tr
+                key={cliente.id}
+                className="border-t border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
+                <td className="px-4 py-2">{cliente.c_codigo_area}</td>
+                <td className="px-4 py-2">{cliente.s_area}</td>
+                <td className="px-4 py-2">{cliente.s_description_area}</td>
+                <td className="px-4 py-2">{cliente.ck_estatus}</td>
+                <td className="px-4 py-2">{cliente.ck_sucursal}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* === Gráfica === */}
       <ActividadDiariaClientes />
 
@@ -77,9 +83,7 @@ export default function ClienteTableOne() {
         </div>
       </div>
 
-      {/* === Tabla === */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md dark:border-white/[0.05] dark:bg-gray-800">
-      </div>
+      
     </>
   );
 }

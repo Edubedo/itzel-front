@@ -10,10 +10,10 @@ import {
 } from "recharts";
 
 const data = [
-  { name: "Contratación", clientes: 30, nuevos: 10 },
-  { name: "Facturación", clientes: 50, nuevos: 20 },
-  { name: "Pago", clientes: 80, nuevos: 40 },
-  { name: "Reporte", clientes: 130, nuevos: 50 },
+  { name: "Contratación", clientes: 2, nuevos: 10 },
+  { name: "Facturación", clientes: 20, nuevos: 20 },
+  { name: "Pago", clientes: 25, nuevos: 45 },
+  { name: "Reporte", clientes: 12, nuevos: 50 },
 ];
 
 export default function ActividadDiariaClientes() {

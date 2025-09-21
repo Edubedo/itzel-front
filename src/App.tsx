@@ -57,7 +57,7 @@ export default function App() {
           {/* Rutas públicas */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/starter" element={<Starter />} />
+          <Route path="/" element={<Starter />} />
 
           {/* Rutas protegidas con layout */}
           <Route element={
@@ -66,7 +66,7 @@ export default function App() {
             </ProtectedRoute>
           }>
             {/* Dashboard principal */}
-            <Route index path="/" element={<Home />} />
+            <Route index path="/home" element={<Home />} />
 
             {/* CATÁLOGOS - Solo Administradores y Ejecutivos */}
             
@@ -195,7 +195,11 @@ export default function App() {
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+
+
       </Router>
+
+
     </AuthProvider>
   );
 }

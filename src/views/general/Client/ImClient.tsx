@@ -150,7 +150,7 @@ const ImClient: React.FC = () => {
                 {/* Action Buttons */}
                 <div className="flex justify-center space-x-4 mt-8">
                   <a 
-                    href="/starter" 
+                    href="/" 
                     className="bg-[#5D7166] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#4A5B52] transition-colors flex items-center"
                   >
                     <span className="mr-2">←</span> Regresar

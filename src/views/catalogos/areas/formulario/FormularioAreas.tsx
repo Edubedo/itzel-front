@@ -136,22 +136,28 @@ function FormularioAreas() {
     try {
       setLoading(true);
       
+      let response;
       if (isEditing && typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
         const areaId = urlParams.get('id');
         
         if (areaId) {
-          await areasService.updateArea(areaId, formData);
-          alert('Área actualizada correctamente');
+          response = await areasService.updateArea(areaId, formData);
+          if (response.success) {
+            alert('Área actualizada correctamente');
+            window.location.href = '/catalogos/areas/consulta/';
+          } else {
+            alert(response.message || 'Error al actualizar área');
+          }
         }
       } else {
-        await areasService.createArea(formData);
-        alert('Área creada correctamente');
-      }
-      
-      // Redirigir a la consulta
-      if (typeof window !== 'undefined') {
-        window.location.href = '/catalogos/areas/consulta/';
+        response = await areasService.createArea(formData);
+        if (response.success) {
+          alert('Área creada correctamente');
+          window.location.href = '/catalogos/areas/consulta/';
+        } else {
+          alert(response.message || 'Error al crear área');
+        }
       }
     } catch (error: any) {
       console.error('Error al guardar el área:', error);
@@ -253,6 +259,7 @@ function FormularioAreas() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label>Sucursal *</Label>
+                {/* REEMPLAZAR Select por select nativo para evitar errores */}
                 <select
                   value={formData.ck_sucursal}
                   onChange={(e) => handleInputChange('ck_sucursal', e.target.value)}

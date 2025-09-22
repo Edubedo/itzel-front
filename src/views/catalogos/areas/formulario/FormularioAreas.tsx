@@ -201,7 +201,7 @@ function FormularioAreas() {
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-6">
-          <ComponentCard title="Información Básica del Área">
+          <ComponentCard title="Información del Área">
             <div className="space-y-6">
               <div>
                 <Label>Código del Área *</Label>
@@ -233,10 +233,8 @@ function FormularioAreas() {
                   <p className="text-red-500 text-sm mt-1">{errors.s_area}</p>
                 )}
               </div>
+              
             </div>
-          </ComponentCard>
-
-          <ComponentCard title="Descripción">
             <div>
               <Label>Descripción del Área *</Label>
               <textarea

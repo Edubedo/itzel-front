@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from "react";
+
+import React, { useState, useCallback, useEffect } from "react";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
 import AreaTableOne from "../../components/tables/BasicTables/AreaTableOne";
 import { AreaStats } from "../../services/areasService";
-
+import { areasService, Sucursal } from "../../services/areasService";
 
 interface AreaTablesProps {
   titleTable?: string;
@@ -14,12 +15,17 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
   const [searchTerm, setSearchTerm] = useState("");
   const [estatusFilter, setEstatusFilter] = useState("");
   const [sucursalFilter, setSucursalFilter] = useState("");
+  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+
   const [stats, setStats] = useState<AreaStats>({
     total: 0,
     activas: 0,
     inactivas: 0,
     porSucursal: {}
   });
+
+
+
 
   // Función para navegar al formulario de añadir área
   const handleAddArea = () => {
@@ -30,6 +36,19 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
   const handleStatsUpdate = useCallback((newStats: AreaStats) => {
     setStats(newStats);
   }, []);
+  useEffect(() => {
+    const fetchSucursales = async () => {
+      try {
+        const response = await areasService.getSucursales();
+        if (response.success && response.data) {
+          setSucursales(response.data);
+        }
+      } catch (error) {
+        console.error('Error al obtener sucursales:', error);
+      }
+    };
+    fetchSucursales();
+  }, []);
 
   // Limpiar filtros
   const clearFilters = () => {
@@ -38,6 +57,8 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
     setSucursalFilter("");
   };
 
+
+
   return (
     <>
       <PageMeta
@@ -45,7 +66,7 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
         description="Catálogo de áreas para el sistema de turnos"
       />
       <PageBreadcrumb pageTitle={titleTable} />
-      
+
       {/* Estadísticas Resumidas - Movidas al principio para mejor UX */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -69,10 +90,10 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
           </p>
         </div>
       </div>
-      
+
       {/* Botón de añadir */}
       <div className="mb-6 flex justify-end">
-        <button 
+        <button
           onClick={handleAddArea}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
         >
@@ -100,13 +121,13 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
               <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
             </div>
           </div>
-          
+
           {/* Filtro por Estado */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Estado
             </label>
-            <select 
+            <select
               value={estatusFilter}
               onChange={(e) => setEstatusFilter(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
@@ -116,20 +137,23 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
               <option value="INACTI">Inactivo</option>
             </select>
           </div>
-          
+
           {/* Filtro por Sucursal */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Sucursal
             </label>
-            <select 
+            <select
               value={sucursalFilter}
               onChange={(e) => setSucursalFilter(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Todas las sucursales</option>
-              <option value="suc-001">Secured Control</option>
-              <option value="suc-002">Secured Norte</option>
+              {sucursales.map((suc) => (
+                <option key={suc.ck_sucursal} value={suc.ck_sucursal}>
+                  {suc.s_nombre_sucursal || suc.s_nombre}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -147,7 +171,7 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
 
       <div className="space-y-6">
         <ComponentCard title="Consulta de Áreas">
-          <AreaTableOne 
+          <AreaTableOne
             searchTerm={searchTerm}
             estatusFilter={estatusFilter}
             sucursalFilter={sucursalFilter}

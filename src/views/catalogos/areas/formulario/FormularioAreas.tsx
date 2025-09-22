@@ -43,7 +43,7 @@ function FormularioAreas() {
         if (typeof window !== 'undefined') {
           const urlParams = new URLSearchParams(window.location.search);
           const areaId = urlParams.get('id');
-          
+
           if (areaId) {
             setIsEditing(true);
             await fetchAreaData(areaId);
@@ -63,7 +63,7 @@ function FormularioAreas() {
   const fetchAreaData = async (id: string) => {
     try {
       const response = await areasService.getAreaById(id);
-      
+
       if (response.success && response.data) {
         // Mapear los datos del backend al formato del formulario
         setFormData({
@@ -85,7 +85,7 @@ function FormularioAreas() {
     if (field === 'c_codigo_area' && value.length > 6) {
       return;
     }
-    
+
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -127,20 +127,20 @@ function FormularioAreas() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       alert('Por favor, corrija los errores en el formulario');
       return;
     }
-    
+
     try {
       setLoading(true);
-      
+
       let response;
       if (isEditing && typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
         const areaId = urlParams.get('id');
-        
+
         if (areaId) {
           response = await areasService.updateArea(areaId, formData);
           if (response.success) {
@@ -176,7 +176,7 @@ function FormularioAreas() {
   // Preparar opciones de sucursales para el Select
   const sucursalesOptions = sucursales.map(sucursal => ({
     value: sucursal.ck_sucursal,
-    label: sucursal.s_nombre
+    label: sucursal.s_nombre_sucursal 
   }));
 
   if (initialLoading) {
@@ -194,9 +194,9 @@ function FormularioAreas() {
         title={isEditing ? "Editar Área - Sistema de Turnos" : "Crear Área - Sistema de Turnos"}
         description="Formulario para gestionar áreas del sistema"
       />
-      
-      <PageBreadcrumb 
-        pageTitle={isEditing ? "Editar Área" : "Crear Nueva Área"} 
+
+      <PageBreadcrumb
+        pageTitle={isEditing ? "Editar Área" : "Crear Nueva Área"}
       />
 
       <form onSubmit={handleSubmit}>
@@ -208,7 +208,7 @@ function FormularioAreas() {
                 <Input
                   type="text"
                   value={formData.c_codigo_area}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('c_codigo_area', e.target.value.toUpperCase())}
                   placeholder="Ej: CONTA, RECHUM"
                   className={errors.c_codigo_area ? 'border-red-500' : ''}
@@ -224,7 +224,7 @@ function FormularioAreas() {
                 <Input
                   type="text"
                   value={formData.s_area}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_area', e.target.value)}
                   placeholder="Ej: Contabilidad, Recursos Humanos"
                   className={errors.s_area ? 'border-red-500' : ''}
@@ -241,12 +241,11 @@ function FormularioAreas() {
               <Label>Descripción del Área *</Label>
               <textarea
                 value={formData.s_descripcion_area}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => 
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                   handleInputChange('s_descripcion_area', e.target.value)}
                 rows={3}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-vertical ${
-                  errors.s_descripcion_area ? 'border-red-500' : 'border-gray-300'
-                }`}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-vertical ${errors.s_descripcion_area ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 placeholder="Describe las funciones y responsabilidades del área..."
               />
               {errors.s_descripcion_area && (
@@ -263,9 +262,8 @@ function FormularioAreas() {
                 <select
                   value={formData.ck_sucursal}
                   onChange={(e) => handleInputChange('ck_sucursal', e.target.value)}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.ck_sucursal ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${errors.ck_sucursal ? 'border-red-500' : 'border-gray-300'
+                    }`}
                 >
                   <option value="">Seleccionar sucursal</option>
                   {sucursalesOptions.map(option => (
@@ -286,7 +284,7 @@ function FormularioAreas() {
                     <input
                       type="checkbox"
                       checked={formData.ck_estatus === 'ACTIVO'}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         handleInputChange('ck_estatus', e.target.checked ? 'ACTIVO' : 'INACTI')}
                       className="sr-only peer"
                     />

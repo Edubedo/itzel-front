@@ -1,9 +1,9 @@
 import React from 'react'
-import AreaTables from '../../../../pages/Tables/ConsultasTables'
+import ClienteTables from '../../../../pages/Tables/ClienteTables'
 
 function ConsultaClientes() {
   return (
-    <AreaTables titleTable="Consulta de Clientes" />
+    <ClienteTables titleTable="Consulta de Clientes" />
   )
 }
 

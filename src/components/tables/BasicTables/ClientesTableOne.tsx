@@ -65,11 +65,18 @@ export default function ClienteTableOne({
 
         if (response.success && response.data) {
           setClientes(response.data.clientes || []);
-          setTotalPages(response.data.pagination?.totalPages || 1);
-          setTotalItems(response.data.pagination?.total || 0);
-        } else {
-          throw new Error('Respuesta inválida del servidor');
-        }
+           const pagination = response.data.pagination;
+      if (pagination) {
+        setTotalPages(pagination.totalPages || 1);
+        setTotalItems(pagination.total || 0);
+      } else {
+        // Si no hay paginación, calcular basado en los datos
+        setTotalPages(1);
+        setTotalItems(response.data.clientes?.length || 0);
+      }
+    } else {
+      throw new Error(response.message || 'Respuesta inválida del servidor');
+    }
 
       } catch (err: any) {
         if (!isActive) return;

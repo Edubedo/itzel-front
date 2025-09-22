@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ActividadDiariaClientes from "./ActividadDiariaClientes";
+
 
 interface Area {
   id: number;
@@ -57,9 +57,7 @@ export default function ClienteTableOne({ data }: ClienteTableOneProps) {
           </tbody>
         </table>
       </div>
-      {/* === Gráfica === */}
-      <ActividadDiariaClientes />
-
+      
       {/* === Métrica === */}
       <div className="metric-container p-6 border rounded-lg shadow-sm bg-white dark:bg-gray-800 dark:border-gray-700 mb-8">
         <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">

@@ -1,160 +1,378 @@
-import React, { useState, useEffect } from 'react';
-import { Branch, BranchStatus } from '../types';
-import FormularioSucursales from '../formulario/FormularioSucursales';
+import React, { useState, useEffect, useMemo } from "react";
+import PageMeta from "../../../../components/common/PageMeta";
+import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
+import ComponentCard from "../../../../components/common/ComponentCard";
+import { usuariosService, Usuario } from "../../../../services/usuariosService";
+import SucursalesTable from "../../../../components/tables/BasicTables/SucursalesTable";
+import { useAuth } from "../../../../contexts/AuthContext";
 
-interface Municipio {
-  id: string;
-  nombre: string;
-}
+// Datos estáticos para el formulario
+const datosMexico = []
+ const estadosDeMexico = Object.keys(datosMexico);
+const areasDisponibles = [];
 
-const datosInicialesDB: Branch[] = [
-    { id: 'uuid-1', address: 'Av. Elías Zamora Verduzco #123', municipality: 'Manzanillo', status: BranchStatus.Open },
-    { id: 'uuid-2', address: 'Blvd. Miguel de la Madrid #456', municipality: 'Manzanillo', status: BranchStatus.Closed },
-    { id: 'uuid-3', address: 'Av. Insurgentes #500', municipality: 'Tecomán', status: BranchStatus.Open },
-    { id: 'uuid-4', address: 'Av. de los Maestros #200', municipality: 'Colima', status: BranchStatus.Open },
-    { id: 'uuid-5', address: 'Benito Juárez #150', municipality: 'Villa de Álvarez', status: BranchStatus.Open },
-];
+export default function ConsultaDeSucursales() {
+    const serviciosPorArea = { "Contabilidad": ["Pagos y convenios", "Facturación"], "Administracion": ["Administración"], "Recursos humanos": ["Capacitación"], "General": ["Reporte de Servicios"], "Contratación": ["Contratación"], "Centro de Atención a Usuarios": ["Reporte"], "Servicio": ["Cortes y Reconexiones"] };
+    // Estado para la lista de sucursales, cargada desde localStorage al inicio
+    const [listaSucursales, setListaSucursales] = useState<any[]>(() => {
+        try {
+            const sucursalesGuardadas = localStorage.getItem('sucursales');
+            return sucursalesGuardadas ? JSON.parse(sucursalesGuardadas) : [];
+        } catch (error) {
+            console.error("Error al leer sucursales de localStorage", error);
+            return [];
+        }
+    });
 
-// --- Iconos SVG ---
-const PencilIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>;
-const TrashIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.134-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.067-2.09 1.02-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>;
-const PlusIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>;
-const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>;
+    // Estados para la interfaz de usuario y la gestión del formulario
+    const [mostrandoFormulario, setMostrandoFormulario] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [sucursalEnEdicion, setSucursalEnEdicion] = useState<any | null>(null);
 
-const ConsultaSucursales: React.FC = () => {
-  const [allSucursales, setAllSucursales] = useState<Branch[]>(datosInicialesDB);
-  const [sucursales, setSucursales] = useState<Branch[]>([]); 
-  const [municipios, setMunicipios] = useState<Municipio[]>([]);
-  const [municipioSeleccionado, setMunicipioSeleccionado] = useState('');
-  const [isFormVisible, setIsFormVisible] = useState(false);
-  const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
+    // Estados para los datos del formulario de registro/edición
+    const [formData, setFormData] = useState({ estado: "", municipio: "", domicilio: "" });
+    const [municipiosDisponibles, setMunicipiosDisponibles] = useState<string[]>([]);
+    const [listaCompletaEjecutivos, setListaCompletaEjecutivos] = useState<Usuario[]>([]);
+    const [listaCompletaAsesores, setListaCompletaAsesores] = useState<Usuario[]>([]);
+    const [ejecutivosAsignados, setEjecutivosAsignados] = useState<Usuario[]>([]);
+    const [asesoresAsignados, setAsesoresAsignados] = useState<Usuario[]>([]);
+    const [ejecutivoActual, setEjecutivoActual] = useState({ usuarioId: "", area: "", servicio: "" });
+    const [asesorActual, setAsesorActual] = useState({ usuarioId: "", area: "", servicio: "" });
+    const [serviciosDisponiblesEjecutivo, setServiciosDisponiblesEjecutivo] = useState<string[]>([]);
+    const [serviciosDisponiblesAsesor, setServiciosDisponiblesAsesor] = useState<string[]>([]);
 
-  useEffect(() => {
-    // ✅ ¡AQUÍ ESTABA EL ERROR! Corregido a 'municipality'
-    const nombresDeMunicipiosConSucursal = allSucursales.map(sucursal => sucursal.municipality);
-    const municipiosUnicos = [...new Set(nombresDeMunicipiosConSucursal)];
-    const municipiosParaSelector = municipiosUnicos.map(nombre => ({
-      id: nombre.substring(0, 3).toUpperCase(),
-      nombre: nombre,
-    }));
-    setMunicipios(municipiosParaSelector);
-  }, [allSucursales]);
+    // Estados para los filtros
+    const [searchTerm, setSearchTerm] = useState("");
+    const [estadoFilter, setEstadoFilter] = useState("");
+    const [municipioFilter, setMunicipioFilter] = useState("");
 
-  const handleBuscar = () => {
-    if (municipioSeleccionado) {
-      const municipioSeleccionadoObj = municipios.find(m => m.id === municipioSeleccionado);
-      if(municipioSeleccionadoObj) {
-          const resultados = allSucursales.filter(sucursal => sucursal.municipality === municipioSeleccionadoObj.nombre);
-          setSucursales(resultados);
-      }
-    }
-  };
+    const { user } = useAuth();
+
+    // Sincroniza el estado de las sucursales con el localStorage
   
-  const handleSave = (formData: Omit<Branch, 'id'>) => {
-    let updatedAllSucursales: Branch[] = [];
-    if (editingBranch) {
-      updatedAllSucursales = allSucursales.map(s => s.id === editingBranch.id ? { ...formData, id: s.id } : s);
-    } else {
-      const nuevaSucursal: Branch = { ...formData, id: `uuid-${Date.now()}` };
-      updatedAllSucursales = [...allSucursales, nuevaSucursal];
-    }
-    setAllSucursales(updatedAllSucursales);
-    const municipioSeleccionadoObj = municipios.find(m => m.id === municipioSeleccionado);
-    if(municipioSeleccionadoObj) {
-        const resultados = updatedAllSucursales.filter(sucursal => sucursal.municipality === municipioSeleccionadoObj.nombre);
-        setSucursales(resultados);
-    }
-    setIsFormVisible(false);
-    setEditingBranch(null);
-  };
-  
-  const handleDelete = (branchId: string) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar esta sucursal?')) {
-        const updatedAllSucursales = allSucursales.filter(s => s.id !== branchId);
-        setAllSucursales(updatedAllSucursales);
-        setSucursales(prevResultados => prevResultados.filter(s => s.id !== branchId));
-    }
-  };
 
-  const showForm = (branch: Branch | null) => {
-    setEditingBranch(branch);
-    setIsFormVisible(true);
-  };
+    // Restablece los estados del formulario a sus valores iniciales
+    const resetFormState = () => {
+        setFormData({ estado: "", municipio: "", domicilio: "" });
+        setMunicipiosDisponibles([]);
+        setEjecutivosAsignados([]);
+        setAsesoresAsignados([]);
+        setEjecutivoActual({ usuarioId: "", area: "", servicio: "" });
+        setAsesorActual({ usuarioId: "", area: "", servicio: "" });
+        setServiciosDisponiblesEjecutivo([]);
+        setServiciosDisponiblesAsesor([]);
+        setSucursalEnEdicion(null);
+    };
 
-  if (isFormVisible) {
-    return <FormularioSucursales branchToEdit={editingBranch} onSave={handleSave} onCancel={() => setIsFormVisible(false)} />;
-  }
+    // Maneja los cambios en los inputs del formulario de la sucursal
+    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        if (name === "estado") {
+            setMunicipiosDisponibles(value ? datosMexico[value as keyof typeof datosMexico] : []);
+            setFormData(prev => ({ ...prev, estado: value, municipio: "" }));
+        } else { setFormData(prev => ({ ...prev, [name]: value })); }
+    };
 
-  return (
-    <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Consulta de Sucursales</h1>
-      
-      {/* --- SECCIÓN DE BÚSQUEDA --- */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 p-4 border rounded-lg bg-white shadow-sm">
-        <div>
-          <label className="text-sm font-medium text-gray-600">Estado</label>
-          <input type="text" value="Colima" disabled className="w-full mt-1 p-2 border rounded bg-gray-100 cursor-not-allowed"/>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-600">Municipio</label>
-          <select value={municipioSeleccionado} onChange={(e) => setMunicipioSeleccionado(e.target.value)} className="w-full mt-1 p-2 border rounded">
-            <option value="">Selecciona un municipio...</option>
-            {municipios.map(municipio => <option key={municipio.id} value={municipio.id}>{municipio.nombre}</option>)}
-          </select>
-        </div>
-        <div className="flex items-end">
-            <button onClick={handleBuscar} disabled={!municipioSeleccionado} className="w-full flex items-center justify-center bg-green-600 text-white font-bold py-2 px-4 rounded-lg disabled:bg-gray-400 hover:bg-green-700 transition-colors">
-              <SearchIcon />
-              Buscar
-            </button>
-        </div>
-      </div>
+    // Maneja los cambios en los inputs para la asignación de ejecutivos
+    const handleEjecutivoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        const fieldName = name === 'usuario' ? 'usuarioId' : name;
+        if (fieldName === 'area') {
+            const servicios = value ? serviciosPorArea[value as keyof typeof serviciosPorArea] : [];
+            setServiciosDisponiblesEjecutivo(servicios);
+            setEjecutivoActual(prev => ({ ...prev, area: value, servicio: "" }));
+        } else { setEjecutivoActual(prev => ({ ...prev, [fieldName]: value })); }
+    };
 
-      {/* --- SECCIÓN DE RESULTADOS --- */}
-      <header className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-700">Resultados</h2>
-        <button onClick={() => showForm(null)} className="flex items-center gap-2 bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-          <PlusIcon />
-          Nueva Sucursal
-        </button>
-      </header>
-      
-      {/* --- SECCIÓN DE RESULTADOS (AHORA CON TARJETAS) --- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sucursales.map((sucursal) => (
-          <div key={sucursal.id} className="bg-white rounded-xl shadow-md overflow-hidden transition-transform hover:scale-105">
-            <div className="p-6">
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="font-semibold text-lg text-gray-800">{sucursal.municipality}</p>
-                  <p className="text-sm text-gray-600">{sucursal.address}</p>
+    // Maneja los cambios en los inputs para la asignación de asesores
+    const handleAsesorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        const fieldName = name === 'usuario' ? 'usuarioId' : name;
+        if (fieldName === 'area') {
+            const servicios = value ? serviciosPorArea[value as keyof typeof serviciosPorArea] : [];
+            setServiciosDisponiblesAsesor(servicios);
+            setAsesorActual(prev => ({ ...prev, area: value, servicio: "" }));
+        } else { setAsesorActual(prev => ({ ...prev, [fieldName]: value })); }
+    };
+
+    // Agrega un ejecutivo al estado de asignados
+    const agregarEjecutivo = () => {
+        if (ejecutivoActual.usuarioId && ejecutivoActual.area && ejecutivoActual.servicio) {
+            const ejecutivoParaAgregar = listaCompletaEjecutivos.find(e => e.ck_usuario === ejecutivoActual.usuarioId);
+            if (ejecutivoParaAgregar) {
+                const nuevoEjecutivo = { ...ejecutivoParaAgregar, area: ejecutivoActual.area, servicio: ejecutivoActual.servicio };
+                setEjecutivosAsignados([...ejecutivosAsignados, nuevoEjecutivo]);
+                setEjecutivoActual({ usuarioId: "", area: "", servicio: "" });
+                setServiciosDisponiblesEjecutivo([]);
+            }
+        }
+    };
+
+    // Agrega un asesor al estado de asignados
+    const agregarAsesor = () => {
+        if (asesorActual.usuarioId && asesorActual.area && asesorActual.servicio) {
+            const asesorParaAgregar = listaCompletaAsesores.find(a => a.ck_usuario === asesorActual.usuarioId);
+            if (asesorParaAgregar) {
+                const nuevoAsesor = { ...asesorParaAgregar, area: asesorActual.area, servicio: asesorActual.servicio };
+                setAsesoresAsignados([...asesoresAsignados, nuevoAsesor]);
+                setAsesorActual({ usuarioId: "", area: "", servicio: "" });
+                setServiciosDisponiblesAsesor([]);
+            }
+        }
+    };
+
+    // Elimina un ejecutivo de la lista de asignados
+    const eliminarEjecutivo = (id: string) => { setEjecutivosAsignados(prev => prev.filter(ejec => ejec.ck_usuario !== id)); };
+
+    // Elimina un asesor de la lista de asignados
+    const eliminarAsesor = (id: string) => { setAsesoresAsignados(prev => prev.filter(asesor => asesor.ck_usuario !== id)); };
+
+    // Maneja el envío del formulario, actualizando o agregando una sucursal
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!formData.estado || !formData.municipio || !formData.domicilio) {
+            alert("Por favor, complete todos los datos de la sucursal.");
+            return;
+        }
+
+        if (sucursalEnEdicion) {
+            const sucursalActualizada = {
+                ...sucursalEnEdicion,
+                sucursal: formData,
+                ejecutivos: ejecutivosAsignados.map(e => ({ ck_usuario: e.ck_usuario, area: e.area, servicio: e.servicio })),
+                asesores: asesoresAsignados.map(a => ({ ck_usuario: a.ck_usuario, area: a.area, servicio: a.servicio })),
+            };
+            setListaSucursales(listaSucursales.map(s => s.id === sucursalEnEdicion.id ? sucursalActualizada : s));
+        } else {
+            const datosFinales = {
+                id: Date.now(),
+                sucursal: formData,
+                ejecutivos: ejecutivosAsignados.map(e => ({ ck_usuario: e.ck_usuario, area: e.area, servicio: e.servicio })),
+                asesores: asesoresAsignados.map(a => ({ ck_usuario: a.ck_usuario, area: a.area, servicio: a.servicio })),
+            };
+            setListaSucursales(prev => [...prev, datosFinales]);
+        }
+
+        setMostrandoFormulario(false);
+        resetFormState();
+    };
+
+    // Maneja la cancelación del formulario
+    const handleCancel = () => {
+        setMostrandoFormulario(false);
+        resetFormState();
+    };
+
+    // Prepara los datos del formulario para editar una sucursal existente
+    const handleEditar = (sucursal: any) => {
+        setSucursalEnEdicion(sucursal);
+        setFormData(sucursal.sucursal);
+
+        const ejecutivosCompletos = sucursal.ejecutivos.map((ejec: any) => {
+            const ejecutivoData = listaCompletaEjecutivos.find(e => e.ck_usuario === ejec.ck_usuario);
+            return { ...(ejecutivoData || {}), ...ejec };
+        });
+        const asesoresCompletos = sucursal.asesores.map((asesor: any) => {
+            const asesorData = listaCompletaAsesores.find(a => a.ck_usuario === asesor.ck_usuario);
+            return { ...(asesorData || {}), ...asesor };
+        });
+
+        setEjecutivosAsignados(ejecutivosCompletos);
+        setAsesoresAsignados(asesoresCompletos);
+        setMunicipiosDisponibles(datosMexico[sucursal.sucursal.estado as keyof typeof datosMexico] || []);
+        setMostrandoFormulario(true);
+    };
+
+    // Maneja la eliminación de una sucursal
+    const handleEliminar = (id: number) => {
+        if (window.confirm("¿Estás seguro de que quieres eliminar esta sucursal?")) {
+            setListaSucursales(listaSucursales.filter(s => s.id !== id));
+        }
+    };
+
+    // Limpia los filtros de búsqueda
+    const clearFilters = () => {
+        setSearchTerm("");
+        setEstadoFilter("");
+        setMunicipioFilter("");
+    };
+
+    // Filtra los ejecutivos y asesores disponibles para asignación (no asignados ya)
+    const ejecutivosDisponibles = listaCompletaEjecutivos.filter(ejec => !ejecutivosAsignados.some(asig => asig.ck_usuario === ejec.ck_usuario));
+    const asesoresDisponibles = listaCompletaAsesores.filter(asesor => !asesoresAsignados.some(asig => asig.ck_usuario === asesor.ck_usuario));
+
+    // Usa useMemo para optimizar el filtrado de municipios
+    const municipiosParaFiltro = useMemo(() => {
+        if (estadoFilter) {
+            return datosMexico[estadoFilter as keyof typeof datosMexico] || [];
+        }
+        return [];
+    }, [estadoFilter]);
+
+    return (
+        <>
+            <PageMeta title="Gestión de Sucursales" description="Consulta y registro de sucursales" />
+            <PageBreadcrumb pageTitle={mostrandoFormulario ? (sucursalEnEdicion ? 'Editar Sucursal' : 'Registrar Nueva Sucursal') : "Consulta de Sucursales"} />
+
+            {/* Botón de añadir (solo para administradores) */}
+            {user?.i_tipo_usuario === 1 && (
+                <div className="mb-6 flex justify-end">
+                    <button
+                        onClick={() => { setMostrandoFormulario(true); resetFormState(); }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center transition-colors shadow-md hover:shadow-lg"
+                    >
+                        <span className="mr-2">+</span>
+                        Añadir Sucursal
+                    </button>
                 </div>
-                <span className={`px-3 py-1 text-xs font-bold rounded-full ${sucursal.status === BranchStatus.Open ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                  {sucursal.status}
-                </span>
-              </div>
-              <div className="mt-6 flex justify-end items-center gap-2">
-                  <button onClick={() => showForm(sucursal)} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full" title="Editar">
-                    <PencilIcon />
-                  </button>
-                  <button onClick={() => handleDelete(sucursal.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-full" title="Eliminar">
-                    <TrashIcon />
-                  </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-       {/* Mensaje si no hay resultados */}
-       {sucursales.length === 0 && municipioSeleccionado && (
-        <div className="text-center py-10 px-6 bg-white rounded-lg shadow-md">
-            <h3 className="text-lg font-medium text-gray-700">Sin resultados</h3>
-            <p className="text-gray-500 mt-1">No se encontraron sucursales para el municipio seleccionado.</p>
-        </div>
-       )}
+            )}
 
-    </div>
-  );
-};
+            {/* Formulario de registro/edición o sección de consulta */}
+            {mostrandoFormulario ? (
+                // Formulario de registro/edición de sucursal
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <ComponentCard title="Datos de la Sucursal">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="estado" className="block text-sm font-medium text-gray-700">Estado</label>
+                                <select id="estado" name="estado" value={formData.estado} onChange={handleFormChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                                    <option value="">Seleccionar Estado</option>
+                                    {estadosDeMexico.map(estado => <option key={estado} value={estado}>{estado}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="municipio" className="block text-sm font-medium text-gray-700">Municipio</label>
+                                <select id="municipio" name="municipio" value={formData.municipio} onChange={handleFormChange} required disabled={!formData.estado} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border disabled:bg-gray-100">
+                                    <option value="">{formData.estado ? 'Seleccionar Municipio' : 'Primero elige un estado'}</option>
+                                    {municipiosDisponibles.map(municipio => <option key={municipio} value={municipio}>{municipio}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="mt-4">
+                            <label htmlFor="domicilio" className="block text-sm font-medium text-gray-700">Domicilio</label>
+                            <input type="text" id="domicilio" name="domicilio" value={formData.domicilio} onChange={handleFormChange} required placeholder="Calle, número, colonia, código postal" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" />
+                        </div>
+                    </ComponentCard>
+                    <ComponentCard title="Asignar Ejecutivo a Sucursal">
+                        <div className="flex items-end gap-4">
+                            <div className="flex-1"><label className="text-sm">Usuario</label><select name="usuario" value={ejecutivoActual.usuarioId} onChange={handleEjecutivoChange} className="w-full border border-gray-300 rounded-lg p-2"><option value="">Seleccionar Ejecutivo</option>{ejecutivosDisponibles.map(ejec => <option key={ejec.ck_usuario} value={ejec.ck_usuario}>{`${ejec.s_nombre} ${ejec.s_apellido_paterno || ''}`}</option>)}</select></div>
+                            <div className="flex-1"><label className="text-sm">Área</label><select name="area" value={ejecutivoActual.area} onChange={handleEjecutivoChange} className="w-full border border-gray-300 rounded-lg p-2"><option value="">Seleccionar Área</option>{areasDisponibles.map(area => <option key={area} value={area}>{area}</option>)}</select></div>
+                            <div className="flex-1"><label className="text-sm">Servicio</label><select name="servicio" value={ejecutivoActual.servicio} onChange={handleEjecutivoChange} className="w-full border border-gray-300 rounded-lg p-2 disabled:bg-gray-100" disabled={!ejecutivoActual.area || serviciosDisponiblesEjecutivo.length === 0}><option value="">{ejecutivoActual.area ? "Seleccionar Servicio" : "Primero elija un área"}</option>{serviciosDisponiblesEjecutivo.map(servicio => <option key={servicio} value={servicio}>{servicio}</option>)}</select></div>
+                            <button type="button" onClick={agregarEjecutivo} className="bg-blue-500 text-white rounded-full w-10 h-10 text-xl font-bold flex-shrink-0">+</button>
+                        </div>
+                        <div className="mt-4 space-y-2">{ejecutivosAsignados.length > 0 && <h4 className="text-sm font-semibold text-gray-600">Ejecutivos Asignados:</h4>}{ejecutivosAsignados.map(ejec => (<div key={ejec.ck_usuario} className="flex justify-between items-center bg-gray-100 p-2 rounded-lg"><div><p className="font-medium text-gray-800">{`${ejec.s_nombre} ${ejec.s_apellido_paterno || ''}`}</p><p className="text-xs text-gray-500">{`Área: ${ejec.area} / Servicio: ${ejec.servicio}`}</p></div><button type="button" onClick={() => eliminarEjecutivo(ejec.ck_usuario)} className="text-red-500 hover:text-red-700 font-semibold text-xl">&times;</button></div>))}</div>
+                    </ComponentCard>
+                    <ComponentCard title="Asignar Asesor a Sucursal">
+                        <div className="flex items-end gap-4">
+                            <div className="flex-1"><label className="text-sm">Usuario</label><select name="usuario" value={asesorActual.usuarioId} onChange={handleAsesorChange} className="w-full border border-gray-300 rounded-lg p-2"><option value="">Seleccionar Asesor</option>{asesoresDisponibles.map(asesor => <option key={asesor.ck_usuario} value={asesor.ck_usuario}>{`${asesor.s_nombre} ${asesor.s_apellido_paterno || ''}`}</option>)}</select></div>
+                            <div className="flex-1"><label className="text-sm">Área</label><select name="area" value={asesorActual.area} onChange={handleAsesorChange} className="w-full border border-gray-300 rounded-lg p-2"><option value="">Seleccionar Área</option>{areasDisponibles.map(area => <option key={area} value={area}>{area}</option>)}</select></div>
+                            <div className="flex-1"><label className="text-sm">Servicio</label><select name="servicio" value={asesorActual.servicio} onChange={handleAsesorChange} className="w-full border border-gray-300 rounded-lg p-2 disabled:bg-gray-100" disabled={!asesorActual.area || serviciosDisponiblesAsesor.length === 0}><option value="">{asesorActual.area ? "Seleccionar Servicio" : "Primero elija un área"}</option>{serviciosDisponiblesAsesor.map(servicio => <option key={servicio} value={servicio}>{servicio}</option>)}</select></div>
+                            <button type="button" onClick={agregarAsesor} className="bg-blue-500 text-white rounded-full w-10 h-10 text-xl font-bold flex-shrink-0">+</button>
+                        </div>
+                        <div className="mt-4 space-y-2">{asesoresAsignados.length > 0 && <h4 className="text-sm font-semibold text-gray-600">Asesores Asignados:</h4>}{asesoresAsignados.map(asesor => (<div key={asesor.ck_usuario} className="flex justify-between items-center bg-gray-100 p-2 rounded-lg"><div><p className="font-medium text-gray-800">{`${asesor.s_nombre} ${asesor.s_apellido_paterno || ''}`}</p><p className="text-xs text-gray-500">{`Área: ${asesor.area} / Servicio: ${asesor.servicio}`}</p></div><button type="button" onClick={() => eliminarAsesor(asesor.ck_usuario)} className="text-red-500 hover:text-red-700 font-semibold text-xl">&times;</button></div>))}</div>
+                    </ComponentCard>
+                    <div className="flex justify-end pt-4 gap-4">
+                        <button type="button" onClick={handleCancel} className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-semibold">Cancelar</button>
+                        <button type="submit" className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-semibold">
+                            {sucursalEnEdicion ? 'Actualizar Sucursal' : 'Guardar Sucursal'}
+                        </button>
+                    </div>
+                </form>
+            ) : (
+                <>
+                    {/* Botón de añadir (visible en la vista de la tabla) */}
+                    <div className="mb-6 flex justify-end">
+                        <button
+                            onClick={() => { setMostrandoFormulario(true); resetFormState(); }}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center transition-colors shadow-md hover:shadow-lg"
+                        >
+                            <span className="mr-2">+</span>
+                            Añadir Sucursal
+                        </button>
+                    </div>
+                    
+                    {/* Sección de Filtros de Búsqueda */}
+                    <div className="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div className="flex flex-wrap gap-4 items-end">
+                            {/* Buscador de Domicilio */}
+                            <div className="flex-1 min-w-64">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Buscar por Domicilio
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar por domicilio..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                    />
+                                    <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
+                                </div>
+                            </div>
 
-export default ConsultaSucursales;
+                            {/* Filtro por Estado */}
+                            <div className="min-w-48">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Estado
+                                </label>
+                                <select
+                                    value={estadoFilter}
+                                    onChange={(e) => {
+                                        setEstadoFilter(e.target.value);
+                                        setMunicipioFilter("");
+                                    }}
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                                >
+                                    <option value="">Todos los estados</option>
+                                    {estadosDeMexico.map(estado => <option key={estado} value={estado}>{estado}</option>)}
+                                </select>
+                            </div>
+
+                            {/* Filtro por Municipio */}
+                            <div className="min-w-48">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Municipio
+                                </label>
+                                <select
+                                    value={municipioFilter}
+                                    onChange={(e) => setMunicipioFilter(e.target.value)}
+                                    disabled={!estadoFilter}
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+                                >
+                                    <option value="">{estadoFilter ? "Todos los municipios" : "Seleccione un estado"}</option>
+                                    {municipiosParaFiltro.map(municipio => <option key={municipio} value={municipio}>{municipio}</option>)}
+                                </select>
+                            </div>
+
+                            {/* Botón para Limpiar Filtros */}
+                            <div>
+                                <button
+                                    onClick={clearFilters}
+                                    className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300"
+                                >
+                                    Limpiar Filtros
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Sección de la Tabla de Sucursales */}
+                    <div className="space-y-6">
+                        <ComponentCard title="Lista de Sucursales">
+                            <SucursalesTable
+                                listaSucursales={listaSucursales}
+                                searchTerm={searchTerm}
+                                estadoFilter={estadoFilter}
+                                municipioFilter={municipioFilter}
+                                onEdit={handleEditar}
+                                onDelete={handleEliminar}
+                                loading={loading}
+                            />
+                        </ComponentCard>
+                    </div>
+                </>
+            )}
+        </>
+    );
+}

@@ -29,7 +29,7 @@ export default function AreaTableOne({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statsLoaded, setStatsLoaded] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0); // Trigger para forzar recarga
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const itemsPerPage = 5;
 
@@ -40,7 +40,7 @@ export default function AreaTableOne({
 
   // Cargar áreas
   useEffect(() => {
-    let isActive = true; // Para evitar race conditions
+    let isActive = true;
 
     const loadAreas = async () => {
       try {
@@ -52,14 +52,13 @@ export default function AreaTableOne({
           limit: itemsPerPage
         };
 
-        // Solo agregar parámetros si tienen valor
         if (searchTerm.trim()) params.search = searchTerm.trim().toLowerCase();
         if (estatusFilter) params.ck_estatus = estatusFilter;
         if (sucursalFilter) params.ck_sucursal = sucursalFilter;
 
         const response: AreasResponse = await areasService.getAllAreas(params);
         
-        if (!isActive) return; // Componente desmontado
+        if (!isActive) return;
 
         if (response.success && response.data) {
           setAreas(response.data.areas || []);
@@ -87,7 +86,7 @@ export default function AreaTableOne({
     return () => {
       isActive = false;
     };
-  }, [currentPage, searchTerm, estatusFilter, sucursalFilter, refreshTrigger]); // Agregamos refreshTrigger
+  }, [currentPage, searchTerm, estatusFilter, sucursalFilter, refreshTrigger]);
 
   // Cargar estadísticas
   useEffect(() => {
@@ -103,11 +102,10 @@ export default function AreaTableOne({
       }
     };
 
-    // Cargar estadísticas al inicio o cuando se actualiza refreshTrigger
     if (!statsLoaded || refreshTrigger > 0) {
       loadStats();
     }
-  }, [onStatsUpdate, statsLoaded, refreshTrigger]); // Agregamos refreshTrigger
+  }, [onStatsUpdate, statsLoaded, refreshTrigger]);
 
   // Funciones de paginación
   const goToPage = (page: number) => {
@@ -128,26 +126,39 @@ export default function AreaTableOne({
     }
   };
 
-  // Manejar inactivación de área (soft delete)
-  const handleInactivate = async (areaId: string, nombre: string) => {
-    if (window.confirm(`¿Está seguro de que desea inactivar el área "${nombre}"?\n\nEsta acción cambiará el estado del área a "INACTIVO" pero no la eliminará permanentemente.`)) {
-      try {
-        setLoading(true);
-        
-        await areasService.deleteArea(areaId); // El backend ya maneja esto como soft delete
-        
-        // Forzar recarga de datos y estadísticas
-        setRefreshTrigger(prev => prev + 1);
-        setStatsLoaded(false); // Forzar recarga de estadísticas
-        
-        alert('Área inactivada exitosamente');
+  // Manejar activación/inactivación de área
+// ...dentro de AreaTableOne...
+const handleToggleStatus = async (areaId: string, nombre: string, estatusActual: string) => {
+  const esActivo = estatusActual.trim().toUpperCase() === "ACTIVO";
+  const nuevoEstatus = esActivo ? "INACTIVO" : "ACTIVO";
+  const accion = esActivo ? "inactivar" : "activar";
+  if (window.confirm(`¿Está seguro de que desea ${accion} el área "${nombre}"?\n\nEsta acción cambiará el estado del área a "${nuevoEstatus}".`)) {
+    try {
+      setLoading(true);
 
-      } catch (error: any) {
-        alert('Error al inactivar área: ' + error.message);
-        setLoading(false);
-      }
+      const areaActual = areas.find(a => a.ck_area === areaId);
+      if (!areaActual) throw new Error("No se encontró el área");
+
+      const areaData = {
+        c_codigo_area: areaActual.c_codigo_area,
+        s_area: areaActual.s_area,
+        s_descripcion_area: areaActual.s_descripcion_area,
+        ck_sucursal: areaActual.ck_sucursal,
+        ck_estatus: nuevoEstatus,
+      };
+
+      await areasService.updateArea(areaId, areaData);
+
+      setRefreshTrigger(prev => prev + 1);
+      setStatsLoaded(false);
+
+      alert(`Área ${esActivo ? "inactivada" : "activada"} exitosamente`);
+    } catch (error: any) {
+      alert(`Error al ${accion} área: ` + error.message);
+      setLoading(false);
     }
-  };
+  }
+};
 
   // Manejar edición
   const handleEdit = (areaId: string) => {
@@ -263,7 +274,7 @@ export default function AreaTableOne({
                   <TableCell className="px-4 py-3 text-start">
                     <Badge
                       size="sm"
-                      color={area.ck_estatus === "ACTIVO" ? "success" : "error"}
+                      color={area.ck_estatus.trim().toUpperCase() === "ACTIVO" ? "success" : "error"}
                     >
                       {area.ck_estatus}
                     </Badge>
@@ -281,19 +292,23 @@ export default function AreaTableOne({
                         </svg>
                       </button>
                       <button 
-                        onClick={() => handleInactivate(area.ck_area, area.s_area)}
-                        className={`p-2 ${area.ck_estatus === "ACTIVO" ? "text-orange-600 hover:text-orange-800 hover:bg-orange-50" : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"} rounded-md transition-colors`}
-                        title={area.ck_estatus === "ACTIVO" ? "Inactivar área" : "Área inactiva"}
+                        onClick={() => handleToggleStatus(
+                          area.ck_area,
+                          area.s_area,
+                          area.ck_estatus
+                        )}
+                        className={`p-2 ${area.ck_estatus.trim().toUpperCase() === "ACTIVO" ? "text-orange-600 hover:text-orange-800 hover:bg-orange-50" : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"} rounded-md transition-colors`}
+                        title={area.ck_estatus.trim().toUpperCase() === "ACTIVO" ? "Inactivar área" : "Activar área"}
                         disabled={loading}
                       >
-                        {area.ck_estatus === "ACTIVO" ? (
-                          // Candado abierto (activo)
+                        {area.ck_estatus.trim().toUpperCase() === "ACTIVO" ? (
+                          // Candado abierto (activo, rojo)
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <rect x="5" y="11" width="14" height="8" rx="2" strokeWidth="2" stroke="currentColor" />
                             <path d="M7 11V7a5 5 0 019.9-1" strokeWidth="2" stroke="currentColor" />
                           </svg>
                         ) : (
-                          // Candado cerrado (inactivo)
+                          // Candado cerrado (inactivo, gris)
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <rect x="5" y="11" width="14" height="8" rx="2" strokeWidth="2" stroke="currentColor" />
                             <path d="M7 11V7a5 5 0 0110 0v4" strokeWidth="2" stroke="currentColor" />

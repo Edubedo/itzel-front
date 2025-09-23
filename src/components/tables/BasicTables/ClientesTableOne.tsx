@@ -47,8 +47,6 @@ export default function ClienteTableOne({
         setLoading(true);
         setError(null);
 
-        console.log('Cargando clientes - página:', currentPage);
-
         const params: any = {
           page: currentPage,
           limit: itemsPerPage
@@ -65,22 +63,20 @@ export default function ClienteTableOne({
 
         if (response.success && response.data) {
           setClientes(response.data.clientes || []);
-           const pagination = response.data.pagination;
-      if (pagination) {
-        setTotalPages(pagination.totalPages || 1);
-        setTotalItems(pagination.total || 0);
-      } else {
-        // Si no hay paginación, calcular basado en los datos
-        setTotalPages(1);
-        setTotalItems(response.data.clientes?.length || 0);
-      }
-    } else {
-      throw new Error(response.message || 'Respuesta inválida del servidor');
-    }
+          const pagination = response.data.pagination;
+          if (pagination) {
+            setTotalPages(pagination.totalPages || 1);
+            setTotalItems(pagination.total || 0);
+          } else {
+            setTotalPages(1);
+            setTotalItems(response.data.clientes?.length || 0);
+          }
+        } else {
+          throw new Error(response.message || 'Respuesta inválida del servidor');
+        }
 
       } catch (err: any) {
         if (!isActive) return;
-        console.error('Error al cargar clientes:', err);
         setError(err.message || 'Error al cargar clientes');
         setClientes([]);
         setTotalPages(1);
@@ -109,7 +105,7 @@ export default function ClienteTableOne({
           setStatsLoaded(true);
         }
       } catch (error) {
-        console.warn('Error al cargar estadísticas:', error);
+        // Silenciar error de stats
       }
     };
 
@@ -137,22 +133,24 @@ export default function ClienteTableOne({
     }
   };
 
-  // Manejar inactivación de cliente
-  const handleInactivate = async (clienteId: string, nombre: string) => {
-    if (window.confirm(`¿Está seguro de que desea inactivar al cliente "${nombre}"?\n\nEsta acción cambiará el estado del cliente a "INACTIVO" pero no lo eliminará permanentemente.`)) {
+  // Manejar activación/inactivación de cliente
+  const handleToggleStatus = async (clienteId: string, nombre: string, estatusActual: string) => {
+    const esActivo = estatusActual.trim().toUpperCase() === "ACTIVO";
+    const nuevoEstatus = esActivo ? "INACTIVO" : "ACTIVO";
+    const accion = esActivo ? "inactivar" : "activar";
+    if (window.confirm(`¿Está seguro de que desea ${accion} al cliente "${nombre}"?\n\nEsta acción cambiará el estado del cliente a "${nuevoEstatus}".`)) {
       try {
         setLoading(true);
-        
-        await clientesService.deleteCliente(clienteId);
-        
+
+        // Usamos updateCliente para cambiar el estatus
+        await clientesService.updateCliente(clienteId, { ck_estatus: nuevoEstatus });
+
         setRefreshTrigger(prev => prev + 1);
         setStatsLoaded(false);
-        
-        alert('Cliente inactivado exitosamente');
 
+        alert(`Cliente ${esActivo ? "inactivado" : "activado"} exitosamente`);
       } catch (error: any) {
-        console.error('Error al inactivar cliente:', error);
-        alert('Error al inactivar cliente: ' + error.message);
+        alert(`Error al ${accion} cliente: ` + error.message);
         setLoading(false);
       }
     }
@@ -294,7 +292,7 @@ export default function ClienteTableOne({
                   <TableCell className="px-4 py-3 text-start">
                     <Badge
                       size="sm"
-                      color={cliente.ck_estatus === "ACTIVO" ? "success" : "error"}
+                      color={cliente.ck_estatus.trim().toUpperCase() === "ACTIVO" ? "success" : "error"}
                     >
                       {cliente.ck_estatus}
                     </Badge>
@@ -312,19 +310,23 @@ export default function ClienteTableOne({
                         </svg>
                       </button>
                       <button 
-                        onClick={() => handleInactivate(cliente.ck_cliente, `${cliente.s_nombre} ${cliente.s_apellido_paterno || ''}`)}
-                        className={`p-2 ${cliente.ck_estatus === "ACTIVO" ? "text-orange-600 hover:text-orange-800 hover:bg-orange-50" : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"} rounded-md transition-colors`}
-                        title={cliente.ck_estatus === "ACTIVO" ? "Inactivar cliente" : "Cliente inactivo"}
+                        onClick={() => handleToggleStatus(
+                          cliente.ck_cliente,
+                          `${cliente.s_nombre} ${cliente.s_apellido_paterno || ''}`,
+                          cliente.ck_estatus
+                        )}
+                        className={`p-2 ${cliente.ck_estatus.trim().toUpperCase() === "ACTIVO" ? "text-orange-600 hover:text-orange-800 hover:bg-orange-50" : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"} rounded-md transition-colors`}
+                        title={cliente.ck_estatus.trim().toUpperCase() === "ACTIVO" ? "Inactivar cliente" : "Activar cliente"}
                         disabled={loading}
                       >
-                        {cliente.ck_estatus === "ACTIVO" ? (
-                          // Candado abierto (activo)
+                        {cliente.ck_estatus.trim().toUpperCase() === "ACTIVO" ? (
+                          // Candado abierto (activo, rojo)
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <rect x="5" y="11" width="14" height="8" rx="2" strokeWidth="2" stroke="currentColor" />
                             <path d="M7 11V7a5 5 0 019.9-1" strokeWidth="2" stroke="currentColor" />
                           </svg>
                         ) : (
-                          // Candado cerrado (inactivo)
+                          // Candado cerrado (inactivo, gris)
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <rect x="5" y="11" width="14" height="8" rx="2" strokeWidth="2" stroke="currentColor" />
                             <path d="M7 11V7a5 5 0 0110 0v4" strokeWidth="2" stroke="currentColor" />

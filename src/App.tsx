@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router-dom"; // Corregido a react-router-dom
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
@@ -41,6 +41,9 @@ import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTu
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
+// ▼▼▼ 1. IMPORTA EL NUEVO COMPONENTE DE PÁGINA ▼▼▼
+import PaginaServicio from "./views/catalogos/servicios/PaginaServicio"; // Asegúrate que la ruta sea correcta
+
 // Definir constantes para tipos de usuario (basado en el backend)
 const USER_TYPES = {
   ADMINISTRADOR: 1,
@@ -51,7 +54,7 @@ const USER_TYPES = {
 export default function App() {
   return (
     <AuthProvider>
-      <Router>
+      <BrowserRouter>
         <ScrollToTop />
         <Routes>
           {/* Rutas públicas */}
@@ -93,6 +96,13 @@ export default function App() {
                 <FormularioServicios />
               </ProtectedRoute>
             } />
+
+            {/* ▼▼▼ 2. AQUÍ ESTÁ LA NUEVA RUTA DINÁMICA ▼▼▼ */}
+            <Route path="/servicio/:slug" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
+                <PaginaServicio />
+              </ProtectedRoute>
+            } />
         
             {/* CLIENTES - Solo Administradores y Ejecutivos pueden ver todos los clientes */}
             <Route path="/catalogos/clientes/consulta/" element={
@@ -112,7 +122,7 @@ export default function App() {
                 <Sucursales />
               </ProtectedRoute>
             } />
-                        
+                      
             {/* USUARIOS - Solo Administradores */}
             <Route path="/catalogos/usuarios/consulta/" element={
               <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
@@ -195,11 +205,7 @@ export default function App() {
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-
-
-      </Router>
-
-
+      </BrowserRouter>
     </AuthProvider>
   );
 }

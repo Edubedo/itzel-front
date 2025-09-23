@@ -55,7 +55,7 @@ export default function ClienteTableOne({
         };
 
         // Solo agregar parámetros si tienen valor
-        if (searchTerm.trim()) params.search = searchTerm.trim();
+        if (searchTerm.trim()) params.search = searchTerm.trim().toLowerCase();
         if (estatusFilter) params.ck_estatus = estatusFilter;
         if (tipoContratoFilter) params.s_tipo_contrato = tipoContratoFilter;
 
@@ -313,13 +313,23 @@ export default function ClienteTableOne({
                       </button>
                       <button 
                         onClick={() => handleInactivate(cliente.ck_cliente, `${cliente.s_nombre} ${cliente.s_apellido_paterno || ''}`)}
-                        className="p-2 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded-md transition-colors"
-                        title="Inactivar cliente"
+                        className={`p-2 ${cliente.ck_estatus === "ACTIVO" ? "text-orange-600 hover:text-orange-800 hover:bg-orange-50" : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"} rounded-md transition-colors`}
+                        title={cliente.ck_estatus === "ACTIVO" ? "Inactivar cliente" : "Cliente inactivo"}
                         disabled={loading}
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
-                        </svg>
+                        {cliente.ck_estatus === "ACTIVO" ? (
+                          // Candado abierto (activo)
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <rect x="5" y="11" width="14" height="8" rx="2" strokeWidth="2" stroke="currentColor" />
+                            <path d="M7 11V7a5 5 0 019.9-1" strokeWidth="2" stroke="currentColor" />
+                          </svg>
+                        ) : (
+                          // Candado cerrado (inactivo)
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <rect x="5" y="11" width="14" height="8" rx="2" strokeWidth="2" stroke="currentColor" />
+                            <path d="M7 11V7a5 5 0 0110 0v4" strokeWidth="2" stroke="currentColor" />
+                          </svg>
+                        )}
                       </button>
                     </div>
                   </TableCell>

@@ -47,15 +47,13 @@ export default function AreaTableOne({
         setLoading(true);
         setError(null);
 
-        console.log('Cargando áreas - página:', currentPage);
-
         const params: any = {
           page: currentPage,
           limit: itemsPerPage
         };
 
         // Solo agregar parámetros si tienen valor
-        if (searchTerm.trim()) params.search = searchTerm.trim();
+        if (searchTerm.trim()) params.search = searchTerm.trim().toLowerCase();
         if (estatusFilter) params.ck_estatus = estatusFilter;
         if (sucursalFilter) params.ck_sucursal = sucursalFilter;
 
@@ -73,7 +71,6 @@ export default function AreaTableOne({
 
       } catch (err: any) {
         if (!isActive) return;
-        console.error('Error al cargar áreas:', err);
         setError(err.message || 'Error al cargar áreas');
         setAreas([]);
         setTotalPages(1);
@@ -102,7 +99,7 @@ export default function AreaTableOne({
           setStatsLoaded(true);
         }
       } catch (error) {
-        console.warn('Error al cargar estadísticas:', error);
+        // Silenciar error de stats
       }
     };
 
@@ -146,7 +143,6 @@ export default function AreaTableOne({
         alert('Área inactivada exitosamente');
 
       } catch (error: any) {
-        console.error('Error al inactivar área:', error);
         alert('Error al inactivar área: ' + error.message);
         setLoading(false);
       }
@@ -286,13 +282,23 @@ export default function AreaTableOne({
                       </button>
                       <button 
                         onClick={() => handleInactivate(area.ck_area, area.s_area)}
-                        className="p-2 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded-md transition-colors"
-                        title="Inactivar área"
+                        className={`p-2 ${area.ck_estatus === "ACTIVO" ? "text-orange-600 hover:text-orange-800 hover:bg-orange-50" : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"} rounded-md transition-colors`}
+                        title={area.ck_estatus === "ACTIVO" ? "Inactivar área" : "Área inactiva"}
                         disabled={loading}
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
-                        </svg>
+                        {area.ck_estatus === "ACTIVO" ? (
+                          // Candado abierto (activo)
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <rect x="5" y="11" width="14" height="8" rx="2" strokeWidth="2" stroke="currentColor" />
+                            <path d="M7 11V7a5 5 0 019.9-1" strokeWidth="2" stroke="currentColor" />
+                          </svg>
+                        ) : (
+                          // Candado cerrado (inactivo)
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <rect x="5" y="11" width="14" height="8" rx="2" strokeWidth="2" stroke="currentColor" />
+                            <path d="M7 11V7a5 5 0 0110 0v4" strokeWidth="2" stroke="currentColor" />
+                          </svg>
+                        )}
                       </button>
                     </div>
                   </TableCell>

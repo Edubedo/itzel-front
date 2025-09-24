@@ -263,7 +263,7 @@ function FormularioAreas() {
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${errors.ck_sucursal ? 'border-red-500' : 'border-gray-300'
                     }`}
                 >
-                  <option value="">Seleccionar sucursal</option>
+                  <option value=""disabled hidden>Selecciona una sucursal</option>
                   {sucursalesOptions.map(option => (
                     <option key={option.value} value={option.value}>
                       {option.label}

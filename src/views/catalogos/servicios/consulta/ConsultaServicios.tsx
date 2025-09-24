@@ -1,9 +1,10 @@
 import React from 'react'
+import ServiciosTables from '../../../../pages/Tables/ServiciosTables'
 
 function ConsultaServicios() {
   return (
-    <div>ConsultaServicios</div>
+    <ServiciosTables titleTable="Consulta de Servicios" />
   )
 }
 
-export default ConsultaServicios
+export default ConsultaServicios;

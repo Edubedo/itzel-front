@@ -47,40 +47,70 @@ const AppHeader: React.FC<HeaderProps>  = ({ title }) => {
   
     // Cargar sucursal guardada en localStorage
     useEffect(() => {
+  const sucursalGuardada = localStorage.getItem('sucursal_seleccionada');
+  if (sucursalGuardada) {
+    try {
+      const sucursal = JSON.parse(sucursalGuardada);
+      setSucursalActiva(sucursal);
+    } catch (error) {
+      console.error('Error al cargar sucursal guardada:', error);
+    }
+  }
+}, []);
+  
+  const cargarSucursales = async () => {
+  setLoading(true);
+  try {
+    const response = await fetch('http://localhost:3001/api/operaciones/turnos/sucursales');
+    const data = await response.json();
+    console.log("data: ", data)
+    
+    if (data.success) {
+      setSucursales(data.sucursales);
+      
+      // Verificar si la sucursal guardada sigue existiendo en la lista
       const sucursalGuardada = localStorage.getItem('sucursal_seleccionada');
       if (sucursalGuardada) {
         try {
-          const sucursal = JSON.parse(sucursalGuardada);
-          setSucursalActiva(sucursal);
+          const sucursalParsed = JSON.parse(sucursalGuardada);
+          const sucursalValida = data.sucursales.find(
+            (s: Sucursal) => s.ck_sucursal === sucursalParsed.ck_sucursal
+          );
+          
+          if (sucursalValida) {
+            setSucursalActiva(sucursalValida);
+          } else {
+            // Si la sucursal guardada no existe, seleccionar la primera y actualizar localStorage
+            if (data.sucursales.length > 0) {
+              const primeraSucursal = data.sucursales[0];
+              setSucursalActiva(primeraSucursal);
+              localStorage.setItem('sucursal_seleccionada', JSON.stringify(primeraSucursal));
+            }
+          }
         } catch (error) {
-          console.error('Error al cargar sucursal guardada:', error);
+          console.error('Error al parsear sucursal guardada:', error);
+          // En caso de error, seleccionar la primera sucursal
+          if (data.sucursales.length > 0) {
+            const primeraSucursal = data.sucursales[0];
+            setSucursalActiva(primeraSucursal);
+            localStorage.setItem('sucursal_seleccionada', JSON.stringify(primeraSucursal));
+          }
         }
-      }
-    }, []);
-  
-    const cargarSucursales = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('http://localhost:3001/api/operaciones/turnos/sucursales');
-      const data = await response.json();
-      console.log("data: ", data)
-      
-      if (data.success) {
-        setSucursales(data.sucursales);
-        
-        // Si no hay sucursal activa, seleccionar la primera
-        if (!sucursalActiva && data.sucursales.length > 0) {
+      } else {
+        // Si no hay sucursal guardada, seleccionar la primera
+        if (data.sucursales.length > 0) {
           const primeraSucursal = data.sucursales[0];
           setSucursalActiva(primeraSucursal);
           localStorage.setItem('sucursal_seleccionada', JSON.stringify(primeraSucursal));
         }
       }
-    } catch (error) {
-      console.error('Error al cargar sucursales:', error);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (error) {
+    console.error('Error al cargar sucursales:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   const handleToggle = () => {
@@ -170,7 +200,6 @@ const AppHeader: React.FC<HeaderProps>  = ({ title }) => {
               </span>
               <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
-
             {/* Dropdown de sucursales */}
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-64 overflow-y-auto">

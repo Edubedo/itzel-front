@@ -5,6 +5,7 @@ import ComponentCard from "../../../../components/common/ComponentCard";
 import Label from "../../../../components/form/Label";
 import Input from "../../../../components/form/input/InputField";
 import { clientesService, Cliente } from '../../../../services/clientesService';
+import Alert from "../../../../components/ui/alert/Alert";
 
 function FormularioClientes() {
   const [formData, setFormData] = useState<Omit<Cliente, 'ck_cliente'>>({
@@ -24,6 +25,8 @@ function FormularioClientes() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [errors, setErrors] = useState<Partial<Omit<Cliente, 'ck_cliente'>>>({});
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Cargar datos si es edición
   useEffect(() => {
@@ -112,15 +115,28 @@ function FormularioClientes() {
         const clienteId = urlParams.get('id');
         if (clienteId) {
           response = await clientesService.updateCliente(clienteId, formData);
+          if (response?.success) {
+            setShowSuccess(true);
+            setSuccessMessage('Cliente actualizado correctamente');
+            setTimeout(() => {
+              window.location.href = '/catalogos/clientes/consulta/';
+            }, 1800);
+          } else {
+            alert(response?.message || 'Error al guardar cliente');
+          }
         }
       } else {
         response = await clientesService.createCliente(formData);
-      }
-      if (response?.success) {
-        alert(isEditing ? 'Cliente actualizado correctamente' : 'Cliente creado correctamente');
-        window.location.href = '/catalogos/clientes/consulta/';
-      } else {
-        alert(response?.message || 'Error al guardar cliente');
+        if (response?.success) {
+          setShowSuccess(true);
+          setSuccessMessage('Cliente creado correctamente');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(() => {
+            window.location.href = '/catalogos/clientes/consulta/';
+          }, 3000);
+        } else {
+          alert(response?.message || 'Error al guardar cliente');
+        }
       }
     } catch (error: any) {
       alert('Error al guardar el cliente: ' + (error.message || 'Error desconocido'));
@@ -149,6 +165,15 @@ function FormularioClientes() {
         description="Formulario para gestionar clientes del sistema"
       />
       <PageBreadcrumb pageTitle={isEditing ? "Editar Cliente" : "Crear Nuevo Cliente"} />
+      {showSuccess && (
+        <div className="mb-8 mt-2">
+          <Alert
+            variant="success"
+            title="¡Operación exitosa!"
+            message={successMessage}
+          />
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-6">
           <ComponentCard title="Información del Cliente">
@@ -270,7 +295,7 @@ function FormularioClientes() {
                   type="text"
                   value={formData.c_codigo_contrato}
                   onChange={e => handleInputChange('c_codigo_contrato', e.target.value)}
-                  placeholder="Código de contrato"
+                  placeholder="Número de teléfono"
                   className={errors.c_codigo_contrato ? 'border-red-500' : ''}
                 />
                 {errors.c_codigo_contrato && (

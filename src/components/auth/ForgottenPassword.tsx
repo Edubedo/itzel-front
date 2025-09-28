@@ -4,6 +4,7 @@ import { ChevronLeftIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Button from "../ui/button/Button";
+import { authService } from "../../services/authService";
 
 export default function ForgottenPassword() {
   const [step, setStep] = useState(1);
@@ -15,17 +16,14 @@ export default function ForgottenPassword() {
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
+
+
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:3001/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      if (!res.ok) throw new Error("No se pudo enviar el código");
+      await authService.sendRecoveryCode(email);
       setStep(2);
     } catch (err: any) {
       setError(err.message || "Error al enviar el código");
@@ -39,12 +37,7 @@ export default function ForgottenPassword() {
     setIsLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:3001/api/auth/verify-code", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code, newPassword }),
-      });
-      if (!res.ok) throw new Error("Código incorrecto o error");
+      await authService.verifyRecoveryCode(email, code, newPassword);
       setStep(3);
       setSuccess("¡Contraseña cambiada exitosamente!");
     } catch (err: any) {
@@ -163,7 +156,7 @@ export default function ForgottenPassword() {
               ¡Contraseña cambiada exitosamente!
               <div className="mt-6">
                 <Button
-                  onClick={() => navigate("/login")}
+                  onClick={() => navigate("/signin")}
                   className="w-full"
                 >
                   Ir a iniciar sesión

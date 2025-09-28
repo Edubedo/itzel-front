@@ -36,13 +36,14 @@ import ConsultaReportes from "./views/operaciones/reportes/consulta/ConsultaRepo
 import FormularioReportes from "./views/operaciones/reportes/formulario/FormularioReportes";
 import ConsultaTurnos from "./views/operaciones/turnos/consulta/ConsultaTurnos";
 import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTurnos";
+import RecoverPassword from "./pages/AuthPages/RecoverPassword";
 
 // Importar componentes de autenticación
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 // ▼▼▼ 1. IMPORTA EL NUEVO COMPONENTE DE PÁGINA ▼▼▼
-import PaginaServicio from "./views/catalogos/servicios/PaginaServicio"; // Asegúrate que la ruta sea correcta
+import PaginaServicio from "./views/catalogos/servicios/PaginaServicio"; 
 
 // Definir constantes para tipos de usuario (basado en el backend)
 const USER_TYPES = {
@@ -61,6 +62,8 @@ export default function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/" element={<Starter />} />
+          <Route path="/reset-password" element={<RecoverPassword />} />
+
 
           {/* Rutas protegidas con layout */}
           <Route element={

@@ -1,12 +1,12 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api/servicios"; // 👈 cambia esto según tu backend
+const API_URL = "http://localhost:3001/api"; // 👈 cambia esto según tu backend
 
 
 
 // Tipos de datos
 export interface Servicio {
-  id: string;
+  ck_servicio: string;
   s_servicio: string;
   s_descripcion_servicio?: string;
   c_codigo_servicio: string;
@@ -20,6 +20,21 @@ export interface ServicioFormData {
   c_codigo_servicio: string;
   ck_area: string;
   ck_estatus: "ACTIVO" | "INACTIVO";
+}
+
+// Interfaces nuevas
+export interface ServicioEstadistica {
+  name: string;
+  data: number[];
+}
+
+export interface ServicioStatsResponse {
+  success: boolean;
+  data?: {
+    labels: string[];
+    series: ServicioEstadistica[];
+  };
+  message?: string;
 }
 
 
@@ -70,4 +85,17 @@ export const serviciosService = {
       return { success: false, message: error.message };
     }
   },
+
+  async getServicioStatsMensual(): Promise<ServicioStatsResponse> {
+    try {
+      const res = await axios.get(`${API_URL}/operaciones/turnos/servicios-mensual`);
+      return {
+        success: true,
+        data: res.data.data,  // asumiendo que tu backend envía { data: { labels, series } }
+      };
+    } catch (error: any) {
+      console.error("Error en getServicioStatsMensual:", error);
+      return { success: false, message: error.message };
+    }
+  }
 };

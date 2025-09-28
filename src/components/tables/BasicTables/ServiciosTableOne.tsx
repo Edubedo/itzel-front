@@ -19,9 +19,10 @@ interface ServiciosTableProps {
 export default function ServiciosTableOne({
   searchTerm,
   estatusFilter,
+  servicios,
   onStatsUpdate,
+  
 }: ServiciosTableProps) {
-  const [servicios, setServicios] = useState<Servicio[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -45,32 +46,6 @@ export default function ServiciosTableOne({
         estatus: estatusFilter,
       };
 
-      const response = await serviciosService.getAllServicios({
-  page: currentPage,
-  limit: itemsPerPage,
-  search: searchTerm,
-  estatus: estatusFilter,
-});
-
-// 👇 ahora usas response.data
-if (response.success) {
-  setServicios(response.data);
-  setTotalItems(response.total || response.data.length);
-  setTotalPages(Math.ceil((response.total || response.data.length) / itemsPerPage));
-}
-
-
-      // Opcional: estadísticas resumidas
-      const stats = {
-        total: response.success ? response.data.length : 0,
-        activos: response.success
-          ? response.data.filter((s: Servicio) => s.ck_estatus === "ACTIVO").length
-          : 0,
-        inactivos: response.success
-          ? response.data.filter((s: Servicio) => s.ck_estatus === "INACTIVO").length
-          : 0,
-      };
-      onStatsUpdate(stats);
     } catch (err: any) {
       setError(err.message);
       console.error("Error al cargar servicios:", err);
@@ -157,7 +132,7 @@ if (response.success) {
           </TableHeader>
 
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {serviciosPaginados.length === 0 ? (
+            {servicios.length === 0 ? (
               <TableRow>
                 <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                   <div className="flex flex-col items-center">
@@ -170,7 +145,7 @@ if (response.success) {
                 </td>
               </TableRow>
             ) : (
-              serviciosPaginados.map((servicio) => (
+              servicios.map((servicio) => (
                 <TableRow key={servicio.id} className="hover:bg-gray-50">
                   <TableCell>{servicio.s_servicio}</TableCell>
                   <TableCell>{servicio.s_descripcion_servicio || "—"}</TableCell>

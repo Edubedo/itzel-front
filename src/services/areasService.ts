@@ -70,6 +70,7 @@ export interface AreaFormData {
 }
 
 export interface Sucursal {
+  s_nombre_sucursal: string;
   ck_sucursal: string;
   s_nombre: string;
 }

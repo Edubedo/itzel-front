@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
@@ -16,10 +16,12 @@ interface ServicioStats {
   porArea: Record<string, number>; // estadísticas dinámicas por área
 }
 
+
 export default function ServiciosTables({ titleTable = "Gestión de Servicios" }: ServiciosTablesProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [areaFilter, setAreaFilter] = useState("");
   const [estatusFilter, setEstatusFilter] = useState("ACTIVO");
+  const [servicios, setServicios] = useState([]);
   const [stats, setStats] = useState<ServicioStats>({
     total: 0,
     activos: 0,
@@ -28,6 +30,20 @@ export default function ServiciosTables({ titleTable = "Gestión de Servicios" }
   });
 
   const { user } = useAuth();
+
+  
+    useEffect(() => {
+    const getAllServicios = async() => {
+      const response = await fetch('http://localhost:3001/api/catalogos/servicios');
+      const data = await response.json();
+      console.log("data:  ", data)
+      setServicios(data && data.getServicios)
+    }
+
+    const data = getAllServicios();
+
+    const responseDataServicios = []
+    }, [])
 
   // Navegar al formulario de añadir servicio
   const handleAddServicio = () => {
@@ -136,6 +152,8 @@ export default function ServiciosTables({ titleTable = "Gestión de Servicios" }
       <div className="space-y-6">
         <ComponentCard title="Lista de Servicios">
           <ServiciosTableOne 
+            servicios={servicios}
+            setServicios={setServicios}
             searchTerm={searchTerm}
             areaFilter={areaFilter}
             estatusFilter={estatusFilter}
@@ -150,7 +168,7 @@ export default function ServiciosTables({ titleTable = "Gestión de Servicios" }
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold opacity-90">Total Servicios</h3>
-              <p className="text-3xl font-bold">{stats.total}</p>
+              <p className="text-3xl font-bold">{servicios.length}</p>
             </div>
             <div className="text-4xl opacity-80">🛠️</div>
           </div>

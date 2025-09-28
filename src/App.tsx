@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"; // Corregido a 
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
-import UserProfiles from "./pages/UserProfiles";
+import UserProfiles from "./pages/Configuration";
 import Videos from "./pages/UiElements/Videos";
 import Images from "./pages/UiElements/Images";
 import Alerts from "./pages/UiElements/Alerts";
@@ -44,6 +44,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 // ▼▼▼ 1. IMPORTA EL NUEVO COMPONENTE DE PÁGINA ▼▼▼
 import PaginaServicio from "./views/catalogos/servicios/PaginaServicio"; 
+import Configuration from "./pages/Configuration";
 
 // Definir constantes para tipos de usuario (basado en el backend)
 const USER_TYPES = {
@@ -161,7 +162,7 @@ export default function App() {
             <Route path="/operaciones/turnos/formulario/" element={<FormularioTurnos />} />
 
             {/* Páginas generales */}
-            <Route path="/profile" element={<UserProfiles />} />
+            <Route path="/configuration" element={<Configuration />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />
 

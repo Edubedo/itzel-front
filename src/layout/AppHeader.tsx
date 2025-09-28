@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
@@ -28,6 +28,8 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
   const [loading, setLoading] = useState(false);
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
   const { showBranchSelector = true } = { showBranchSelector: true };
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -239,15 +241,15 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
             </div>
           </div>
 
-          <Link to="/" className="lg:hidden">
+          <Link to="/home" className="lg:hidden">
             <img
               className="dark:hidden h-8 w-auto max-h-10"
-              src="./images/logo/itzelLogoR.png"
+              src="public/images/Logo2/logoSinFondo.png"
               alt="Logo"
             />
             <img
               className="hidden dark:block h-8 w-auto max-h-10"
-              src="images/Logo2/ItzelFOndoMejoradoDarkMode.png"
+              src="public/images/Logo2/ItzelFOndoMejoradoDarkMode.png"
               alt="Logo"
 
             />
@@ -265,14 +267,43 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
           <div className="hidden lg:block">
             <form>
               <div className="relative">
-                <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
-                  <svg className="fill-gray-500 dark:fill-gray-400" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fillRule="evenodd" clipRule="evenodd" d="M3.04175 9.37363C3.04175 5.87693 5.87711 3.04199 9.37508 3.04199C12.8731 3.04199 15.7084 5.87693 15.7084 9.37363C15.7084 12.8703 12.8731 15.7053 9.37508 15.7053C5.87711 15.7053 3.04175 12.8703 3.04175 9.37363ZM9.37508 1.54199C5.04902 1.54199 1.54175 5.04817 1.54175 9.37363C1.54175 13.6991 5.04902 17.2053 9.37508 17.2053C11.2674 17.2053 13.003 16.5344 14.357 15.4176L17.177 18.238C17.4699 18.5309 17.9448 18.5309 18.2377 18.238C18.5306 17.9451 18.5306 17.4703 18.2377 17.1774L15.418 14.3573C16.5365 13.0033 17.2084 11.2669 17.2084 9.37363C17.2084 5.04817 13.7011 1.54199 9.37508 1.54199Z" fill="" />
+                <input
+                  type="text"
+                  placeholder="Buscar"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none transition-all border-[#8ECAB2] bg-white text-gray-700 placeholder-gray-500 font-medium focus:border-[#70A18E] shadow-sm text-base dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-700 dark:focus:border-[#70A18E]"
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  {/* ScanSearch icon, cambia color según modo */}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="3" width="7" height="7" rx="2"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-[#8ECAB2] dark:text-[#70A18E]"
+                    />
+                    <rect x="14" y="3" width="7" height="7" rx="2"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-[#8ECAB2] dark:text-[#70A18E]"
+                    />
+                    <rect x="14" y="14" width="7" height="7" rx="2"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-[#8ECAB2] dark:text-[#70A18E]"
+                    />
+                    <rect x="3" y="14" width="7" height="7" rx="2"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-[#8ECAB2] dark:text-[#70A18E]"
+                    />
+                    <circle cx="12" cy="12" r="3"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-[#3A554B] dark:text-[#B7F2DA]"
+                    />
                   </svg>
                 </span>
-                <Search />
-                <button className="absolute right-2.5 top-1/2 inline-flex -translate-y-1/2 items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 px-[7px] py-[4.5px] text-xs -tracking-[0.2px] text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
-                </button>
               </div>
             </form>
           </div>

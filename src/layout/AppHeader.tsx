@@ -28,7 +28,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
   const [loading, setLoading] = useState(false);
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
   const { showBranchSelector = true } = { showBranchSelector: true };
-  
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Cerrar dropdown al hacer clic fuera
@@ -75,10 +75,10 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
     try {
       const response = await fetch('http://localhost:3001/api/operaciones/turnos/sucursales');
       const data = await response.json();
-      
+
       if (data.success) {
         setSucursales(data.sucursales);
-        
+
         const sucursalGuardada = localStorage.getItem('sucursal_seleccionada');
         if (sucursalGuardada) {
           try {
@@ -86,7 +86,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
             const sucursalValida = data.sucursales.find(
               (s: Sucursal) => s.ck_sucursal === sucursalParsed.ck_sucursal
             );
-            
+
             if (sucursalValida) {
               setSucursalActiva(sucursalValida);
             } else if (data.sucursales.length > 0) {
@@ -163,20 +163,6 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
 
           {/* Selector de sucursal mejorado */}
           <div className="flex items-center gap-4" ref={dropdownRef}>
-            {/* Información de sucursal activa */}
-            {sucursalActiva && (
-              <div className="hidden md:flex items-center gap-2 bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-lg border border-green-200 dark:border-green-800">
-                <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                <div className="text-sm">
-                  <div className="font-medium text-green-800 dark:text-green-300">Sucursal activa</div>
-                  <div className="text-green-700 dark:text-green-400 truncate max-w-[200px]">
-                    {sucursalActiva.s_nombre_sucursal}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Selector de sucursal */}
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -185,13 +171,13 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
               >
                 <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 <span className="flex-1 text-left font-medium truncate">
-                  {loading ? 'Cargando sucursales...' : 
-                   sucursalActiva ? sucursalActiva.s_nombre_sucursal : 'Seleccionar sucursal'}
+                  {loading ? 'Cargando sucursales...' :
+                    sucursalActiva ? sucursalActiva.s_nombre_sucursal : 'Seleccionar sucursal'}
                 </span>
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              {/* Dropdown de sucursales mejorado */}
+              {/* Dropdown de sucursales */}
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-80 overflow-y-auto">
                   <div className="p-3 border-b border-gray-100 dark:border-gray-700">
@@ -200,7 +186,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                       {sucursales.length} sucursales disponibles
                     </p>
                   </div>
-                  
+
                   {sucursales.length === 0 ? (
                     <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                       <MapPin className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
@@ -212,11 +198,10 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                         <button
                           key={sucursal.ck_sucursal}
                           onClick={() => seleccionarSucursal(sucursal)}
-                          className={`w-full text-left p-3 rounded-lg transition-all duration-200 mb-1 last:mb-0 ${
-                            sucursalActiva?.ck_sucursal === sucursal.ck_sucursal 
-                              ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' 
+                          className={`w-full text-left p-3 rounded-lg transition-all duration-200 mb-1 last:mb-0 ${sucursalActiva?.ck_sucursal === sucursal.ck_sucursal
+                              ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
                               : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
@@ -228,16 +213,16 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                                   <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                                 )}
                               </div>
-                              
+
                               {sucursal.s_domicilio && (
                                 <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">
                                   {sucursal.s_domicilio}
                                 </div>
                               )}
-                              
+
                               {(sucursal.s_municipio || sucursal.s_estado) && (
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                                  {sucursal.s_municipio && sucursal.s_estado 
+                                  {sucursal.s_municipio && sucursal.s_estado
                                     ? `${sucursal.s_municipio}, ${sucursal.s_estado}`
                                     : sucursal.s_municipio || sucursal.s_estado
                                   }
@@ -291,7 +276,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
             </form>
           </div>
         </div>
-        
+
         <div className={`${isApplicationMenuOpen ? "flex" : "hidden"} items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}>
           <div className="flex items-center gap-2 2xsm:gap-3">
             <ThemeToggleButton />

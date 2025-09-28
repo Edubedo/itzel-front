@@ -114,5 +114,24 @@ export const authService = {
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Token inválido');
     }
+  },
+
+   async sendRecoveryCode(email: string): Promise<{ message: string }> {
+    try {
+      const response = await api.post('/auth/forgot-password', { email });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'No se pudo enviar el código');
+    }
+  },
+
+  async verifyRecoveryCode(email: string, code: string, newPassword: string): Promise<{ message: string }> {
+    try {
+      const response = await api.post('/auth/verify-code', { email, code, newPassword });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Código incorrecto o error');
+    }
   }
+
 }; 

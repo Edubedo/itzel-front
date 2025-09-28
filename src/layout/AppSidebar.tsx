@@ -274,17 +274,17 @@ const AppSidebar: React.FC = () => {
               />
               <img
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                src="images/Logo2/ItzelFOndoMejoradoDarkMode.png"
                 alt="Logo"
-                width={100}
-                height={40}
+                width={80}
+                height={45}
               />
             </>
           ) : (
             <img
-              src="/images/logo/itzelLogoR.png"
+              src="/images/Logo2/logoSinFondo.png"
               alt="Logo"
-              width={50}
+              width={60}
               height={50}
             />
           )}

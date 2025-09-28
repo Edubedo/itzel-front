@@ -199,8 +199,8 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                           key={sucursal.ck_sucursal}
                           onClick={() => seleccionarSucursal(sucursal)}
                           className={`w-full text-left p-3 rounded-lg transition-all duration-200 mb-1 last:mb-0 ${sucursalActiva?.ck_sucursal === sucursal.ck_sucursal
-                              ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-                              : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent'
+                            ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                            : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent'
                             }`}
                         >
                           <div className="flex items-start justify-between">
@@ -247,8 +247,9 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
             />
             <img
               className="hidden dark:block h-8 w-auto max-h-10"
-              src="./images/logo/logo-dark.svg"
+              src="images/Logo2/ItzelFOndoMejoradoDarkMode.png"
               alt="Logo"
+
             />
           </Link>
 

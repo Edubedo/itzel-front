@@ -39,7 +39,7 @@ export default function ConsultaServicios() {
         setTipoClienteSeleccionado(null);
         setSearchTerm("");
     };
-    
+
     const clearFilters = () => {
         setSearchTerm("");
     };
@@ -68,6 +68,12 @@ export default function ConsultaServicios() {
         <>
             <PageMeta title="Consulta de Servicios" description="Seleccione el tipo de consulta de servicio" />
             <PageBreadcrumb pageTitle={obtenerTitulo()} />
+            {/* Título y subtítulo del catálogo de servicios */}
+            <div className="mb-6">
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Consulta de Servicios</h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-1">Gestiona y consulta los servicios del sistema</p>
+            </div>
+
 
             {tipoCliente === null ? (
                 // --- VISTA INICIAL (LISTA CON OPCIONES DE CLIENTE) ---
@@ -117,6 +123,7 @@ export default function ConsultaServicios() {
             ) : (
                 // --- VISTAS CONDICIONALES CON FORMATO DE FILTRO ---
                 <div>
+
                     <div className="mb-6 flex justify-between items-center">
                         <button
                             onClick={reiniciarSeleccion}
@@ -153,7 +160,7 @@ export default function ConsultaServicios() {
                                     <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
                                 </div>
                             </div>
-                            
+
                             {/* Botón limpiar filtros */}
                             <div>
                                 <button
@@ -165,7 +172,7 @@ export default function ConsultaServicios() {
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* Contenido del formulario */}
                     <ComponentCard title="Servicios Disponibles">
                         <FormularioSimpleServicios

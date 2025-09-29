@@ -269,7 +269,7 @@ const AppSidebar: React.FC = () => {
                 className="dark:hidden"
                 src="/images/logo/itzelLogoR.png"
                 alt="Logo CFE"
-                width={100}
+                width={140}
                 height={40}
               />
               {/* Dark Mode - Logo grande */}

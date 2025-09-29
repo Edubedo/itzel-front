@@ -5,7 +5,6 @@ import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
 import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
 import { ChevronDown, MapPin, CheckCircle } from "lucide-react";
-import Search from "./search";
 
 interface Sucursal {
   ck_sucursal: string;
@@ -29,18 +28,50 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
   const { showBranchSelector = true } = { showBranchSelector: true };
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showResults, setShowResults] = useState(false);
+
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) return;
+    try {
+      const response = await fetch(`http://localhost:3001/api/busqueda-general?query=${encodeURIComponent(searchTerm)}`);
+      const data = await response.json();
+      setSearchResults(data.resultados || []);
+      setShowResults(true);
+    } catch (error) {
+      setSearchResults([]);
+      setShowResults(true);
+    }
+  };
+
+const handleResultClick = (result: any) => {
+  setShowResults(false);
+  setSearchTerm("");
+  // Redirige según el tipo de resultado
+  if (result.tipo === "usuario") {
+    window.location.href = `/catalogos/usuarios/${result.id}`;
+  } else if (result.tipo === "area") {
+    window.location.href = `/catalogos/areas/${result.id}`;
+  } else if (result.tipo === "cliente") {
+    window.location.href = `/clientes/${result.id}`;
+  } else if (result.tipo === "sucursal") {
+    window.location.href = `/sucursales/${result.id}`;
+  } else if (result.tipo === "servicio") {
+    window.location.href = `/catalogos/servicios/${result.id}`;
+  }
+};
 
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+        setShowResults(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -52,14 +83,12 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
     window.dispatchEvent(new CustomEvent('sucursalCambiada', { detail: sucursal }));
   };
 
-  // Cargar sucursales al montar el componente
   useEffect(() => {
     if (showBranchSelector) {
       cargarSucursales();
     }
   }, [showBranchSelector]);
 
-  // Cargar sucursal guardada en localStorage
   useEffect(() => {
     const sucursalGuardada = localStorage.getItem('sucursal_seleccionada');
     if (sucursalGuardada) {
@@ -251,7 +280,6 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
               className="hidden dark:block h-8 w-auto max-h-10"
               src="public/images/Logo2/ItzelFOndoMejoradoDarkMode.png"
               alt="Logo"
-
             />
           </Link>
 
@@ -265,17 +293,18 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
           </button>
 
           <div className="hidden lg:block">
-            <form>
+            <form onSubmit={handleSearch}>
               <div className="relative">
                 <input
+                  ref={inputRef}
                   type="text"
                   placeholder="Buscar"
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none transition-all border-[#8ECAB2] bg-white text-gray-700 placeholder-gray-500 font-medium focus:border-[#70A18E] shadow-sm text-base dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-700 dark:focus:border-[#70A18E]"
+                  onFocus={() => setShowResults(false)}
                 />
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                  {/* ScanSearch icon, cambia color según modo */}
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <rect x="3" y="3" width="7" height="7" rx="2"
                       stroke="currentColor"
@@ -304,6 +333,25 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                     />
                   </svg>
                 </span>
+                {/* Resultados de búsqueda */}
+                {showResults && (
+                  <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-80 overflow-y-auto">
+                    {searchResults.length > 0 ? (
+                      searchResults.map((result, idx) => (
+                        <button
+                          key={idx}
+                          className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          onClick={() => handleResultClick(result)}
+                          type="button"
+                        >
+                          {result.nombre} <span className="text-xs text-gray-400">({result.tipo})</span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="p-4 text-gray-500">No se encontraron resultados.</div>
+                    )}
+                  </div>
+                )}
               </div>
             </form>
           </div>

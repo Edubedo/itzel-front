@@ -8,7 +8,7 @@ import { useAuth } from "../../../../contexts/AuthContext";
 
 // Datos estáticos para el formulario
 const datosMexico = []
- const estadosDeMexico = Object.keys(datosMexico);
+const estadosDeMexico = Object.keys(datosMexico);
 const areasDisponibles = [];
 
 export default function ConsultaDeSucursales() {
@@ -49,7 +49,7 @@ export default function ConsultaDeSucursales() {
     const { user } = useAuth();
 
     // Sincroniza el estado de las sucursales con el localStorage
-  
+
 
     // Restablece los estados del formulario a sus valores iniciales
     const resetFormState = () => {
@@ -213,7 +213,11 @@ export default function ConsultaDeSucursales() {
         <>
             <PageMeta title="Gestión de Sucursales" description="Consulta y registro de sucursales" />
             <PageBreadcrumb pageTitle={mostrandoFormulario ? (sucursalEnEdicion ? 'Editar Sucursal' : 'Registrar Nueva Sucursal') : "Consulta de Sucursales"} />
-
+            {/* Título y subtítulo del catálogo de sucursales */}
+            <div className="mb-6">
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Consulta de Sucursales</h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-1">Gestiona y consulta las sucursales del sistema</p>
+            </div>
             {/* Botón de añadir (solo para administradores) */}
             {user?.i_tipo_usuario === 1 && (
                 <div className="mb-6 flex justify-end">
@@ -290,7 +294,7 @@ export default function ConsultaDeSucursales() {
                             Añadir Sucursal
                         </button>
                     </div>
-                    
+
                     {/* Sección de Filtros de Búsqueda */}
                     <div className="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
                         <div className="flex flex-wrap gap-4 items-end">

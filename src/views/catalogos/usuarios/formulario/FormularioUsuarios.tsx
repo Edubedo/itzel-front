@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import PageMeta from "../../../../components/common/PageMeta";
 import ComponentCard from "../../../../components/common/ComponentCard";
@@ -6,6 +6,7 @@ import Label from "../../../../components/form/Label";
 import Input from "../../../../components/form/input/InputField";
 import { usuariosService, UsuarioFormData, Usuario } from "../../../../services/usuariosService";
 import { useAuth } from "../../../../contexts/AuthContext";
+import Alert from "../../../../components/ui/alert/Alert"; // Importa el componente de alerta
 
 function FormularioUsuarios() {
   const [formData, setFormData] = useState<UsuarioFormData>({
@@ -30,11 +31,25 @@ function FormularioUsuarios() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const { user } = useAuth();
 
+  // Warning/Success states
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const successRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (showSuccess) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => {
+        window.location.href = "/catalogos/usuarios/consulta/";
+      }, 1000);
+    }
+  }, [showSuccess]);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const usuarioId = urlParams.get('id');
-      
+
       if (usuarioId) {
         setIsEditing(true);
         fetchUsuarioData(usuarioId);
@@ -46,7 +61,7 @@ function FormularioUsuarios() {
     try {
       setLoading(true);
       const response = await usuariosService.getUsuarioById(id);
-      
+
       if (response.success) {
         const usuario: Usuario = response.data;
         setFormData({
@@ -58,13 +73,13 @@ function FormularioUsuarios() {
           s_password: '', // No mostrar contraseña por seguridad
           i_tipo_usuario: usuario.i_tipo_usuario,
           ck_estatus: usuario.ck_estatus,
-          d_fecha_nacimiento: usuario.d_fecha_nacimiento ? 
+          d_fecha_nacimiento: usuario.d_fecha_nacimiento ?
             new Date(usuario.d_fecha_nacimiento).toISOString().split('T')[0] : '',
           s_rfc: usuario.s_rfc || '',
           s_curp: usuario.s_curp || '',
           s_domicilio: usuario.s_domicilio || ''
         });
-        
+
         // Mostrar imagen actual si existe
         if (usuario.s_foto) {
           setImagePreview(usuariosService.getImageUrl(usuario.s_foto));
@@ -83,7 +98,7 @@ function FormularioUsuarios() {
       ...prev,
       [field]: value
     }));
-    
+
     // Limpiar error del campo cuando el usuario empiece a escribir
     if (errors[field]) {
       setErrors(prev => ({
@@ -101,15 +116,15 @@ function FormularioUsuarios() {
         alert('Por favor seleccione un archivo de imagen válido');
         return;
       }
-      
+
       // Validar tamaño (5MB máximo)
       if (file.size > 5 * 1024 * 1024) {
         alert('La imagen no puede ser mayor a 5MB');
         return;
       }
-      
+
       setImageFile(file);
-      
+
       // Mostrar preview
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -153,8 +168,7 @@ function FormularioUsuarios() {
       newErrors.s_rfc = 'El RFC debe tener exactamente 13 caracteres';
     }
 
-    console.log("formData.d_fecha_nacimiento: ", formData.d_fecha_nacimiento)
-    if(!formData.d_fecha_nacimiento || formData.d_fecha_nacimiento === '  ') {
+    if (!formData.d_fecha_nacimiento || formData.d_fecha_nacimiento === '  ') {
       newErrors.d_fecha_nacimiento = 'La fecha de nacimiento es requerida';
     }
 
@@ -179,15 +193,15 @@ function FormularioUsuarios() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       alert('Por favor, corrija los errores en el formulario');
       return;
     }
-    
+
     try {
       setLoading(true);
-      
+
       const submitData: UsuarioFormData = {
         ...formData,
         s_foto: imageFile || undefined
@@ -201,12 +215,10 @@ function FormularioUsuarios() {
       } else {
         response = await usuariosService.createUsuario(submitData);
       }
-      
+
       if (response.success) {
-        alert(isEditing ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente');
-        if (typeof window !== 'undefined') {
-          window.location.href = '/catalogos/usuarios/consulta/';
-        }
+        setShowSuccess(true);
+        setSuccessMessage(isEditing ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente');
       }
     } catch (error: any) {
       console.error('Error al guardar el usuario:', error);
@@ -237,14 +249,24 @@ function FormularioUsuarios() {
         title={isEditing ? "Editar Usuario - Sistema de Turnos" : "Crear Usuario - Sistema de Turnos"}
         description="Formulario para gestionar usuarios del sistema"
       />
-      
-      <PageBreadcrumb 
-        pageTitle={isEditing ? "Editar Usuario" : "Crear Nuevo Usuario"} 
+
+      <PageBreadcrumb
+        pageTitle={isEditing ? "Editar Usuario" : "Crear Nuevo Usuario"}
       />
+
+      {showSuccess && (
+        <div ref={successRef} className="mb-8 mt-2">
+          <Alert
+            variant="success"
+            title="¡Operación exitosa!"
+            message={successMessage}
+          />
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-6">
-          
+
           {/* Información Personal */}
           <ComponentCard title="Información Personal">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -253,7 +275,7 @@ function FormularioUsuarios() {
                 <Input
                   type="text"
                   value={formData.s_nombre}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_nombre', e.target.value)}
                   placeholder="Nombre del usuario"
                   className={errors.s_nombre ? 'border-red-500' : ''}
@@ -266,7 +288,7 @@ function FormularioUsuarios() {
                 <Input
                   type="text"
                   value={formData.s_apellido_paterno}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_apellido_paterno', e.target.value)}
                   placeholder="Apellido paterno"
                 />
@@ -277,7 +299,7 @@ function FormularioUsuarios() {
                 <Input
                   type="text"
                   value={formData.s_apellido_materno}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_apellido_materno', e.target.value)}
                   placeholder="Apellido materno"
                 />
@@ -288,7 +310,7 @@ function FormularioUsuarios() {
                 <Input
                   type="date"
                   value={formData.d_fecha_nacimiento}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('d_fecha_nacimiento', e.target.value)}
                 />
               </div>
@@ -298,7 +320,7 @@ function FormularioUsuarios() {
                 <input
                   type="tel"
                   value={formData.s_telefono}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_telefono', e.target.value)}
                   placeholder="10 dígitos"
                   maxLength={10}
@@ -317,7 +339,7 @@ function FormularioUsuarios() {
                 <Input
                   type="email"
                   value={formData.s_correo_electronico}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_correo_electronico', e.target.value)}
                   placeholder="correo@ejemplo.com"
                   className={errors.s_correo_electronico ? 'border-red-500' : ''}
@@ -330,7 +352,7 @@ function FormularioUsuarios() {
                 <Input
                   type="password"
                   value={formData.s_password}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_password', e.target.value)}
                   placeholder={isEditing ? 'Dejar en blanco para mantener actual' : 'Mínimo 6 caracteres'}
                   className={errors.s_password ? 'border-red-500' : ''}
@@ -348,7 +370,7 @@ function FormularioUsuarios() {
                 <input
                   type="text"
                   value={formData.s_rfc}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_rfc', e.target.value.toUpperCase())}
                   placeholder="13 caracteres"
                   maxLength={13}
@@ -362,7 +384,7 @@ function FormularioUsuarios() {
                 <input
                   type="text"
                   value={formData.s_curp}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_curp', e.target.value.toUpperCase())}
                   placeholder="18 caracteres"
                   maxLength={18}
@@ -376,7 +398,7 @@ function FormularioUsuarios() {
               <Label>Domicilio <span className="text-red-500 text-sm">*</span></Label>
               <textarea
                 value={formData.s_domicilio}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => 
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                   handleInputChange('s_domicilio', e.target.value)}
                 rows={3}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-vertical ${errors.s_domicilio ? 'border-red-500' : 'border-gray-300'}`}
@@ -404,9 +426,9 @@ function FormularioUsuarios() {
               {imagePreview && (
                 <div className="flex items-start space-x-4">
                   <div className="relative">
-                    <img 
-                      src={imagePreview} 
-                      alt="Preview" 
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
                       className="w-32 h-32 object-cover rounded-lg border border-gray-300"
                     />
                     <button
@@ -429,16 +451,15 @@ function FormularioUsuarios() {
           {/* Configuración del Sistema */}
           <ComponentCard title="Configuración del Sistema">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Solo mostrar tipo de usuario si es admin o si está editando */}
               {(user?.tipo_usuario === 1 || isEditing) && (
                 <div>
                   <Label>Tipo de Usuario</Label>
                   <select
                     value={formData.i_tipo_usuario}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                       handleInputChange('i_tipo_usuario', parseInt(e.target.value))}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                    disabled={user?.tipo_usuario !== 1} // Solo admin puede cambiar tipo
+                    disabled={user?.tipo_usuario !== 1}
                   >
                     <option value={3}>Asesor</option>
                     <option value={2}>Ejecutivo</option>
@@ -456,7 +477,7 @@ function FormularioUsuarios() {
                     <input
                       type="checkbox"
                       checked={formData.ck_estatus === 'ACTIVO'}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         handleInputChange('ck_estatus', e.target.checked ? 'ACTIVO' : 'INACTI')}
                       className="sr-only peer"
                     />

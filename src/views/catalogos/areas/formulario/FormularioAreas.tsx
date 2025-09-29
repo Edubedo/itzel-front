@@ -6,6 +6,7 @@ import Label from "../../../../components/form/Label";
 import Input from "../../../../components/form/input/InputField";
 import Select from "../../../../components/form/Select";
 import { areasService, AreaFormData, Sucursal } from '../../../../services/areasService';
+import Alert from "../../../../components/ui/alert/Alert";
 
 // Define las opciones de estado
 const estatusOptions = [
@@ -27,6 +28,8 @@ function FormularioAreas() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [errors, setErrors] = useState<Partial<AreaFormData>>({});
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     const initializeForm = async () => {
@@ -100,6 +103,7 @@ function FormularioAreas() {
     }
   };
 
+
   const validateForm = (): boolean => {
     const newErrors: Partial<AreaFormData> = {};
 
@@ -144,8 +148,11 @@ function FormularioAreas() {
         if (areaId) {
           response = await areasService.updateArea(areaId, formData);
           if (response.success) {
-            alert('Área actualizada correctamente');
-            window.location.href = '/catalogos/areas/consulta/';
+            setShowSuccess(true);
+            setSuccessMessage('Área actualizada correctamente');
+            setTimeout(() => {
+              window.location.href = '/catalogos/areas/consulta/';
+            }, 1800);
           } else {
             alert(response.message || 'Error al actualizar área');
           }
@@ -153,8 +160,12 @@ function FormularioAreas() {
       } else {
         response = await areasService.createArea(formData);
         if (response.success) {
-          alert('Área creada correctamente');
-          window.location.href = '/catalogos/areas/consulta/';
+          setShowSuccess(true);
+          setSuccessMessage('Área creada correctamente');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(() => {
+            window.location.href = '/catalogos/areas/consulta/';
+          }, 3000);
         } else {
           alert(response.message || 'Error al crear área');
         }
@@ -176,7 +187,7 @@ function FormularioAreas() {
   // Preparar opciones de sucursales para el Select
   const sucursalesOptions = sucursales.map(sucursal => ({
     value: sucursal.ck_sucursal,
-    label: sucursal.s_nombre_sucursal 
+    label: sucursal.s_nombre_sucursal
   }));
 
   if (initialLoading) {
@@ -198,8 +209,17 @@ function FormularioAreas() {
       <PageBreadcrumb
         pageTitle={isEditing ? "Editar Área" : "Crear Nueva Área"}
       />
+      {showSuccess && (
+        <div className="mb-8 mt-2">
+          <Alert
+            variant="success"
+            title="¡Operación exitosa!"
+            message={successMessage}
+          />
+        </div>
+      )}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="mt-4">
         <div className="grid grid-cols-1 gap-6">
           <ComponentCard title="Información del Área">
             <div className="space-y-6">
@@ -233,7 +253,7 @@ function FormularioAreas() {
                   <p className="text-red-500 text-sm mt-1">{errors.s_area}</p>
                 )}
               </div>
-              
+
             </div>
             <div>
               <Label>Descripción del Área *</Label>
@@ -263,7 +283,7 @@ function FormularioAreas() {
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${errors.ck_sucursal ? 'border-red-500' : 'border-gray-300'
                     }`}
                 >
-                  <option value=""disabled hidden>Selecciona una sucursal</option>
+                  <option value="" disabled hidden>Selecciona una sucursal</option>
                   {sucursalesOptions.map(option => (
                     <option key={option.value} value={option.value}>
                       {option.label}

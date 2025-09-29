@@ -5,6 +5,7 @@ import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
 import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
 import { ChevronDown, MapPin, CheckCircle } from "lucide-react";
+import { useLogo } from "../contexts/LogoContext";
 
 interface Sucursal {
   ck_sucursal: string;
@@ -30,6 +31,8 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const { logoLight, logoDark } = useLogo();
+
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,22 +48,22 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
     }
   };
 
-const handleResultClick = (result: any) => {
-  setShowResults(false);
-  setSearchTerm("");
-  // Redirige según el tipo de resultado
-  if (result.tipo === "usuario") {
-    window.location.href = `/catalogos/usuarios/${result.id}`;
-  } else if (result.tipo === "area") {
-    window.location.href = `/catalogos/areas/${result.id}`;
-  } else if (result.tipo === "cliente") {
-    window.location.href = `/clientes/${result.id}`;
-  } else if (result.tipo === "sucursal") {
-    window.location.href = `/sucursales/${result.id}`;
-  } else if (result.tipo === "servicio") {
-    window.location.href = `/catalogos/servicios/${result.id}`;
-  }
-};
+  const handleResultClick = (result: any) => {
+    setShowResults(false);
+    setSearchTerm("");
+    // Redirige según el tipo de resultado
+    if (result.tipo === "usuario") {
+      window.location.href = `/catalogos/usuarios/${result.id}`;
+    } else if (result.tipo === "area") {
+      window.location.href = `/catalogos/areas/${result.id}`;
+    } else if (result.tipo === "cliente") {
+      window.location.href = `/clientes/${result.id}`;
+    } else if (result.tipo === "sucursal") {
+      window.location.href = `/sucursales/${result.id}`;
+    } else if (result.tipo === "servicio") {
+      window.location.href = `/catalogos/servicios/${result.id}`;
+    }
+  };
 
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -273,12 +276,12 @@ const handleResultClick = (result: any) => {
           <Link to="/home" className="lg:hidden">
             <img
               className="dark:hidden h-8 w-auto max-h-10"
-              src="public/images/Logo2/logoSinFondo.png"
+              src={logoLight}
               alt="Logo"
             />
             <img
               className="hidden dark:block h-8 w-auto max-h-10"
-              src="public/images/Logo2/ItzelFOndoMejoradoDarkMode.png"
+              src={logoDark}
               alt="Logo"
             />
           </Link>

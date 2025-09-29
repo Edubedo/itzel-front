@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
+import { useSidebar } from "../context/SidebarContext";
+import { useLogo } from "../contexts/LogoContext";
 
 // Assume these icons are imported from an icon library
 import {
@@ -15,7 +17,6 @@ import {
   TableIcon,
   UserCircleIcon,
 } from "../icons";
-import { useSidebar } from "../context/SidebarContext";
 
 type NavItem = {
   name: string;
@@ -34,8 +35,9 @@ const catalogosSecciones: NavItem[] = [
       { name: "Sucursales", path: "/catalogos/sucursales", pro: false },
       { name: "Usuarios", path: "/catalogos/usuarios/consulta", pro: false },
       { name: "Clientes", path: "/catalogos/clientes/consulta", pro: false }
-]}
-]; 
+    ]
+  }
+];
 
 const othersItems: NavItem[] = [
   {
@@ -51,6 +53,7 @@ const othersItems: NavItem[] = [
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { logoLight, logoDark } = useLogo();
   const location = useLocation();
 
   const [openSubmenu, setOpenSubmenu] = useState<{
@@ -126,36 +129,32 @@ const AppSidebar: React.FC = () => {
           {nav.subItems ? (
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group ${
-                openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
-              } cursor-pointer ${
-                !isSidebarExpanded
+              className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
+                ? "menu-item-active"
+                : "menu-item-inactive"
+                } cursor-pointer ${!isSidebarExpanded
                   ? "lg:justify-center"
                   : "lg:justify-start"
-              }`}
+                }`}
             >
               <span
-                className={`menu-item-icon-size  ${
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? "menu-item-icon-active"
-                    : "menu-item-icon-inactive"
-                }`}
+                className={`menu-item-icon-size  ${openSubmenu?.type === menuType && openSubmenu?.index === index
+                  ? "menu-item-icon-active"
+                  : "menu-item-icon-inactive"
+                  }`}
               >
                 {nav.icon}
               </span>
-              {isSidebarExpanded && ( 
+              {isSidebarExpanded && (
                 <span className="menu-item-text">{nav.name}</span>
               )}
               {isSidebarExpanded && (
                 <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                    openSubmenu?.type === menuType &&
+                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${openSubmenu?.type === menuType &&
                     openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
-                  }`}
+                    ? "rotate-180 text-brand-500"
+                    : ""
+                    }`}
                 />
               )}
             </button>
@@ -163,16 +162,14 @@ const AppSidebar: React.FC = () => {
             nav.path && (
               <Link
                 to={nav.path}
-                className={`menu-item group ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                }`}
+                className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
+                  }`}
               >
                 <span
-                  className={`menu-item-icon-size ${
-                    isActive(nav.path)
-                      ? "menu-item-icon-active"
-                      : "menu-item-icon-inactive"
-                  }`}
+                  className={`menu-item-icon-size ${isActive(nav.path)
+                    ? "menu-item-icon-active"
+                    : "menu-item-icon-inactive"
+                    }`}
                 >
                   {nav.icon}
                 </span>
@@ -200,32 +197,29 @@ const AppSidebar: React.FC = () => {
                   <li key={subItem.name}>
                     <Link
                       to={subItem.path}
-                      className={`menu-dropdown-item ${
-                        isActive(subItem.path)
-                          ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive"
-                      }`}
+                      className={`menu-dropdown-item ${isActive(subItem.path)
+                        ? "menu-dropdown-item-active"
+                        : "menu-dropdown-item-inactive"
+                        }`}
                     >
                       {subItem.name}
                       <span className="flex items-center gap-1 ml-auto">
                         {subItem.new && (
                           <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge`}
+                            className={`ml-auto ${isActive(subItem.path)
+                              ? "menu-dropdown-badge-active"
+                              : "menu-dropdown-badge-inactive"
+                              } menu-dropdown-badge`}
                           >
                             new
                           </span>
                         )}
                         {subItem.pro && (
                           <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge`}
+                            className={`ml-auto ${isActive(subItem.path)
+                              ? "menu-dropdown-badge-active"
+                              : "menu-dropdown-badge-inactive"
+                              } menu-dropdown-badge`}
                           >
                             pro
                           </span>
@@ -245,10 +239,9 @@ const AppSidebar: React.FC = () => {
   return (
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
-        ${
-          isSidebarExpanded
-            ? "w-[290px]"
-            : "w-[90px]"
+        ${isSidebarExpanded
+          ? "w-[290px]"
+          : "w-[90px]"
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
@@ -256,9 +249,8 @@ const AppSidebar: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8 flex ${
-          !isSidebarExpanded ? "lg:justify-center" : "justify-start"
-        }`}
+        className={`py-8 flex ${!isSidebarExpanded ? "lg:justify-center" : "justify-start"
+          }`}
       >
         <Link to="/home">
           {isSidebarExpanded ? (
@@ -267,16 +259,16 @@ const AppSidebar: React.FC = () => {
               {/* Light Mode - Logo grande */}
               <img
                 className="dark:hidden"
-                src="/images/logo/itzelLogoR.png"
-                alt="Logo CFE"
+                src={logoLight}
+                alt="Logo"
                 width={140}
                 height={40}
               />
               {/* Dark Mode - Logo grande */}
               <img
                 className="hidden dark:block"
-                src="/images/Logo2/ItzelFOndoMejoradoDarkMode.png"
-                alt="Logo CFE"
+                src={logoDark}
+                alt="Logo"
                 width={100}
                 height={40}
               />
@@ -287,16 +279,16 @@ const AppSidebar: React.FC = () => {
               {/* Light Mode - Logo pequeño */}
               <img
                 className="dark:hidden"
-                src="/images/Logo2/logoSinFondo.png"
-                alt="Logo CFE"
+                src={logoLight}
+                alt="Logo"
                 width={60}
                 height={50}
               />
               {/* Dark Mode - Logo pequeño */}
               <img
                 className="hidden dark:block"
-                src="/images/Logo2/ItzelFOndoMejoradoDarkMode.png"
-                alt="Logo CFE"
+                src={logoDark}
+                alt="Logo"
                 width={60}
                 height={50}
               />
@@ -307,15 +299,14 @@ const AppSidebar: React.FC = () => {
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
-            
+
             {/* Catálogos */}
             <div>
               <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isSidebarExpanded
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isSidebarExpanded
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
               >
                 {isSidebarExpanded ? (
                   "General"
@@ -326,15 +317,13 @@ const AppSidebar: React.FC = () => {
               {renderMenuItems(catalogosSecciones, "main")}
             </div>
 
-            
             {/* Operaciones */}
             <div className="">
               <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isSidebarExpanded
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isSidebarExpanded
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
               >
                 {isSidebarExpanded ? (
                   "Operaciones"

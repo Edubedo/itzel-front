@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, MapPin } from 'lucide-react';
+import { useLogo } from "../../contexts/LogoContext";
 
 interface Sucursal {
   ck_sucursal: string;
@@ -19,6 +20,7 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
   const [sucursalActiva, setSucursalActiva] = useState<Sucursal | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { logoLight, logoDark } = useLogo();
 
   // Cargar sucursales al montar el componente
   useEffect(() => {
@@ -45,10 +47,10 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
     try {
       const response = await fetch('http://localhost:3001/api/operaciones/turnos/sucursales');
       const data = await response.json();
-      
+
       if (data.success) {
         setSucursales(data.sucursales);
-        
+
         // Si no hay sucursal activa, seleccionar la primera
         if (!sucursalActiva && data.sucursales.length > 0) {
           const primeraSucursal = data.sucursales[0];
@@ -67,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
     setSucursalActiva(sucursal);
     localStorage.setItem('sucursal_seleccionada', JSON.stringify(sucursal));
     setIsDropdownOpen(false);
-    
+
     // Emitir evento personalizado para notificar el cambio
     window.dispatchEvent(new CustomEvent('sucursalCambiada', { detail: sucursal }));
   };
@@ -78,15 +80,21 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center overflow-hidden">
-            <img 
-              src="/images/Logo2/Logo%20Itzel%20CFE%20Redondo.png" 
-              alt="ITZEL Logo" 
-              className="w-full h-full object-cover"
+            {/* Logo dinámico */}
+            <img
+              src={logoLight}
+              alt="ITZEL Logo"
+              className="w-full h-full object-cover dark:hidden"
+            />
+            <img
+              src={logoDark}
+              alt="ITZEL Logo"
+              className="w-full h-full object-cover hidden dark:block"
             />
           </div>
           <span className="text-white font-semibold text-lg">ITZEL</span>
         </div>
-        
+
         {title && (
           <div className="border-l border-[#5D7166] pl-4">
             <h1 className="text-white font-medium text-lg">{title}</h1>
@@ -105,8 +113,8 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
             >
               <MapPin className="w-4 h-4" />
               <span className="font-medium">
-                {loading ? 'Cargando...' : 
-                 sucursalActiva ? sucursalActiva.s_nombre_sucursal : 'Seleccionar sucursal'}
+                {loading ? 'Cargando...' :
+                  sucursalActiva ? sucursalActiva.s_nombre_sucursal : 'Seleccionar sucursal'}
               </span>
               <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -123,9 +131,8 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
                     <button
                       key={sucursal.ck_sucursal}
                       onClick={() => seleccionarSucursal(sucursal)}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${
-                        sucursalActiva?.ck_sucursal === sucursal.ck_sucursal ? 'bg-[#CFF4DE]' : ''
-                      }`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${sucursalActiva?.ck_sucursal === sucursal.ck_sucursal ? 'bg-[#CFF4DE]' : ''
+                        }`}
                     >
                       <div className="font-medium text-gray-900">
                         {sucursal.s_nombre_sucursal}
@@ -137,7 +144,7 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
                       )}
                       {(sucursal.s_municipio || sucursal.s_estado) && (
                         <div className="text-xs text-gray-500">
-                          {sucursal.s_municipio && sucursal.s_estado 
+                          {sucursal.s_municipio && sucursal.s_estado
                             ? `${sucursal.s_municipio}, ${sucursal.s_estado}`
                             : sucursal.s_municipio || sucursal.s_estado
                           }
@@ -162,8 +169,8 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
 
       {/* Enlaces de navegación */}
       <div className="flex items-center space-x-4">
-        <a 
-          href="/signin" 
+        <a
+          href="/signin"
           className="text-white hover:text-[#B7F2DA] transition-colors text-sm font-medium py-2 px-4 bg-[#5D7166] rounded-lg hover:bg-[#4A5B52]"
         >
           Acceso

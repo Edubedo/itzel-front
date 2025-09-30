@@ -5,6 +5,7 @@ import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Button from "../ui/button/Button";
 import { authService } from "../../services/authService";
+import { useLogo } from "../../contexts/LogoContext";
 
 export default function ForgottenPassword() {
   const [step, setStep] = useState(1);
@@ -15,6 +16,7 @@ export default function ForgottenPassword() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+  const { logoLight, logoDark } = useLogo();
 
 
 
@@ -51,7 +53,7 @@ export default function ForgottenPassword() {
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-10 mx-auto">
         <Link
-          to="/"
+          to="/signin"
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
           <ChevronLeftIcon className="size-5" />
@@ -59,6 +61,11 @@ export default function ForgottenPassword() {
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
+        {/* Logo dinámico */}
+        <div className="flex justify-center mb-6">
+          <img src={logoLight} alt="Logo" className="h-14 dark:hidden" />
+          <img src={logoDark} alt="Logo" className="h-14 hidden dark:block" />
+        </div>
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">

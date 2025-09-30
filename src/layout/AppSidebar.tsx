@@ -269,7 +269,7 @@ const AppSidebar: React.FC = () => {
                 className="hidden dark:block"
                 src={logoDark}
                 alt="Logo"
-                width={100}
+                width={133}
                 height={40}
               />
             </>

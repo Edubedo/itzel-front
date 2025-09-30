@@ -1,5 +1,5 @@
 import React from "react";
-import ActividadDiariaClientes from "../../../../components/tables/BasicTables/ActividadDiariaClientes";
+import ActividadDiariaClientes from "../estadisticas/ActividadDiariaClientes";
 
 function ConsultaReportes() {
   return (

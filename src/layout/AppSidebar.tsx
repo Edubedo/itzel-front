@@ -42,13 +42,11 @@ const othersItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Operaciones",
     subItems: [
-
       { name: "Turnos", path: "/operaciones/turnos/consulta", pro: false },
       { name: "Citas", path: "/operaciones/citas/consulta", pro: false },
       { name: "Reportes", path: "/operaciones/reportes/consulta", pro: false },
     ],
   },
-  
 ];
 
 const AppSidebar: React.FC = () => {
@@ -64,7 +62,6 @@ const AppSidebar: React.FC = () => {
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
     (path: string) => location.pathname === path,
     [location.pathname]
@@ -119,6 +116,9 @@ const AppSidebar: React.FC = () => {
     });
   };
 
+  // Función para determinar si el sidebar está expandido
+  const isSidebarExpanded = isExpanded || isHovered || isMobileOpen;
+
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
     <ul className="flex flex-col gap-4">
       {items.map((nav, index) => (
@@ -131,7 +131,7 @@ const AppSidebar: React.FC = () => {
                   ? "menu-item-active"
                   : "menu-item-inactive"
               } cursor-pointer ${
-                !isExpanded && !isHovered
+                !isSidebarExpanded
                   ? "lg:justify-center"
                   : "lg:justify-start"
               }`}
@@ -145,10 +145,10 @@ const AppSidebar: React.FC = () => {
               >
                 {nav.icon}
               </span>
-              {(isExpanded || isHovered || isMobileOpen) && ( 
+              {isSidebarExpanded && ( 
                 <span className="menu-item-text">{nav.name}</span>
               )}
-              {(isExpanded || isHovered || isMobileOpen) && (
+              {isSidebarExpanded && (
                 <ChevronDownIcon
                   className={`ml-auto w-5 h-5 transition-transform duration-200 ${
                     openSubmenu?.type === menuType &&
@@ -176,13 +176,13 @@ const AppSidebar: React.FC = () => {
                 >
                   {nav.icon}
                 </span>
-                {(isExpanded || isHovered || isMobileOpen) && (
+                {isSidebarExpanded && (
                   <span className="menu-item-text">{nav.name}</span>
                 )}
               </Link>
             )
           )}
-          {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
+          {nav.subItems && isSidebarExpanded && (
             <div
               ref={(el) => {
                 subMenuRefs.current[`${menuType}-${index}`] = el;
@@ -246,9 +246,7 @@ const AppSidebar: React.FC = () => {
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${
-          isExpanded || isMobileOpen
-            ? "w-[290px]"
-            : isHovered
+          isSidebarExpanded
             ? "w-[290px]"
             : "w-[90px]"
         }
@@ -259,53 +257,67 @@ const AppSidebar: React.FC = () => {
     >
       <div
         className={`py-8 flex ${
-          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+          !isSidebarExpanded ? "lg:justify-center" : "justify-start"
         }`}
       >
         <Link to="/home">
-          {isExpanded || isHovered || isMobileOpen ? (
+          {isSidebarExpanded ? (
+            // Sidebar expandido - Logo grande con variantes light/dark
             <>
+              {/* Light Mode - Logo grande */}
               <img
                 className="dark:hidden"
                 src="/images/logo/itzelLogoR.png"
-                alt="Logo"
-                width={100}
+                alt="Logo CFE"
+                width={140}
                 height={40}
               />
+              {/* Dark Mode - Logo grande */}
               <img
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
-                alt="Logo"
+                src="/images/Logo2/ItzelFOndoMejoradoDarkMode.png"
+                alt="Logo CFE"
                 width={100}
                 height={40}
               />
             </>
           ) : (
-            <img
-              src="/images/logo/itzelLogoR.png"
-              alt="Logo"
-              width={50}
-              height={50}
-            />
+            // Sidebar minimizado - Logo pequeño con variantes light/dark
+            <>
+              {/* Light Mode - Logo pequeño */}
+              <img
+                className="dark:hidden"
+                src="/images/Logo2/logoSinFondo.png"
+                alt="Logo CFE"
+                width={60}
+                height={50}
+              />
+              {/* Dark Mode - Logo pequeño */}
+              <img
+                className="hidden dark:block"
+                src="/images/Logo2/ItzelFOndoMejoradoDarkMode.png"
+                alt="Logo CFE"
+                width={60}
+                height={50}
+              />
+            </>
           )}
         </Link>
       </div>
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
-
-            
             
             {/* Catálogos */}
             <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
+                  !isSidebarExpanded
                     ? "lg:justify-center"
                     : "justify-start"
                 }`}
               >
-                {isExpanded || isHovered || isMobileOpen ? (
+                {isSidebarExpanded ? (
                   "General"
                 ) : (
                   <HorizontaLDots className="size-6" />
@@ -319,12 +331,12 @@ const AppSidebar: React.FC = () => {
             <div className="">
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-cen ter"
+                  !isSidebarExpanded
+                    ? "lg:justify-center"
                     : "justify-start"
                 }`}
               >
-                {isExpanded || isHovered || isMobileOpen ? (
+                {isSidebarExpanded ? (
                   "Operaciones"
                 ) : (
                   <HorizontaLDots />

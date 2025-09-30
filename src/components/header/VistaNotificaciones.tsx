@@ -26,15 +26,15 @@ export default function VistaNotificaciones({ onClose }: VistaNotificacionesProp
   const usuarioActual = JSON.parse(localStorage.getItem("userData") || "{}");
 
   useEffect(() => {
-    if (!usuarioActual.id) return;
+    if (!usuarioActual.uk_usuario) return;
 
     async function cargar() {
-      const data = await getNotificaciones(usuarioActual);
+      const data = await getNotificaciones(usuarioActual.uk_usuario);
       setNotificaciones(data);
     }
 
     cargar();
-  }, [usuarioActual.id]);
+  }, [usuarioActual.uk_usuario]);
 
   const handleMarcarComoLeida = async (id: number) => {
     await marcarComoLeida(id);
@@ -109,7 +109,7 @@ export default function VistaNotificaciones({ onClose }: VistaNotificacionesProp
           notificacionesFiltradas.map((n) => (
             <div
               key={n.id}
-              className={`border rounded-lg p-4 ${n.leida ? "opacity-60" : "border-blue-500"}`}
+              className={`border rounded-lg p-4 ${n.leida ? "opacity-60" : "border-green-800"}`}
             >
               <div className="flex justify-between items-center">
                 <div>
@@ -118,6 +118,7 @@ export default function VistaNotificaciones({ onClose }: VistaNotificacionesProp
                 </div>
                 {!n.leida && (
                   <Button
+                   className="border-green-400"
                     variant="outline"
                     size="sm"
                     onClick={() => handleMarcarComoLeida(n.id)}

@@ -10,27 +10,40 @@ export interface Notificacion {
   servicio?: string;
 }
 
-export interface Usuario {
-  id: number;
-  nombre: string;
-  area?: string;
-  tipo: number; // 1=Admin, 2=Ejecutivo, 4=Asesor
-  sucursal?: string;
-}
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
+// Configurar axios con interceptors
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Interceptor para agregar token a las requests
+api.interceptors.request.use(
+  (config) => {
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('authToken='))
+      ?.split('=')[1];
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 /**
- * Trae todas las notificaciones filtradas según el tipo de usuario
+ * Trae todas las notificaciones filtradas por uk_usuario
  */
-export async function getNotificaciones(usuario: Usuario): Promise<Notificacion[]> {
+export async function getNotificaciones(uk_usuario: string): Promise<Notificacion[]> {
   try {
-    const response = await axios.get("/api/notificaciones", {
-      params: {
-        rol: usuario.tipo,
-        area: usuario.area || "",
-        sucursal: usuario.sucursal || "",
-      },
-    });
-    return response.data.notificaciones || [];
+    const response = await fetch(`${API_BASE_URL}/operaciones/turnos/notificaciones?uk_usuario=${uk_usuario}`);
+    const data = await response.json();
+    return data.notificaciones || [];
   } catch (error) {
     console.error("Error al traer notificaciones:", error);
     return [];
@@ -42,7 +55,7 @@ export async function getNotificaciones(usuario: Usuario): Promise<Notificacion[
  */
 export async function marcarComoLeida(id: number): Promise<void> {
   try {
-    await axios.put(`/api/turnos/notificaciones/${id}/leer`);
+    await api.put(`/operaciones/turnos/notificaciones/${id}/leer`);
   } catch (error) {
     console.error("Error al marcar notificación como leída:", error);
     throw error;

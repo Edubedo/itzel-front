@@ -6,6 +6,7 @@ import Label from "../components/form/Label";
 import { useState, useEffect } from "react";
 import { getConfiguracion, updateConfiguracion } from "../services/configuracionService";
 import { useLogo } from "../contexts/LogoContext";
+import Alert from "../components/ui/alert/Alert";
 
 export default function Configuration() {
   const [systemConfig, setSystemConfig] = useState({
@@ -21,6 +22,9 @@ export default function Configuration() {
   const [lastUpdate, setLastUpdate] = useState<string>("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { setLogoLight, setLogoDark } = useLogo();
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
 
   useEffect(() => {
     loadConfiguration();
@@ -106,7 +110,7 @@ export default function Configuration() {
 
         // SOLO actualizar el estado local, NO el contexto global
         console.log(`Logo ${mode} cargado (pendiente de guardar):`, base64.substring(0, 50) + '...');
-        
+
         setHasUnsavedChanges(true);
       } else {
         alert("Error al procesar la imagen. Intente con otra.");
@@ -141,7 +145,12 @@ export default function Configuration() {
       });
 
       const data = await updateConfiguracion(dataToSend);
-      alert("Configuración guardada exitosamente");
+
+      setHasUnsavedChanges(false);
+      setShowSuccess(true);
+      setSuccessMessage("¡Configuración actualizada correctamente!");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => setShowSuccess(false), 2500);
 
       // ACTUALIZAR CONTEXTO GLOBAL SOLO DESPUÉS DE GUARDAR EXITOSAMENTE
       if (data.s_logo_light && data.s_logo_light.startsWith('data:image')) {
@@ -149,7 +158,7 @@ export default function Configuration() {
       } else if (data.s_logo_light === null || data.s_logo_light === "") {
         setLogoLight("/images/logo/itzelLogoR.png");
       }
-      
+
       if (data.s_logo_dark && data.s_logo_dark.startsWith('data:image')) {
         setLogoDark(data.s_logo_dark);
       } else if (data.s_logo_dark === null || data.s_logo_dark === "") {
@@ -211,7 +220,17 @@ export default function Configuration() {
         title="Configuración - ITZEL"
         description="Configuración general del sistema ITZEL"
       />
+
       <PageBreadcrumb pageTitle="Configuración" />
+      {showSuccess && (
+        <div className="mb-8 mt-2">
+          <Alert
+            variant="success"
+            title="¡Operación exitosa!"
+            message={successMessage}
+          />
+        </div>
+      )}
 
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         {/* Header */}

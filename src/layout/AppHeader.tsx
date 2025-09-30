@@ -220,7 +220,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                                 </div>
                               )}
 
-                              {(sucursal.s_municipio || sucursal.s_estado) && (
+   |                           {(sucursal.s_municipio || sucursal.s_estado) && (
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
                                   {sucursal.s_municipio && sucursal.s_estado
                                     ? `${sucursal.s_municipio}, ${sucursal.s_estado}`

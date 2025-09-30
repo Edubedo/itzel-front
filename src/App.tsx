@@ -107,6 +107,13 @@ export default function App() {
                 <PaginaServicio />
               </ProtectedRoute>
             } />
+
+            {/* SUCURSALES */}
+            <Route path="/catalogos/sucursales" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
+                <Sucursales />
+              </ProtectedRoute>
+            } />
         
             {/* CLIENTES - Solo Administradores y Ejecutivos pueden ver todos los clientes */}
             <Route path="/catalogos/clientes/consulta/" element={

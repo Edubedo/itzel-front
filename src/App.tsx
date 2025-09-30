@@ -39,6 +39,7 @@ import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTu
 import RecoverPassword from "./pages/AuthPages/RecoverPassword";
 import { LogoProvider } from "./contexts/LogoContext";
 
+
 // Importar componentes de autenticación
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -53,6 +54,8 @@ const USER_TYPES = {
   EJECUTIVO: 2,
   CLIENTE: 3
 };
+
+
 
 export default function App() {
   return (

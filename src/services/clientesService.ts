@@ -193,5 +193,29 @@ export const clientesService = {
       console.error('Error en updateCliente:', error);
       throw new Error('Error al actualizar cliente');
     }
+  },
+
+  async getClientesDelDia(): Promise<{ success: boolean; data?: { total: number } }> {
+    try {
+      const response = await fetch('/api/operaciones/clientes/del-dia');
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      return {
+        success: data.success,
+        data: {
+          total: data?.total_clientes || 0,
+        },
+      };
+    } catch (error) {
+      console.error('Error en getClientesDelDia:', error);
+      return { success: false, data: { total: 0 } };
+    }
   }
+
+
 };

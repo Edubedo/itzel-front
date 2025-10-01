@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
 import NotificationDropdown from "../components/header/NotificationDropdown";
@@ -32,6 +32,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
   const { logoLight, logoDark } = useLogo();
+  const navigate = useNavigate();
 
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -53,25 +54,28 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
     setSearchTerm("");
     // Redirige según el tipo de resultado
     if (result.tipo === "usuario") {
-      window.location.href = `/catalogos/usuarios/${result.id}`;
+      navigate(`/catalogos/usuarios/formulario/?id=${result.id}`);
     } else if (result.tipo === "area") {
-      window.location.href = `/catalogos/areas/${result.id}`;
+      navigate(`/catalogos/areas/formulario/?id=${result.id}`);
     } else if (result.tipo === "cliente") {
-      window.location.href = `/clientes/${result.id}`;
+      navigate(`/catalogos/clientes/formulario/?id=${result.id}`);
     } else if (result.tipo === "sucursal") {
-      window.location.href = `/sucursales/${result.id}`;
+      navigate(`/catalogos/sucursales?id=${result.id}`);
     } else if (result.tipo === "servicio") {
-      window.location.href = `/catalogos/servicios/${result.id}`;
+      navigate(`/catalogos/servicios/formulario/?id=${result.id}`);
     }
   };
 
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setShowResults(false);
       }
     };
@@ -297,7 +301,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
 
           <div className="hidden lg:block">
             <form onSubmit={handleSearch}>
-              <div className="relative">
+              <div className="relative" ref={searchRef}>
                 <input
                   ref={inputRef}
                   type="text"
@@ -338,20 +342,61 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                 </span>
                 {/* Resultados de búsqueda */}
                 {showResults && (
-                  <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-80 overflow-y-auto">
+                  <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
                     {searchResults.length > 0 ? (
-                      searchResults.map((result, idx) => (
-                        <button
-                          key={idx}
-                          className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                          onClick={() => handleResultClick(result)}
-                          type="button"
-                        >
-                          {result.nombre} <span className="text-xs text-gray-400">({result.tipo})</span>
-                        </button>
-                      ))
+                      <div className="p-2">
+                        {searchResults.map((result, idx) => (
+                          <button
+                            key={idx}
+                            className="block w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-150"
+                            onClick={() => handleResultClick(result)}
+                            type="button"
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="font-semibold text-gray-900 dark:text-white">
+                                    {result.nombre}
+                                  </span>
+                                  <span className="text-xs px-2 py-0.5 rounded-full bg-[#8ECAB2]/20 text-[#3A554B] dark:bg-[#70A18E]/20 dark:text-[#B7F2DA] font-medium capitalize">
+                                    {result.tipo}
+                                  </span>
+                                </div>
+                                {result.codigo && (
+                                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                                    Código: {result.codigo}
+                                  </div>
+                                )}
+                                {result.correo && (
+                                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                                    {result.correo}
+                                  </div>
+                                )}
+                                {result.domicilio && (
+                                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                                    {result.domicilio}
+                                  </div>
+                                )}
+                              </div>
+                              <svg
+                                className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     ) : (
-                      <div className="p-4 text-gray-500">No se encontraron resultados.</div>
+                      <div className="p-6 text-center">
+                        <svg className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <p className="text-gray-500 dark:text-gray-400">No se encontraron resultados.</p>
+                      </div>
                     )}
                   </div>
                 )}

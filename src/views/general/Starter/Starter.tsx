@@ -44,6 +44,10 @@ export default function Starter() {
   const [turnoCreado, setTurnoCreado] = useState<Turno | null>(null);
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(20);
+  
+  const INACTIVITY_TIME = 30;
+  const [timer, setTimer] = useState(INACTIVITY_TIME);
+
 
   // Cargar sucursal seleccionada desde localStorage
   useEffect(() => {
@@ -91,15 +95,34 @@ export default function Starter() {
   // Countdown para regresar al inicio desde el ticket
   useEffect(() => {
     if (currentStep === 'ticket' && countdown > 0) {
-      const timer = setTimeout(() => {
+      const timerId = setTimeout(() => {
         setCountdown(countdown - 1);
       }, 1000);
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timerId);
     } else if (countdown === 0) {
       regresarAlInicio();
     }
   }, [currentStep, countdown]);
+
+  // useEffect para el temporizador de inactividad
+  useEffect(() => {
+    if (currentStep !== 'serviceSelection') {
+      return;
+    }
+
+    if (timer <= 0) {
+      console.log('Tiempo de inactividad agotado. Regresando al inicio.');
+      regresarAlInicio();
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      setTimer((prevTimer) => prevTimer - 1);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [currentStep, timer]);
 
   const cargarAreas = async () => {
     if (!sucursalSeleccionada) return;
@@ -141,6 +164,7 @@ export default function Starter() {
     
     setEsCliente(isClient);
     setCurrentStep('serviceSelection');
+    setTimer(INACTIVITY_TIME);
   };
 
   const seleccionarArea = (area: Area) => {
@@ -191,7 +215,6 @@ export default function Starter() {
     if (!turnoCreado) return;
 
     try {
-      // Realizar petición para descargar el PDF
       const response = await fetch(
         `http://localhost:3001/api/operaciones/turnos/ticket/${turnoCreado.ck_turno}/pdf`,
         {
@@ -206,10 +229,8 @@ export default function Starter() {
         throw new Error('Error al descargar el ticket');
       }
 
-      // Obtener el blob del PDF
       const pdfBlob = await response.blob();
       
-      // Crear URL para descarga
       const url = URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = url;
@@ -233,6 +254,13 @@ export default function Starter() {
     setTurnoCreado(null);
     setServicios([]);
     setCountdown(20);
+    setTimer(INACTIVITY_TIME);
+  };
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
   const renderClientTypeSelection = () => (

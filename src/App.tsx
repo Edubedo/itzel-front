@@ -112,6 +112,12 @@ export default function App() {
               </ProtectedRoute>
             } />
 
+            {/* SUCURSALES */}
+            <Route path="/catalogos/sucursales" element={
+              <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
+                <Sucursales />
+              </ProtectedRoute>
+            } />
              {/*Ruta para ver todas las notificaciones*/}
           <Route path="/notificaciones" element={
             <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.ASESOR, USER_TYPES.EJECUTIVO]}>

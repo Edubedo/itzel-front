@@ -3,261 +3,226 @@ import PageMeta from "../../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import ComponentCard from "../../../../components/common/ComponentCard";
 import { usuariosService, Usuario } from "../../../../services/usuariosService";
+import { sucursalesService, SucursalFormData, Estado, Municipio, SucursalData } from "../../../../services/sucursalesService";
+import { areasService, Area } from "../../../../services/areasService";
+import axios from "axios";
 import { FaTimesCircle } from "react-icons/fa";
- 
-// Datos geográficos de México
-const datosMexico = {
-    "Aguascalientes": ["Aguascalientes", "Jesús María", "Calvillo"],
-    "Baja California": ["Mexicali", "Tijuana", "Ensenada"],
-    "Baja California Sur": ["La Paz", "Los Cabos"],
-    "Campeche": ["Campeche", "Carmen"],
-    "Chiapas": ["Tuxtla Gutiérrez", "San Cristóbal de las Casas"],
-    "Chihuahua": ["Chihuahua", "Juárez", "Delicias"],
-    "Ciudad de México": ["Azcapotzalco", "Coyoacán", "Cuajimalpa", "Gustavo A. Madero", "Iztapalapa", "Benito Juárez"],
-    "Coahuila": ["Saltillo", "Torreón"],
-    "Colima": ["Colima", "Manzanillo", "Villa de Álvarez", "Tecomán", "Comala"],
-    "Durango": ["Durango", "Gómez Palacio"],
-    "Guanajuato": ["León", "Guanajuato", "Irapuato"],
-    "Guerrero": ["Acapulco", "Chilpancingo"],
-    "Hidalgo": ["Pachuca", "Tulancingo"],
-    "Jalisco": ["Guadalajara", "Zapopan", "Tlaquepaque", "Tonalá", "Puerto Vallarta"],
-    "México": ["Toluca", "Naucalpan", "Ecatepec"],
-    "Michoacán": ["Morelia", "Uruapan"],
-    "Morelos": ["Cuernavaca", "Jiutepec"],
-    "Nayarit": ["Tepic", "Bahía de Banderas"],
-    "Nuevo León": ["Monterrey", "San Pedro Garza García", "Guadalupe", "Apodaca"],
-    "Oaxaca": ["Oaxaca de Juárez", "Salina Cruz"],
-    "Puebla": ["Puebla", "Tehuacán"],
-    "Querétaro": ["Querétaro", "San Juan del Río"],
-    "Quintana Roo": ["Cancún", "Playa del Carmen", "Chetumal"],
-    "San Luis Potosí": ["San Luis Potosí", "Soledad de Graciano Sánchez"],
-    "Sinaloa": ["Culiacán", "Mazatlán"],
-    "Sonora": ["Hermosillo", "Ciudad Obregón", "Nogales"],
-    "Tabasco": ["Villahermosa", "Cárdenas"],
-    "Tamaulipas": ["Ciudad Victoria", "Tampico", "Reynosa"],
-    "Tlaxcala": ["Tlaxcala", "Apizaco"],
-    "Veracruz": ["Xalapa", "Veracruz", "Coatzacoalos"],
-    "Yucatán": ["Mérida", "Progreso", "Valladolid", "Tizimín"],
-    "Zacatecas": ["Zacatecas", "Fresnillo"]
-};
-// Array de estados para el select
-const estadosDeMexico = Object.keys(datosMexico);
-
-// Listas de áreas y servicios disponibles
-const areasDisponibles = [
-    "Administracion",
-    "Contabilidad",
-    "Recursos humanos",
-    "General",
-    "Contratación",
-    "Centro de Atención a Usuarios",
-    "Servicio"
-];
-const serviciosPorArea = {
-    "Contabilidad": ["Pagos y convenios", "Facturación"],
-    "Administracion": ["Admnistración"],
-    "Recursos humanos": ["Capacitación"],
-    "General": ["Reporte de Servicio"],
-    "Contratación": ["Contratación"],
-    "Centro de Atención a Usuarios": ["Reporte"],
-    "Servicio": ["Cortes y Reconexiones"]
-};
-
+import Alert from "../../../../components/ui/alert/Alert";
 
 // Definición de las props del componente
 interface FormularioProps {
-    onSave: (datos: any) => void;
+    onSave: (datos: SucursalFormData) => void;
     onCancel: () => void;
+    branchToEdit?: SucursalData | null;
 }
 
-// Interfaz para los datos que se enviarán a la API
-interface SucursalFormData {
-    sucursal: {
-        estado: string;
-        municipio: string;
-        domicilio: string;
-    };
-    ejecutivos: { ck_usuario: string; area: string; servicio: string }[];
-    asesores: { ck_usuario: string; area: string; servicio: string }[];
-}
-
-export default function FormularioSucursales({ onSave, onCancel }: FormularioProps) {
+export default function FormularioSucursales({ onSave, onCancel, branchToEdit }: FormularioProps) {
     // Estado para los campos del formulario de la sucursal
-    const [formData, setFormData] = useState({ estado: "", municipio: "", domicilio: "" });
-    // Estado para la lista de municipios que dependen del estado seleccionado
-    const [municipiosDisponibles, setMunicipiosDisponibles] = useState<string[]>([]);
+    const [formData, setFormData] = useState({
+        s_nombre_sucursal: "",
+        s_domicilio: "",
+        s_telefono: "",
+        s_codigo_postal: "",
+        ck_municipio: ""
+    });
+
+    // Estados para dropdowns
+    const [estados, setEstados] = useState<Estado[]>([]);
+    const [municipiosDisponibles, setMunicipiosDisponibles] = useState<Municipio[]>([]);
+    const [estadoSeleccionado, setEstadoSeleccionado] = useState("");
+
+    // Áreas y servicios desde API
+    const [areas, setAreas] = useState<Area[]>([]);
+    const [serviciosDisponiblesEjecutivo, setServiciosDisponiblesEjecutivo] = useState<Array<{ ck_servicio: string; s_servicio: string }>>([]);
 
     // Estados para las listas de usuarios y los asignados a la sucursal
     const [listaCompletaEjecutivos, setListaCompletaEjecutivos] = useState<Usuario[]>([]);
-    const [listaCompletaAsesores, setListaCompletaAsesdores] = useState<Usuario[]>([]);
-    const [ejecutivosAsignados, setEjecutivosAsignados] = useState<Usuario[]>([]);
+    const [listaCompletaAsesores, setListaCompletaAsesores] = useState<Usuario[]>([]);
+    const [ejecutivosAsignados, setEjecutivosAsignados] = useState<Array<Usuario & { ck_area?: string; ck_servicio?: string; areaNombre?: string; servicioNombre?: string }>>([]);
     const [asesoresAsignados, setAsesoresAsignados] = useState<Usuario[]>([]);
 
     // Estado para los valores seleccionados temporalmente antes de agregar
-    const [ejecutivoActual, setEjecutivoActual] = useState({ usuarioId: "", area: "", servicio: "" });
-    const [asesorActual, setAsesorActual] = useState({ usuarioId: "", area: "", servicio: "" });
-
-    // Estados para los servicios que dependen del área seleccionada
-    const [serviciosDisponiblesEjecutivo, setServiciosDisponiblesEjecutivo] = useState<string[]>([]);
-    const [serviciosDisponiblesAsesor, setServiciosDisponiblesAsesor] = useState<string[]>([]);
+    const [ejecutivoActual, setEjecutivoActual] = useState({ usuarioId: "", ck_area: "", ck_servicio: "" });
+    const [asesorActual, setAsesorActual] = useState({ usuarioId: "" });
 
     // Estado para mostrar el estado de carga
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
-    // Estados para manejar los errores de validación de los campos
-    const [ejecutivoUsuarioError, setEjecutivoUsuarioError] = useState(false);
-    const [ejecutivoAreaError, setEjecutivoAreaError] = useState(false);
-    const [ejecutivoServicioError, setEjecutivoServicioError] = useState(false);
+    // Estados para mostrar alertas
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
-    const [asesorUsuarioError, setAsesorUsuarioError] = useState(false);
-    const [asesorAreaError, setAsesorAreaError] = useState(false);
-    const [asesorServicioError, setAsesorServicioError] = useState(false);
-
-    const [estadoError, setEstadoError] = useState(false);
-    const [domicilioError, setDomicilioError] = useState(false);
-
-    // Hook para cargar los usuarios al inicio del componente
+    // Hook para cargar datos iniciales
     useEffect(() => {
-        const cargarUsuarios = async () => {
+        const cargarDatosIniciales = async () => {
             try {
-                const respuesta = await usuariosService.getAllUsuarios();
-
-                if (respuesta.success && Array.isArray(respuesta.data.usuarios)) {
-                    const todosLosUsuarios: Usuario[] = respuesta.data.usuarios;
-
-                    // Filtra los usuarios por tipo para separar ejecutivos (2) y asesores (3)
+                // Cargar usuarios
+                const respuestaUsuarios = await usuariosService.getAllUsuarios();
+                if (respuestaUsuarios.success && Array.isArray(respuestaUsuarios.data.usuarios)) {
+                    const todosLosUsuarios: Usuario[] = respuestaUsuarios.data.usuarios;
                     const ejecutivos = todosLosUsuarios.filter(u => u.i_tipo_usuario == 2);
                     const asesores = todosLosUsuarios.filter(u => u.i_tipo_usuario == 3);
-
                     setListaCompletaEjecutivos(ejecutivos);
                     setListaCompletaAsesores(asesores);
-                } else {
-                    console.error("La respuesta del servicio no tiene el formato esperado:", respuesta);
                 }
+
+                // Cargar estados
+                const respuestaEstados = await sucursalesService.getEstados();
+                if (respuestaEstados.success) {
+                    setEstados(respuestaEstados.estados);
+                }
+
+                // Cargar áreas activas
+                const respuestaAreas = await areasService.getAllAreas({ limit: 100, page: 1, ck_estatus: 'ACTIVO' });
+                if (respuestaAreas.success) {
+                    setAreas(respuestaAreas.data.areas);
+                }
+
+                // Si estamos editando, cargar los datos
+                if (branchToEdit) {
+                    setFormData({
+                        s_nombre_sucursal: branchToEdit.s_nombre_sucursal,
+                        s_domicilio: branchToEdit.s_domicilio || "",
+                        s_telefono: branchToEdit.s_telefono || "",
+                        s_codigo_postal: branchToEdit.s_codigo_postal || "",
+                        ck_municipio: branchToEdit.ck_municipio || ""
+                    });
+
+                    // Si hay municipio, cargar el estado y municipios
+                    if (branchToEdit.municipio) {
+                        setEstadoSeleccionado(branchToEdit.municipio.estado?.s_estado || "");
+                        // Cargar municipios del estado
+                        if (branchToEdit.municipio.estado?.ck_estado) {
+                            const respuestaMunicipios = await sucursalesService.getMunicipiosByEstado(branchToEdit.municipio.estado.ck_estado);
+                            if (respuestaMunicipios.success) {
+                                setMunicipiosDisponibles(respuestaMunicipios.municipios);
+                            }
+                        }
+                    }
+                }
+
             } catch (error) {
-                console.error("Error al cargar usuarios:", error);
-                alert("No se pudieron cargar los usuarios. Revisa la consola para más detalles.");
+                console.error("Error al cargar datos:", error);
+                setErrorMessage("No se pudieron cargar los datos iniciales.");
+                setShowError(true);
             } finally {
                 setLoading(false);
             }
         };
 
-        cargarUsuarios();
-    }, []);
+        cargarDatosIniciales();
+    }, [branchToEdit]);
+
+    // Cargar municipios cuando cambie el estado
+    useEffect(() => {
+        if (estadoSeleccionado && estados.length > 0) {
+            const estado = estados.find(e => e.s_estado === estadoSeleccionado);
+            if (estado) {
+                loadMunicipios(estado.ck_estado);
+            }
+        } else {
+            setMunicipiosDisponibles([]);
+            setFormData(prev => ({ ...prev, ck_municipio: "" }));
+        }
+    }, [estadoSeleccionado, estados]);
+
+    const loadMunicipios = async (estadoId: string) => {
+        try {
+            const response = await sucursalesService.getMunicipiosByEstado(estadoId);
+            if (response.success) {
+                setMunicipiosDisponibles(response.municipios);
+            }
+        } catch (error) {
+            console.error('Error al cargar municipios:', error);
+        }
+    };
+
+    // Cargar servicios cuando cambie el área en la selección temporal
+    useEffect(() => {
+        const fetchServicios = async () => {
+            if (!ejecutivoActual.ck_area) {
+                setServiciosDisponiblesEjecutivo([]);
+                setEjecutivoActual(prev => ({ ...prev, ck_servicio: "" }));
+                return;
+            }
+            try {
+                const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+                const resp = await axios.get(`${baseURL}/operaciones/turnos/servicios/${ejecutivoActual.ck_area}`);
+                if (resp.data?.success) {
+                    setServiciosDisponiblesEjecutivo(resp.data.servicios.map((s: any) => ({ ck_servicio: s.ck_servicio, s_servicio: s.s_servicio })));
+                } else {
+                    setServiciosDisponiblesEjecutivo([]);
+                }
+            } catch (e) {
+                console.error('Error al cargar servicios:', e);
+                setServiciosDisponiblesEjecutivo([]);
+            }
+        };
+        fetchServicios();
+    }, [ejecutivoActual.ck_area]);
 
     // Maneja los cambios en los campos del formulario de la sucursal
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        // Reinicia el error al seleccionar un valor
-        if (name === "estado") {
-            setEstadoError(false);
-            // Actualiza la lista de municipios según el estado seleccionado
-            const municipios = value ? datosMexico[value as keyof typeof datosMexico] : [];
-            setMunicipiosDisponibles(municipios);
-            setFormData(prev => ({ ...prev, estado: value, municipio: "" }));
-        } else if (name === "domicilio") {
-            setDomicilioError(false);
-            setFormData(prev => ({ ...prev, [name]: value }));
-        } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
-        }
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    // Maneja el cambio de estado
+    const handleEstadoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setEstadoSeleccionado(e.target.value);
     };
 
     // Maneja los cambios en los selects de asignación de ejecutivos
     const handleEjecutivoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target;
-        // Reinicia los errores al seleccionar un valor
-        if (name === 'usuario') { setEjecutivoUsuarioError(false); }
-        if (name === 'area') { setEjecutivoAreaError(false); }
-        if (name === 'servicio') { setEjecutivoServicioError(false); }
-
         if (name === 'usuario') {
             setEjecutivoActual(prev => ({ ...prev, usuarioId: value }));
         } else if (name === 'area') {
-            const servicios = value ? serviciosPorArea[value as keyof typeof serviciosPorArea] : [];
-            setServiciosDisponiblesEjecutivo(servicios);
-            setEjecutivoActual(prev => ({ ...prev, area: value, servicio: "" }));
+            setEjecutivoActual(prev => ({ ...prev, ck_area: value, ck_servicio: "" }));
         } else if (name === 'servicio') {
-            setEjecutivoActual(prev => ({ ...prev, servicio: value }));
+            setEjecutivoActual(prev => ({ ...prev, ck_servicio: value }));
         }
     };
 
     // Maneja los cambios en los selects de asignación de asesores
     const handleAsesorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target;
-        // Reinicia los errores al seleccionar un valor
-        if (name === 'usuario') { setAsesorUsuarioError(false); }
-        if (name === 'area') { setAsesorAreaError(false); }
-        if (name === 'servicio') { setAsesorServicioError(false); }
-        
         if (name === 'usuario') {
             setAsesorActual(prev => ({ ...prev, usuarioId: value }));
-        } else if (name === 'area') {
-            const servicios = value ? serviciosPorArea[value as keyof typeof serviciosPorArea] : [];
-            setServiciosDisponiblesAsesor(servicios);
-            setAsesorActual(prev => ({ ...prev, area: value, servicio: "" }));
-        } else if (name === 'servicio') {
-            setAsesorActual(prev => ({ ...prev, servicio: value }));
         }
     };
 
     // Agrega un ejecutivo a la lista de asignados
     const agregarEjecutivo = () => {
-        // Valida que todos los campos estén seleccionados
-        const isUsuarioValid = !!ejecutivoActual.usuarioId;
-        const isAreaValid = !!ejecutivoActual.area;
-        const isServicioValid = !!ejecutivoActual.servicio;
-
-        setEjecutivoUsuarioError(!isUsuarioValid);
-        setEjecutivoAreaError(!isAreaValid);
-        setEjecutivoServicioError(!isServicioValid);
-
-        if (!isUsuarioValid || !isAreaValid || !isServicioValid) {
-            return;
-        }
-
-        // Busca al ejecutivo en la lista completa y lo agrega a la lista de asignados
-        const ejecutivoParaAgregar = listaCompletaEjecutivos.find(e => e.ck_usuario === ejecutivoActual.usuarioId);
-        if (ejecutivoParaAgregar) {
-            const nuevoEjecutivo = {
-                ...ejecutivoParaAgregar,
-                area: ejecutivoActual.area,
-                servicio: ejecutivoActual.servicio
-            };
-            setEjecutivosAsignados([...ejecutivosAsignados, nuevoEjecutivo]);
-            // Reinicia los campos de selección para el próximo ejecutivo
-            setEjecutivoActual({ usuarioId: "", area: "", servicio: "" });
-            setServiciosDisponiblesEjecutivo([]);
+        if (ejecutivoActual.usuarioId && ejecutivoActual.ck_area && ejecutivoActual.ck_servicio) {
+            const ejecutivoParaAgregar = listaCompletaEjecutivos.find(e => e.ck_usuario === ejecutivoActual.usuarioId);
+            const areaSeleccionada = areas.find(a => a.ck_area === ejecutivoActual.ck_area);
+            const servicioSeleccionado = serviciosDisponiblesEjecutivo.find(s => s.ck_servicio === ejecutivoActual.ck_servicio);
+            if (ejecutivoParaAgregar && areaSeleccionada && servicioSeleccionado) {
+                const nuevoEjecutivo = {
+                    ...ejecutivoParaAgregar,
+                    ck_area: ejecutivoActual.ck_area,
+                    ck_servicio: ejecutivoActual.ck_servicio,
+                    areaNombre: areaSeleccionada.s_area,
+                    servicioNombre: servicioSeleccionado.s_servicio
+                };
+                setEjecutivosAsignados(prev => [...prev, nuevoEjecutivo]);
+                setEjecutivoActual({ usuarioId: "", ck_area: "", ck_servicio: "" });
+                setServiciosDisponiblesEjecutivo([]);
+            }
         }
     };
 
     // Agrega un asesor a la lista de asignados
     const agregarAsesor = () => {
-        // Valida que todos los campos estén seleccionados
-        const isUsuarioValid = !!asesorActual.usuarioId;
-        const isAreaValid = !!asesorActual.area;
-        const isServicioValid = !!asesorActual.servicio;
-
-        setAsesorUsuarioError(!isUsuarioValid);
-        setAsesorAreaError(!isAreaValid);
-        setAsesorServicioError(!isServicioValid);
-
-        if (!isUsuarioValid || !isAreaValid || !isServicioValid) {
-            return;
-        }
-
-        // Busca al asesor en la lista completa y lo agrega a la lista de asignados
-        const asesorParaAgregar = listaCompletaAsesores.find(a => a.ck_usuario === asesorActual.usuarioId);
-        if (asesorParaAgregar) {
-            const nuevoAsesor = {
-                ...asesorParaAgregar,
-                area: asesorActual.area,
-                servicio: asesorActual.servicio
-            };
-            setAsesoresAsignados([...asesoresAsignados, nuevoAsesor]);
-            // Reinicia los campos de selección para el próximo asesor
-            setAsesorActual({ usuarioId: "", area: "", servicio: "" });
-            setServiciosDisponiblesAsesor([]);
+        if (asesorActual.usuarioId) {
+            const asesorParaAgregar = listaCompletaAsesores.find(a => a.ck_usuario === asesorActual.usuarioId);
+            if (asesorParaAgregar) {
+                setAsesoresAsignados([...asesoresAsignados, asesorParaAgregar]);
+                setAsesorActual({ usuarioId: "" });
+            }
         }
     };
 
@@ -274,58 +239,66 @@ export default function FormularioSucursales({ onSave, onCancel }: FormularioPro
     // Maneja el envío del formulario
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setSaving(true);
 
-        // Valida los campos de la sucursal antes de enviar
-        const isEstadoValid = !!formData.estado;
-        const isDomicilioValid = !!formData.domicilio;
-
-        setEstadoError(!isEstadoValid);
-        setDomicilioError(!isDomicilioValid);
-
-        if (!isEstadoValid || !isDomicilioValid) {
+        // Valida los campos obligatorios
+        if (!formData.s_nombre_sucursal || !formData.ck_municipio || !formData.s_domicilio) {
+            setErrorMessage("Por favor, complete todos los campos obligatorios.");
+            setShowError(true);
+            setSaving(false);
             return;
         }
 
         // Construye el objeto de datos para enviar a la API
         const datosParaEnviar: SucursalFormData = {
-            sucursal: {
-                estado: formData.estado,
-                municipio: formData.municipio,
-                domicilio: formData.domicilio,
-            },
-            ejecutivos: ejecutivosAsignados.map(e => ({ ck_usuario: e.ck_usuario, area: e.area, servicio: e.servicio })),
-            asesores: asesoresAsignados.map(a => ({ ck_usuario: a.ck_usuario, area: a.area, servicio: a.servicio })),
+            s_nombre_sucursal: formData.s_nombre_sucursal,
+            s_domicilio: formData.s_domicilio,
+            ck_municipio: formData.ck_municipio,
+            s_telefono: formData.s_telefono,
+            s_codigo_postal: formData.s_codigo_postal,
+            ejecutivos: ejecutivosAsignados.map(e => ({ 
+                ck_usuario: e.ck_usuario, 
+                ck_area: e.ck_area,
+                ck_servicio: e.ck_servicio
+            })),
+            asesores: asesoresAsignados.map(a => ({ ck_usuario: a.ck_usuario }))
         };
 
         try {
-            // const response = await sucursalesService.createSucursal(datosParaEnviar);
-            alert("Sucursal guardada con éxito!");
-
-            onSave(datosParaEnviar);
+            if (branchToEdit) {
+                await sucursalesService.updateSucursal(branchToEdit.ck_sucursal!, datosParaEnviar);
+            } else {
+                await sucursalesService.createSucursal(datosParaEnviar);
+            }
+            setShowSuccess(true);
+            setTimeout(() => {
+                onSave(datosParaEnviar);
+            }, 1500);
         } catch (error: any) {
-            alert("Error al guardar la sucursal: " + error.message);
+            setErrorMessage("Error al guardar la sucursal: " + (error.response?.data?.message || error.message));
+            setShowError(true);
             console.error("Error completo:", error);
+        } finally {
+            setSaving(false);
         }
     };
 
     // Filtra los ejecutivos disponibles para evitar duplicados en la lista de asignación
-    const idsEjecutivosAsignados = new Set(ejecutivosAsignados.map(e => e.ck_usuario));
     const ejecutivosDisponibles = listaCompletaEjecutivos.filter(
-        (ejec) => !idsEjecutivosAsignados.has(ejec.ck_usuario)
+        (ejec) => !ejecutivosAsignados.some(asignado => asignado.ck_usuario === ejec.ck_usuario)
     );
 
     // Filtra los asesores disponibles para evitar duplicados en la lista de asignación
-    const idsAsesoresAsignados = new Set(asesoresAsignados.map(a => a.ck_usuario));
     const asesoresDisponibles = listaCompletaAsesores.filter(
-        (asesor) => !idsAsesoresAsignados.has(asesor.ck_usuario)
+        (asesor) => !asesoresAsignados.some(asignado => asignado.ck_usuario === asesor.ck_usuario)
     );
 
-    // Muestra un indicador de carga mientras se obtienen los usuarios
+    // Muestra un indicador de carga mientras se obtienen los datos
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Cargando usuarios...</span>
+                <span className="ml-3 text-gray-600">Cargando datos...</span>
             </div>
         );
     }
@@ -337,74 +310,147 @@ export default function FormularioSucursales({ onSave, onCancel }: FormularioPro
                 title="Sistema de Turnos - Registrar Sucursal"
                 description="Formulario para la creación de nuevas sucursales y asignación de personal"
             />
-            <PageBreadcrumb pageTitle="Registrar Nueva Sucursal" />
+            <PageBreadcrumb pageTitle={branchToEdit ? "Editar Sucursal" : "Registrar Nueva Sucursal"} />
+
+            {/* Alertas */}
+            {showSuccess && (
+                <div className="mb-6">
+                    <Alert 
+                        variant="success" 
+                        title="¡Éxito!"
+                        message={branchToEdit ? "Sucursal actualizada exitosamente!" : "Sucursal guardada exitosamente!"}
+                    />
+                </div>
+            )}
+
+            {showError && (
+                <div className="mb-6">
+                    <Alert 
+                        variant="error" 
+                        title="Error"
+                        message={errorMessage}
+                    />
+                </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 <ComponentCard title="Datos de la Sucursal">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="relative">
-                            <label htmlFor="estado" className="block text-sm font-medium text-gray-700">Estado</label>
+                        <div>
+                            <label htmlFor="s_nombre_sucursal" className="block text-sm font-medium text-gray-700">
+                                Nombre de la Sucursal <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="s_nombre_sucursal"
+                                name="s_nombre_sucursal"
+                                value={formData.s_nombre_sucursal}
+                                onChange={handleFormChange}
+                                required
+                                placeholder="Ej: Sucursal Centro"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="s_telefono" className="block text-sm font-medium text-gray-700">
+                                Teléfono
+                            </label>
+                            <input
+                                type="tel"
+                                id="s_telefono"
+                                name="s_telefono"
+                                value={formData.s_telefono}
+                                onChange={handleFormChange}
+                                placeholder="Ej: 312-123-4567"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label htmlFor="estado" className="block text-sm font-medium text-gray-700">
+                                Estado <span className="text-red-500">*</span>
+                            </label>
                             <select
                                 id="estado"
                                 name="estado"
-                                value={formData.estado}
-                                onChange={handleFormChange}
-                                className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm p-2 border ${estadoError ? 'border-red-500' : 'border-gray-300'}`}
+                                value={estadoSeleccionado}
+                                onChange={handleEstadoChange}
+                                required
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
                             >
                                 <option value="">Seleccionar Estado</option>
-                                {estadosDeMexico.map(estado => (
-                                    <option key={estado} value={estado}>{estado}</option>
+                                {estados.map(estado => (
+                                    <option key={estado.ck_estado} value={estado.s_estado}>{estado.s_estado}</option>
                                 ))}
                             </select>
-                            {estadoError && (
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 p-2 bg-red-500 text-white text-xs rounded-lg shadow-lg z-10 whitespace-nowrap">
-                                    ¡Selecciona un elemento de la lista!
-                                    <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -mt-2 w-0 h-0 border-x-4 border-x-transparent border-b-4 border-b-red-500"></div>
-                                </div>
-                            )}
                         </div>
                         <div>
-                            <label htmlFor="municipio" className="block text-sm font-medium text-gray-700">Municipio</label>
+                            <label htmlFor="ck_municipio" className="block text-sm font-medium text-gray-700">
+                                Municipio <span className="text-red-500">*</span>
+                            </label>
                             <select
-                                id="municipio"
-                                name="municipio"
-                                value={formData.municipio}
+                                id="ck_municipio"
+                                name="ck_municipio"
+                                value={formData.ck_municipio}
                                 onChange={handleFormChange}
-                                disabled={!formData.estado}
+                                required
+                                disabled={!estadoSeleccionado}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border disabled:bg-gray-100"
                             >
-                                <option value="">{formData.estado ? 'Seleccionar Municipio' : 'Primero elige un estado'}</option>
+                                <option value="">{estadoSeleccionado ? 'Seleccionar Municipio' : 'Primero elige un estado'}</option>
                                 {municipiosDisponibles.map(municipio => (
-                                    <option key={municipio} value={municipio}>{municipio}</option>
+                                    <option key={municipio.ck_municipio} value={municipio.ck_municipio}>{municipio.s_municipio}</option>
                                 ))}
                             </select>
                         </div>
                     </div>
-                    <div className="mt-4 relative">
-                        <label htmlFor="domicilio" className="block text-sm font-medium text-gray-700">Domicilio</label>
-                        <input
-                            type="text"
-                            id="domicilio"
-                            name="domicilio"
-                            value={formData.domicilio}
-                            onChange={handleFormChange}
-                            placeholder="Calle, número, colonia, código postal"
-                            className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm p-2 border ${domicilioError ? 'border-red-500' : 'border-gray-300'}`}
-                        />
-                        {domicilioError && (
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 p-2 bg-red-500 text-white text-xs rounded-lg shadow-lg z-10 whitespace-nowrap">
-                                ¡Completa este campo!
-                                <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -mt-2 w-0 h-0 border-x-4 border-x-transparent border-b-4 border-b-red-500"></div>
-                            </div>
-                        )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label htmlFor="s_domicilio" className="block text-sm font-medium text-gray-700">
+                                Domicilio <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="s_domicilio"
+                                name="s_domicilio"
+                                value={formData.s_domicilio}
+                                onChange={handleFormChange}
+                                required
+                                placeholder="Calle, número, colonia"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="s_codigo_postal" className="block text-sm font-medium text-gray-700">
+                                Código Postal
+                            </label>
+                            <input
+                                type="text"
+                                id="s_codigo_postal"
+                                name="s_codigo_postal"
+                                value={formData.s_codigo_postal}
+                                onChange={handleFormChange}
+                                placeholder="Ej: 28000"
+                                maxLength={5}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                            />
+                        </div>
                     </div>
                 </ComponentCard>
 
-                <ComponentCard title="Asignar Ejecutivo a Sucursal">
+                <ComponentCard title="Asignar Ejecutivos a Sucursal">
                     <div className="flex items-end gap-4">
-                        <div className="flex-1 relative">
-                            <label className="text-sm">Usuario</label>
-                            <select name="usuario" value={ejecutivoActual.usuarioId} onChange={handleEjecutivoChange} className={`w-full border rounded-lg p-2 ${ejecutivoUsuarioError ? 'border-red-500' : 'border-gray-300'}`}>
+                        <div className="flex-1">
+                            <label className="text-sm font-medium text-gray-700">Usuario</label>
+                            <select 
+                                name="usuario" 
+                                value={ejecutivoActual.usuarioId} 
+                                onChange={handleEjecutivoChange} 
+                                className="w-full border border-gray-300 rounded-lg p-2 mt-1"
+                            >
                                 <option value="">Seleccionar Ejecutivo</option>
                                 {ejecutivosDisponibles.map(ejec => (
                                     <option key={ejec.ck_usuario} value={ejec.ck_usuario}>
@@ -412,95 +458,81 @@ export default function FormularioSucursales({ onSave, onCancel }: FormularioPro
                                     </option>
                                 ))}
                             </select>
-                            {ejecutivoUsuarioError && (
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 p-2 bg-red-500 text-white text-xs rounded-lg shadow-lg z-10 whitespace-nowrap">
-                                    ¡Selecciona un elemento de la lista!
-                                    <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -mt-2 w-0 h-0 border-x-4 border-x-transparent border-b-4 border-b-red-500"></div>
-                                </div>
-                            )}
                         </div>
-                        <div className="flex-1 relative group">
-                            <label className="text-sm">Área</label>
+                        <div className="flex-1">
+                            <label className="text-sm font-medium text-gray-700">Área</label>
                             <select
                                 name="area"
-                                value={ejecutivoActual.area}
+                                value={ejecutivoActual.ck_area}
                                 onChange={handleEjecutivoChange}
                                 disabled={!ejecutivoActual.usuarioId}
-                                className={`w-full border rounded-lg p-2 ${ejecutivoAreaError ? 'border-red-500' : 'border-gray-300'} disabled:bg-gray-100`}
+                                className="w-full border border-gray-300 rounded-lg p-2 mt-1 disabled:bg-gray-100"
                             >
                                 <option value="">{ejecutivoActual.usuarioId ? "Seleccionar Área" : "Seleccione primero un Usuario"}</option>
-                                {ejecutivoActual.usuarioId && areasDisponibles.map(area => (
-                                    <option key={area} value={area}>{area}</option>
+                                {ejecutivoActual.usuarioId && areas.map(area => (
+                                    <option key={area.ck_area} value={area.ck_area}>{area.s_area}</option>
                                 ))}
                             </select>
-                            {!ejecutivoActual.usuarioId && (
-                                <div className="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 w-max mb-2 p-2 bg-gray-700 text-white text-xs rounded-lg shadow-lg z-20 whitespace-nowrap">
-                                    Seleccione primero un Usuario
-                                    <div className="absolute left-1/2 top-full transform -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-700"></div>
-                                </div>
-                            )}
-                            {ejecutivoAreaError && (
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 p-2 bg-red-500 text-white text-xs rounded-lg shadow-lg z-10 whitespace-nowrap">
-                                    ¡Selecciona un elemento de la lista!
-                                    <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -mt-2 w-0 h-0 border-x-4 border-x-transparent border-b-4 border-b-red-500"></div>
-                                </div>
-                            )}
                         </div>
-                        <div className="flex-1 relative group">
-                            <label className="text-sm">Servicio</label>
+                        <div className="flex-1">
+                            <label className="text-sm font-medium text-gray-700">Servicio</label>
                             <select
                                 name="servicio"
-                                value={ejecutivoActual.servicio}
+                                value={ejecutivoActual.ck_servicio}
                                 onChange={handleEjecutivoChange}
-                                disabled={!ejecutivoActual.area || serviciosDisponiblesEjecutivo.length === 0}
-                                className={`w-full border rounded-lg p-2 disabled:bg-gray-100 ${ejecutivoServicioError ? 'border-red-500' : 'border-gray-300'}`}
+                                disabled={!ejecutivoActual.ck_area || serviciosDisponiblesEjecutivo.length === 0}
+                                className="w-full border border-gray-300 rounded-lg p-2 mt-1 disabled:bg-gray-100"
                             >
                                 <option value="">
-                                    {ejecutivoActual.area ? "Seleccionar Servicio" : "Primero elija un área"}
+                                    {ejecutivoActual.ck_area ? "Seleccionar Servicio" : "Primero elija un área"}
                                 </option>
                                 {serviciosDisponiblesEjecutivo.map(servicio => (
-                                    <option key={servicio} value={servicio}>{servicio}</option>
+                                    <option key={servicio.ck_servicio} value={servicio.ck_servicio}>{servicio.s_servicio}</option>
                                 ))}
                             </select>
-                            {!ejecutivoActual.area && ejecutivoActual.usuarioId && (
-                                <div className="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 w-max mb-2 p-2 bg-gray-700 text-white text-xs rounded-lg shadow-lg z-20 whitespace-nowrap">
-                                    Seleccione primero un Área
-                                    <div className="absolute left-1/2 top-full transform -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-700"></div>
-                                </div>
-                            )}
-                            {ejecutivoServicioError && (
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 p-2 bg-red-500 text-white text-xs rounded-lg shadow-lg z-10 whitespace-nowrap">
-                                    ¡Selecciona un elemento de la lista!
-                                    <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -mt-2 w-0 h-0 border-x-4 border-x-transparent border-b-4 border-b-red-500"></div>
-                                </div>
-                            )}
                         </div>
-                        <button type="button" onClick={agregarEjecutivo} className="bg-blue-500 text-white rounded-full w-10 h-10 text-xl font-bold flex-shrink-0">+</button>
+                        <button 
+                            type="button" 
+                            onClick={agregarEjecutivo} 
+                            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 text-xl font-bold flex-shrink-0"
+                        >
+                            +
+                        </button>
                     </div>
-                    <div className="mt-4">
-                        {/* Lista de ejecutivos agregados */}
-                        {ejecutivosAsignados.length > 0 && (
-                            <ul className="space-y-2">
-                                {ejecutivosAsignados.map(ejec => (
-                                    <li key={ejec.ck_usuario} className="flex justify-between items-center bg-gray-100 p-3 rounded-md">
-                                        <span>
-                                            <strong>{ejec.s_nombre} {ejec.s_apellido_paterno}</strong> - {ejec.area} - {ejec.servicio}
-                                        </span>
-                                        <button onClick={() => eliminarEjecutivo(ejec.ck_usuario)} className="text-red-500 hover:text-red-700 font-bold">
-                                            &times;
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
+                    
+                    {/* Lista de ejecutivos agregados */}
+                    {ejecutivosAsignados.length > 0 && (
+                        <div className="mt-4 space-y-2">
+                            <h4 className="text-sm font-semibold text-gray-600">Ejecutivos Asignados:</h4>
+                            {ejecutivosAsignados.map(ejec => (
+                                <div key={ejec.ck_usuario} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg">
+                                    <div>
+                                        <p className="font-medium text-gray-800">{`${ejec.s_nombre} ${ejec.s_apellido_paterno || ''}`}</p>
+                                        <p className="text-xs text-gray-500">{`Área: ${ejec.areaNombre || ''} / Servicio: ${ejec.servicioNombre || ''}`}</p>
+                                    </div>
+                                    <button 
+                                        type="button"
+                                        onClick={() => eliminarEjecutivo(ejec.ck_usuario)} 
+                                        className="text-red-500 hover:text-red-700 font-bold text-xl"
+                                    >
+                                        <FaTimesCircle />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </ComponentCard>
 
-                <ComponentCard title="Asignar Asesor a Sucursal">
+                <ComponentCard title="Asignar Asesores a Sucursal">
                     <div className="flex items-end gap-4">
-                        <div className="flex-1 relative">
-                            <label className="text-sm">Usuario</label>
-                            <select name="usuario" value={asesorActual.usuarioId} onChange={handleAsesorChange} className={`w-full border rounded-lg p-2 ${asesorUsuarioError ? 'border-red-500' : 'border-gray-300'}`}>
+                        <div className="flex-1">
+                            <label className="text-sm font-medium text-gray-700">Usuario</label>
+                            <select 
+                                name="usuario" 
+                                value={asesorActual.usuarioId} 
+                                onChange={handleAsesorChange} 
+                                className="w-full border border-gray-300 rounded-lg p-2 mt-1"
+                            >
                                 <option value="">Seleccionar Asesor</option>
                                 {asesoresDisponibles.map(asesor => (
                                     <option key={asesor.ck_usuario} value={asesor.ck_usuario}>
@@ -508,88 +540,36 @@ export default function FormularioSucursales({ onSave, onCancel }: FormularioPro
                                     </option>
                                 ))}
                             </select>
-                            {asesorUsuarioError && (
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 p-2 bg-red-500 text-white text-xs rounded-lg shadow-lg z-10 whitespace-nowrap">
-                                    ¡Selecciona un elemento de la lista!
-                                    <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -mt-2 w-0 h-0 border-x-4 border-x-transparent border-b-4 border-b-red-500"></div>
-                                </div>
-                            )}
                         </div>
-                        <div className="flex-1 relative group">
-                            <label className="text-sm">Área</label>
-                            <select
-                                name="area"
-                                value={asesorActual.area}
-                                onChange={handleAsesorChange}
-                                disabled={!asesorActual.usuarioId}
-                                className={`w-full border rounded-lg p-2 ${asesorAreaError ? 'border-red-500' : 'border-gray-300'} disabled:bg-gray-100`}
-                            >
-                                <option value="">{asesorActual.usuarioId ? "Seleccionar Área" : "Seleccione primero un Usuario"}</option>
-                                {asesorActual.usuarioId && areasDisponibles.map(area => (
-                                    <option key={area} value={area}>{area}</option>
-                                ))}
-                            </select>
-                            {!asesorActual.usuarioId && (
-                                <div className="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 w-max mb-2 p-2 bg-gray-700 text-white text-xs rounded-lg shadow-lg z-20 whitespace-nowrap">
-                                    Seleccione primero un Usuario
-                                    <div className="absolute left-1/2 top-full transform -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-700"></div>
-                                </div>
-                            )}
-                            {asesorAreaError && (
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 p-2 bg-red-500 text-white text-xs rounded-lg shadow-lg z-10 whitespace-nowrap">
-                                    ¡Selecciona un elemento de la lista!
-                                    <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -mt-2 w-0 h-0 border-x-4 border-x-transparent border-b-4 border-b-red-500"></div>
-                                </div>
-                            )}
-                        </div>
-                        <div className="flex-1 relative group">
-                            <label className="text-sm">Servicio</label>
-                            <select
-                                name="servicio"
-                                value={asesorActual.servicio}
-                                onChange={handleAsesorChange}
-                                disabled={!asesorActual.area || serviciosDisponiblesAsesor.length === 0}
-                                className={`w-full border rounded-lg p-2 disabled:bg-gray-100 ${asesorServicioError ? 'border-red-500' : 'border-gray-300'}`}
-                            >
-                                <option value="">
-                                    {asesorActual.area ? "Seleccionar Servicio" : "Primero elija un área"}
-                                </option>
-                                {serviciosDisponiblesAsesor.map(servicio => (
-                                    <option key={servicio} value={servicio}>{servicio}</option>
-                                ))}
-                            </select>
-                            {!asesorActual.area && asesorActual.usuarioId && (
-                                <div className="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 w-max mb-2 p-2 bg-gray-700 text-white text-xs rounded-lg shadow-lg z-20 whitespace-nowrap">
-                                    Seleccione primero un Área
-                                    <div className="absolute left-1/2 top-full transform -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-700"></div>
-                                </div>
-                            )}
-                            {asesorServicioError && (
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 p-2 bg-red-500 text-white text-xs rounded-lg shadow-lg z-10 whitespace-nowrap">
-                                    ¡Selecciona un elemento de la lista!
-                                    <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -mt-2 w-0 h-0 border-x-4 border-x-transparent border-b-4 border-b-red-500"></div>
-                                </div>
-                            )}
-                        </div>
-                        <button type="button" onClick={agregarAsesor} className="bg-blue-500 text-white rounded-full w-10 h-10 text-xl font-bold flex-shrink-0">+</button>
+                        <button 
+                            type="button" 
+                            onClick={agregarAsesor} 
+                            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 text-xl font-bold flex-shrink-0"
+                        >
+                            +
+                        </button>
                     </div>
-                    <div className="mt-4">
-                        {/* Lista de asesores agregados */}
-                        {asesoresAsignados.length > 0 && (
-                            <ul className="space-y-2">
-                                {asesoresAsignados.map(asesor => (
-                                    <li key={asesor.ck_usuario} className="flex justify-between items-center bg-gray-100 p-3 rounded-md">
-                                        <span>
-                                            <strong>{asesor.s_nombre} {asesor.s_apellido_paterno}</strong> - {asesor.area} - {asesor.servicio}
-                                        </span>
-                                        <button onClick={() => eliminarAsesor(asesor.ck_usuario)} className="text-red-500 hover:text-red-700 font-bold">
-                                            &times;
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
+                    
+                    {/* Lista de asesores agregados */}
+                    {asesoresAsignados.length > 0 && (
+                        <div className="mt-4 space-y-2">
+                            <h4 className="text-sm font-semibold text-gray-600">Asesores Asignados:</h4>
+                            {asesoresAsignados.map(asesor => (
+                                <div key={asesor.ck_usuario} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg">
+                                    <div>
+                                        <p className="font-medium text-gray-800">{`${asesor.s_nombre} ${asesor.s_apellido_paterno || ''}`}</p>
+                                    </div>
+                                    <button 
+                                        type="button"
+                                        onClick={() => eliminarAsesor(asesor.ck_usuario)} 
+                                        className="text-red-500 hover:text-red-700 font-bold text-xl"
+                                    >
+                                        <FaTimesCircle />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </ComponentCard>
 
                 {/* Botones de acción del formulario */}
@@ -597,15 +577,18 @@ export default function FormularioSucursales({ onSave, onCancel }: FormularioPro
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-semibold"
+                        disabled={saving}
+                        className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-semibold disabled:opacity-50"
                     >
                         Cancelar
                     </button>
                     <button
                         type="submit"
-                        className="px-6 py-2 bg-emerald-600 text-white rounded-lg bg-emerald-700 font-semibold"
+                        disabled={saving}
+                        className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-semibold disabled:opacity-50 flex items-center"
                     >
-                        Guardar Sucursal
+                        {saving && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>}
+                        {saving ? 'Guardando...' : (branchToEdit ? 'Actualizar Sucursal' : 'Guardar Sucursal')}
                     </button>
                 </div>
             </form>

@@ -6,6 +6,8 @@ import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { useAuth } from "../../contexts/AuthContext";
+import { useLogo } from "../../contexts/LogoContext";
+
 
 export default function SignInForm() {
   const [formData, setFormData] = useState({
@@ -16,6 +18,7 @@ export default function SignInForm() {
   const [isChecked, setIsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const { logoLight, logoDark } = useLogo();
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -36,7 +39,7 @@ export default function SignInForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.s_usuario || !formData.s_contrasena) {
       setError('Por favor completa todos los campos');
       return;
@@ -68,6 +71,19 @@ export default function SignInForm() {
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
+        {/* Logo dinámico */}
+        <div className="flex justify-center mb-6">
+          <img
+            src={logoLight}
+            alt="Logo"
+            className="h-14 dark:hidden"
+          />
+          <img
+            src={logoDark}
+            alt="Logo"
+            className="h-14 hidden dark:block"
+          />
+        </div>
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
@@ -90,7 +106,7 @@ export default function SignInForm() {
                 <Label>
                   Usuario o Email <span className="text-error-500">*</span>
                 </Label>
-                <Input 
+                <Input
                   name="s_usuario"
                   type="text"
                   placeholder="usuario o correo@ejemplo.com"
@@ -138,15 +154,15 @@ export default function SignInForm() {
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>
-                             <div>
-                 <button 
-                   type="submit"
-                   className="w-full px-4 py-3 text-sm bg-brand-500 text-white rounded hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed" 
-                   disabled={isLoading}
-                 >
-                   {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-                 </button>
-               </div>
+              <div>
+                <button
+                  type="submit"
+                  className="w-full px-4 py-3 text-sm bg-brand-500 text-white rounded hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                </button>
+              </div>
             </div>
           </form>
 

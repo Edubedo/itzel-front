@@ -68,13 +68,21 @@ function FormularioAreas() {
       const response = await areasService.getAreaById(id);
 
       if (response.success && response.data) {
+        console.log('Datos recibidos del backend:', response.data);
+        console.log('Estado original:', `"${response.data.ck_estatus}"`);
+        console.log('Longitud del estado:', response.data.ck_estatus?.length);
+        
+        // Limpiar espacios en blanco del estado
+        const estatusLimpio = response.data.ck_estatus?.trim() || 'ACTIVO';
+        console.log('Estado limpio:', `"${estatusLimpio}"`);
+        
         // Mapear los datos del backend al formato del formulario
         setFormData({
           c_codigo_area: response.data.c_codigo_area || '',
           s_area: response.data.s_area || '',
           s_descripcion_area: response.data.s_descripcion_area || '',
           ck_sucursal: response.data.ck_sucursal || '',
-          ck_estatus: response.data.ck_estatus || 'ACTIVO'
+          ck_estatus: estatusLimpio
         });
       }
     } catch (error) {

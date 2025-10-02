@@ -2,7 +2,7 @@
 import DashboardMetrics from "../../components/ecommerce/DashboardMetrics";
 import MostRequestedServicesChart from "../../components/ecommerce/MostRequestedServicesChart";
 import StatisticsChart from "../../components/ecommerce/StatisticsChart";
-import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
+import PopularAreasPieChart from "../../components/ecommerce/PopularAreasPieChart.tsx";
 import BranchesDemographicCard from "../../components/ecommerce/BranchesDemographicCard.tsx";
 
 
@@ -21,7 +21,7 @@ export default function Home() {
       {/* Sección de gráficas */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <StatisticsChart />
-        <MonthlyTarget />
+        <PopularAreasPieChart />
         <BranchesDemographicCard />
       </div>
 

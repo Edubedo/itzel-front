@@ -219,8 +219,8 @@ export default function AreaTableOne({
   if (loading && areas.length === 0) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600">Cargando áreas...</span>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#70A18E] dark:border-[#8ECAB2]"></div>
+        <span className="ml-3 text-gray-600 dark:text-gray-400">Cargando áreas...</span>
       </div>
     );
   }
@@ -229,11 +229,11 @@ export default function AreaTableOne({
     return (
       <div className="flex justify-center items-center h-64">
         <div className="text-center">
-          <div className="text-red-600 mb-2">Error al cargar áreas</div>
-          <div className="text-gray-600 text-sm mb-3">{error}</div>
+          <div className="text-red-600 dark:text-red-400 mb-2">Error al cargar áreas</div>
+          <div className="text-gray-600 dark:text-gray-400 text-sm mb-3">{error}</div>
           <button
             onClick={handleRetry}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-4 py-2 bg-[#70A18E] hover:bg-[#547A6B] text-white rounded transition-colors dark:bg-[#8ECAB2] dark:hover:bg-[#70A18E]"
             disabled={loading}
           >
             {loading ? 'Cargando...' : 'Reintentar'}
@@ -247,22 +247,22 @@ export default function AreaTableOne({
   const endIndex = Math.min(startIndex + areas.length, totalItems);
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+    <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
       {/* Toast notification */}
       {toast.show && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
           <div className={`relative max-w-md w-full mx-4 rounded-xl shadow-2xl border transition-all duration-200 ${toast.type === "warning"
-            ? "bg-white border-red-100"
-            : "bg-white border-green-100"
+            ? "bg-white border-red-100 dark:bg-gray-800 dark:border-red-900"
+            : "bg-white border-green-100 dark:bg-gray-800 dark:border-green-900"
             }`}>
             {/* Header con icono */}
             <div className={`flex items-center px-6 py-4 rounded-t-xl ${toast.type === "warning"
-              ? "bg-red-50 border-b border-red-100"
-              : "bg-green-50 border-b border-green-100"
+              ? "bg-red-50 border-b border-red-100 dark:bg-red-900/20 dark:border-red-800"
+              : "bg-green-50 border-b border-green-100 dark:bg-green-900/20 dark:border-green-800"
               }`}>
               <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${toast.type === "warning"
-                ? "bg-red-100 text-red-600"
-                : "bg-green-100 text-green-600"
+                ? "bg-red-100 text-red-600 dark:bg-red-800 dark:text-red-300"
+                : "bg-green-100 text-green-600 dark:bg-green-800 dark:text-green-300"
                 }`}>
                 {toast.type === "warning" ? (
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -275,7 +275,7 @@ export default function AreaTableOne({
                 )}
               </div>
               <div className="ml-4">
-                <h3 className={`text-lg font-semibold ${toast.type === "warning" ? "text-red-800" : "text-green-800"
+                <h3 className={`text-lg font-semibold ${toast.type === "warning" ? "text-red-800 dark:text-red-300" : "text-green-800 dark:text-green-300"
                   }`}>
                   {toast.type === "warning"
                     ? areaToToggle?.estatus === "ACTIVO"
@@ -289,7 +289,7 @@ export default function AreaTableOne({
 
             {/* Contenido */}
             <div className="px-6 py-6">
-              <p className="text-gray-700 text-base leading-relaxed mb-6">
+              <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed mb-6">
                 {toast.message}
               </p>
 
@@ -302,7 +302,7 @@ export default function AreaTableOne({
                       setAreaToToggle(null);
                       setToast({ ...toast, show: false });
                     }}
-                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
                     disabled={loading}
                   >
                     Cancelar
@@ -310,8 +310,8 @@ export default function AreaTableOne({
                   <button
                     onClick={confirmarToggleArea}
                     className={`px-5 py-2.5 text-sm font-medium text-white rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 ${loading
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-red-600 hover:bg-red-700 focus:ring-red-200"
+                      ? "bg-gray-400 cursor-not-allowed dark:bg-gray-600"
+                      : "bg-red-600 hover:bg-red-700 focus:ring-red-200 dark:bg-red-700 dark:hover:bg-red-600"
                       }`}
                     disabled={loading}
                   >
@@ -335,7 +335,7 @@ export default function AreaTableOne({
                 <div className="flex justify-end">
                   <button
                     onClick={() => setToast({ ...toast, show: false })}
-                    className="px-5 py-2.5 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors duration-150"
+                    className="px-5 py-2.5 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors duration-150 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800 dark:hover:bg-green-900/30"
                   >
                     Aceptar
                   </button>
@@ -354,7 +354,7 @@ export default function AreaTableOne({
 
       <div className="max-w-full overflow-x-auto">
         <Table>
-          <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+          <TableHeader className="border-b border-gray-100 dark:border-gray-700">
             <TableRow>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                 Código
@@ -376,10 +376,10 @@ export default function AreaTableOne({
               </TableCell>
             </TableRow>
           </TableHeader>
-          <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+          <TableBody className="divide-y divide-gray-100 dark:divide-gray-700">
             {areas.length === 0 && !loading ? (
               <TableRow>
-                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                   <div className="flex flex-col items-center">
                     <span className="text-2xl mb-2">🏢</span>
                     <span>No se encontraron áreas</span>
@@ -394,7 +394,7 @@ export default function AreaTableOne({
               </TableRow>
             ) : (
               areas.map((area) => (
-                <TableRow key={area.ck_area} className="hover:bg-gray-50 dark:hover:bg-white/[0.02]">
+                <TableRow key={area.ck_area} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <TableCell className="px-5 py-4 text-start">
                     <span className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
                       {area.c_codigo_area}
@@ -421,7 +421,7 @@ export default function AreaTableOne({
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(area.ck_area)}
-                        className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"
+                        className="p-2 text-[#70A18E] hover:text-[#547A6B] hover:bg-[#B7F2DA]/20 rounded-md transition-colors dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] dark:hover:bg-[#8ECAB2]/10"
                         title="Editar área"
                         disabled={loading}
                       >
@@ -435,7 +435,10 @@ export default function AreaTableOne({
                           area.s_area,
                           area.ck_estatus
                         )}
-                        className={`p-2 ${area.ck_estatus.trim().toUpperCase() === "ACTIVO" ? "text-orange-600 hover:text-orange-800 hover:bg-orange-50" : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"} rounded-md transition-colors`}
+                        className={`p-2 ${area.ck_estatus.trim().toUpperCase() === "ACTIVO" 
+                          ? "text-orange-600 hover:text-orange-800 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900/20" 
+                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700"
+                        } rounded-md transition-colors`}
                         title={area.ck_estatus.trim().toUpperCase() === "ACTIVO" ? "Inactivar área" : "Activar área"}
                         disabled={loading}
                       >
@@ -461,7 +464,7 @@ export default function AreaTableOne({
           </TableBody>
         </Table>
         {totalPages > 1 && areas.length > 0 && (
-          <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200">
+          <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200 dark:border-gray-700">
             <span className="text-sm text-gray-600 dark:text-gray-400">
               Mostrando {startIndex + 1}-{endIndex} de {totalItems} áreas
             </span>
@@ -469,7 +472,7 @@ export default function AreaTableOne({
               <button
                 onClick={goToPrevPage}
                 disabled={currentPage === 1 || loading}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:hover:bg-gray-700"
+                className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Anterior
               </button>
@@ -490,8 +493,8 @@ export default function AreaTableOne({
                     onClick={() => goToPage(page)}
                     disabled={loading}
                     className={`px-3 py-1 rounded-md text-sm ${currentPage === page
-                      ? 'bg-blue-600 text-white'
-                      : 'border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700'
+                      ? 'bg-[#70A18E] text-white dark:bg-[#8ECAB2] dark:text-gray-900'
+                      : 'border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'
                       } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     {page}
@@ -501,7 +504,7 @@ export default function AreaTableOne({
               <button
                 onClick={goToNextPage}
                 disabled={currentPage === totalPages || loading}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:hover:bg-gray-700"
+                className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Siguiente
               </button>

@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
 import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
 import { ChevronDown, MapPin, CheckCircle } from "lucide-react";
-import Search from "./search";
 
 interface Sucursal {
   ck_sucursal: string;
@@ -28,17 +27,51 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
   const [loading, setLoading] = useState(false);
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
   const { showBranchSelector = true } = { showBranchSelector: true };
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showResults, setShowResults] = useState(false);
+
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) return;
+    try {
+      const response = await fetch(`http://localhost:3001/api/busqueda-general?query=${encodeURIComponent(searchTerm)}`);
+      const data = await response.json();
+      setSearchResults(data.resultados || []);
+      setShowResults(true);
+    } catch (error) {
+      setSearchResults([]);
+      setShowResults(true);
+    }
+  };
+
+const handleResultClick = (result: any) => {
+  setShowResults(false);
+  setSearchTerm("");
+  // Redirige según el tipo de resultado
+  if (result.tipo === "usuario") {
+    window.location.href = `/catalogos/usuarios/${result.id}`;
+  } else if (result.tipo === "area") {
+    window.location.href = `/catalogos/areas/${result.id}`;
+  } else if (result.tipo === "cliente") {
+    window.location.href = `/clientes/${result.id}`;
+  } else if (result.tipo === "sucursal") {
+    window.location.href = `/sucursales/${result.id}`;
+  } else if (result.tipo === "servicio") {
+    window.location.href = `/catalogos/servicios/${result.id}`;
+  }
+};
+
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+        setShowResults(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -50,14 +83,12 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
     window.dispatchEvent(new CustomEvent('sucursalCambiada', { detail: sucursal }));
   };
 
-  // Cargar sucursales al montar el componente
   useEffect(() => {
     if (showBranchSelector) {
       cargarSucursales();
     }
   }, [showBranchSelector]);
 
-  // Cargar sucursal guardada en localStorage
   useEffect(() => {
     const sucursalGuardada = localStorage.getItem('sucursal_seleccionada');
     if (sucursalGuardada) {
@@ -199,8 +230,8 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                           key={sucursal.ck_sucursal}
                           onClick={() => seleccionarSucursal(sucursal)}
                           className={`w-full text-left p-3 rounded-lg transition-all duration-200 mb-1 last:mb-0 ${sucursalActiva?.ck_sucursal === sucursal.ck_sucursal
-                              ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-                              : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent'
+                            ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                            : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent'
                             }`}
                         >
                           <div className="flex items-start justify-between">
@@ -239,15 +270,15 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
             </div>
           </div>
 
-          <Link to="/" className="lg:hidden">
+          <Link to="/home" className="lg:hidden">
             <img
               className="dark:hidden h-8 w-auto max-h-10"
-              src="./images/logo/itzelLogoR.png"
+              src="public/images/Logo2/logoSinFondo.png"
               alt="Logo"
             />
             <img
               className="hidden dark:block h-8 w-auto max-h-10"
-              src="./images/logo/logo-dark.svg"
+              src="public/images/Logo2/ItzelFOndoMejoradoDarkMode.png"
               alt="Logo"
             />
           </Link>
@@ -262,16 +293,65 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
           </button>
 
           <div className="hidden lg:block">
-            <form>
+            <form onSubmit={handleSearch}>
               <div className="relative">
-                <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
-                  <svg className="fill-gray-500 dark:fill-gray-400" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fillRule="evenodd" clipRule="evenodd" d="M3.04175 9.37363C3.04175 5.87693 5.87711 3.04199 9.37508 3.04199C12.8731 3.04199 15.7084 5.87693 15.7084 9.37363C15.7084 12.8703 12.8731 15.7053 9.37508 15.7053C5.87711 15.7053 3.04175 12.8703 3.04175 9.37363ZM9.37508 1.54199C5.04902 1.54199 1.54175 5.04817 1.54175 9.37363C1.54175 13.6991 5.04902 17.2053 9.37508 17.2053C11.2674 17.2053 13.003 16.5344 14.357 15.4176L17.177 18.238C17.4699 18.5309 17.9448 18.5309 18.2377 18.238C18.5306 17.9451 18.5306 17.4703 18.2377 17.1774L15.418 14.3573C16.5365 13.0033 17.2084 11.2669 17.2084 9.37363C17.2084 5.04817 13.7011 1.54199 9.37508 1.54199Z" fill="" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  placeholder="Buscar"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none transition-all border-[#8ECAB2] bg-white text-gray-700 placeholder-gray-500 font-medium focus:border-[#70A18E] shadow-sm text-base dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-700 dark:focus:border-[#70A18E]"
+                  onFocus={() => setShowResults(false)}
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="3" width="7" height="7" rx="2"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-[#8ECAB2] dark:text-[#70A18E]"
+                    />
+                    <rect x="14" y="3" width="7" height="7" rx="2"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-[#8ECAB2] dark:text-[#70A18E]"
+                    />
+                    <rect x="14" y="14" width="7" height="7" rx="2"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-[#8ECAB2] dark:text-[#70A18E]"
+                    />
+                    <rect x="3" y="14" width="7" height="7" rx="2"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-[#8ECAB2] dark:text-[#70A18E]"
+                    />
+                    <circle cx="12" cy="12" r="3"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-[#3A554B] dark:text-[#B7F2DA]"
+                    />
                   </svg>
                 </span>
-                <Search />
-                <button className="absolute right-2.5 top-1/2 inline-flex -translate-y-1/2 items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 px-[7px] py-[4.5px] text-xs -tracking-[0.2px] text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
-                </button>
+                {/* Resultados de búsqueda */}
+                {showResults && (
+                  <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-80 overflow-y-auto">
+                    {searchResults.length > 0 ? (
+                      searchResults.map((result, idx) => (
+                        <button
+                          key={idx}
+                          className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          onClick={() => handleResultClick(result)}
+                          type="button"
+                        >
+                          {result.nombre} <span className="text-xs text-gray-400">({result.tipo})</span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="p-4 text-gray-500">No se encontraron resultados.</div>
+                    )}
+                  </div>
+                )}
               </div>
             </form>
           </div>

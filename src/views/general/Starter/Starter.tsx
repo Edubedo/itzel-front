@@ -45,7 +45,7 @@ export default function Starter() {
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(20);
   
-  const INACTIVITY_TIME = 60;
+  const INACTIVITY_TIME = 30;
   const [timer, setTimer] = useState(INACTIVITY_TIME);
 
 
@@ -335,9 +335,6 @@ export default function Starter() {
           <h2 className="text-xl font-bold text-[#0A1310]">
             SELECCIÓN DE SERVICIO
           </h2>
-          <p className="text-lg font-mono text-[#ef2a2a] mt-2">
-            Tiempo restante: {formatTime(timer)}
-          </p>
           <p className="text-gray-600 mt-2">
             Cliente: {esCliente ? 'Cliente CFE' : 'No cliente'} | Sucursal: {sucursalSeleccionada?.s_nombre_sucursal}
           </p>

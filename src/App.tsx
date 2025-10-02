@@ -36,22 +36,25 @@ import ConsultaReportes from "./views/operaciones/reportes/consulta/ConsultaRepo
 import FormularioReportes from "./views/operaciones/reportes/formulario/FormularioReportes";
 import ConsultaTurnos from "./views/operaciones/turnos/consulta/ConsultaTurnos";
 import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTurnos";
-import RecoverPassword from "./pages/AuthPages/RecoverPassword";
+import VistaNotificaciones from "./components/header/VistaNotificaciones";
 
 // Importar componentes de autenticación
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 // ▼▼▼ 1. IMPORTA EL NUEVO COMPONENTE DE PÁGINA ▼▼▼
-import PaginaServicio from "./views/catalogos/servicios/PaginaServicio"; 
-import Configuration from "./pages/Configuration";
+import PaginaServicio from "./views/catalogos/servicios/PaginaServicio"; // Asegúrate que la ruta sea correcta
+import { computeFunnelTrapezoids } from "recharts/types/cartesian/Funnel";
 
 // Definir constantes para tipos de usuario (basado en el backend)
 const USER_TYPES = {
   ADMINISTRADOR: 1,
   EJECUTIVO: 2,
-  CLIENTE: 3
+  CLIENTE: 3,
+  ASESOR: 4
 };
+
+
 
 export default function App() {
   return (
@@ -59,6 +62,7 @@ export default function App() {
       <BrowserRouter>
         <ScrollToTop />
         <Routes>
+
           {/* Rutas públicas */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
@@ -114,6 +118,12 @@ export default function App() {
                 <Sucursales />
               </ProtectedRoute>
             } />
+             {/*Ruta para ver todas las notificaciones*/}
+          <Route path="/notificaciones" element={
+            <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.ASESOR, USER_TYPES.EJECUTIVO]}>
+              <VistaNotificaciones />
+            </ProtectedRoute>
+          } />
         
             {/* CLIENTES - Solo Administradores y Ejecutivos pueden ver todos los clientes */}
             <Route path="/catalogos/clientes/consulta/" element={
@@ -212,6 +222,10 @@ export default function App() {
               </ProtectedRoute>
             } />
           </Route>
+
+         
+
+
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />

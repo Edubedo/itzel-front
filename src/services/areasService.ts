@@ -152,3 +152,13 @@ export const areasService = {
     }
   }
 };
+
+
+
+// src/services/areasService.ts
+
+
+const API_URL = "http://localhost:3000/api/areas"; // Ajusta según tu backend
+
+
+

@@ -52,7 +52,8 @@ import Configuration from "./pages/Configuration";
 const USER_TYPES = {
   ADMINISTRADOR: 1,
   EJECUTIVO: 2,
-  CLIENTE: 3
+  CLIENTE: 3,
+  ASESOR: 4
 };
 
 

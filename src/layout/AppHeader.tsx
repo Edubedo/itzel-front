@@ -302,44 +302,60 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
           <div className="hidden lg:block">
             <form onSubmit={handleSearch}>
               <div className="relative" ref={searchRef}>
-                <input
-                  ref={inputRef}
-                  type="text"
-                  placeholder="Buscar"
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none transition-all border-[#8ECAB2] bg-white text-gray-700 placeholder-gray-500 font-medium focus:border-[#70A18E] shadow-sm text-base dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-700 dark:focus:border-[#70A18E]"
-                  onFocus={() => setShowResults(false)}
-                />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="3" width="7" height="7" rx="2"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-[#8ECAB2] dark:text-[#70A18E]"
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      placeholder="Buscar"
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none transition-all border-[#8ECAB2] bg-white text-gray-700 placeholder-gray-500 font-medium focus:border-[#70A18E] shadow-sm text-base dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-700 dark:focus:border-[#70A18E]"
+                      onFocus={() => setShowResults(false)}
                     />
-                    <rect x="14" y="3" width="7" height="7" rx="2"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-[#8ECAB2] dark:text-[#70A18E]"
-                    />
-                    <rect x="14" y="14" width="7" height="7" rx="2"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-[#8ECAB2] dark:text-[#70A18E]"
-                    />
-                    <rect x="3" y="14" width="7" height="7" rx="2"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-[#8ECAB2] dark:text-[#70A18E]"
-                    />
-                    <circle cx="12" cy="12" r="3"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-[#3A554B] dark:text-[#B7F2DA]"
-                    />
-                  </svg>
-                </span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="3" width="7" height="7" rx="2"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className="text-[#8ECAB2] dark:text-[#70A18E]"
+                        />
+                        <rect x="14" y="3" width="7" height="7" rx="2"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className="text-[#8ECAB2] dark:text-[#70A18E]"
+                        />
+                        <rect x="14" y="14" width="7" height="7" rx="2"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className="text-[#8ECAB2] dark:text-[#70A18E]"
+                        />
+                        <rect x="3" y="14" width="7" height="7" rx="2"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className="text-[#8ECAB2] dark:text-[#70A18E]"
+                        />
+                        <circle cx="12" cy="12" r="3"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className="text-[#3A554B] dark:text-[#B7F2DA]"
+                        />
+                      </svg>
+                    </span>
+                  </div>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-lg border border-[#8ECAB2] bg-white hover:bg-[#8ECAB2]/10 text-[#3A554B] font-medium transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-900 dark:text-[#B7F2DA] dark:border-gray-700 dark:hover:bg-gray-800 dark:hover:border-[#70A18E] flex items-center gap-2"
+                    disabled={!searchTerm.trim()}
+                    aria-label="Buscar"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <span className="hidden xl:inline">Buscar</span>
+                  </button>
+                </div>
                 {/* Resultados de búsqueda */}
                 {showResults && (
                   <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">

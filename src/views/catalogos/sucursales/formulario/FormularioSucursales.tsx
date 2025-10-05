@@ -54,6 +54,13 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
+    // Hook para hacer scroll al inicio cuando se muestran alertas
+    useEffect(() => {
+        if (showSuccess || showError) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [showSuccess, showError]);
+
     // Hook para cargar datos iniciales
     useEffect(() => {
         const cargarDatosIniciales = async () => {
@@ -256,8 +263,8 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
             ck_municipio: formData.ck_municipio,
             s_telefono: formData.s_telefono,
             s_codigo_postal: formData.s_codigo_postal,
-            ejecutivos: ejecutivosAsignados.map(e => ({ 
-                ck_usuario: e.ck_usuario, 
+            ejecutivos: ejecutivosAsignados.map(e => ({
+                ck_usuario: e.ck_usuario,
                 ck_area: e.ck_area,
                 ck_servicio: e.ck_servicio
             })),
@@ -265,15 +272,11 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
         };
 
         try {
-            if (branchToEdit) {
-                await sucursalesService.updateSucursal(branchToEdit.ck_sucursal!, datosParaEnviar);
-            } else {
-                await sucursalesService.createSucursal(datosParaEnviar);
-            }
+            // Llamar al callback del padre que se encarga de guardar
+            await onSave(datosParaEnviar);
             setShowSuccess(true);
-            setTimeout(() => {
-                onSave(datosParaEnviar);
-            }, 1500);
+            // Esperar un momento para que el usuario vea el mensaje de éxito
+            // El padre cerrará el formulario automáticamente
         } catch (error: any) {
             setErrorMessage("Error al guardar la sucursal: " + (error.response?.data?.message || error.message));
             setShowError(true);
@@ -315,8 +318,8 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
             {/* Alertas */}
             {showSuccess && (
                 <div className="mb-6">
-                    <Alert 
-                        variant="success" 
+                    <Alert
+                        variant="success"
                         title="¡Éxito!"
                         message={branchToEdit ? "Sucursal actualizada exitosamente!" : "Sucursal guardada exitosamente!"}
                     />
@@ -325,8 +328,8 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
 
             {showError && (
                 <div className="mb-6">
-                    <Alert 
-                        variant="error" 
+                    <Alert
+                        variant="error"
                         title="Error"
                         message={errorMessage}
                     />
@@ -362,11 +365,13 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                 value={formData.s_telefono}
                                 onChange={handleFormChange}
                                 placeholder="Ej: 312-123-4567"
+                                maxLength={20}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
                             />
+                            <p className="mt-1 text-xs text-gray-500">Máximo 20 caracteres</p>
                         </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div>
                             <label htmlFor="estado" className="block text-sm font-medium text-gray-700">
@@ -406,7 +411,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                             </select>
                         </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div>
                             <label htmlFor="s_domicilio" className="block text-sm font-medium text-gray-700">
@@ -445,10 +450,10 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                     <div className="flex items-end gap-4">
                         <div className="flex-1">
                             <label className="text-sm font-medium text-gray-700">Usuario</label>
-                            <select 
-                                name="usuario" 
-                                value={ejecutivoActual.usuarioId} 
-                                onChange={handleEjecutivoChange} 
+                            <select
+                                name="usuario"
+                                value={ejecutivoActual.usuarioId}
+                                onChange={handleEjecutivoChange}
                                 className="w-full border border-gray-300 rounded-lg p-2 mt-1"
                             >
                                 <option value="">Seleccionar Ejecutivo</option>
@@ -491,15 +496,15 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                 ))}
                             </select>
                         </div>
-                        <button 
-                            type="button" 
-                            onClick={agregarEjecutivo} 
+                        <button
+                            type="button"
+                            onClick={agregarEjecutivo}
                             className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 text-xl font-bold flex-shrink-0"
                         >
                             +
                         </button>
                     </div>
-                    
+
                     {/* Lista de ejecutivos agregados */}
                     {ejecutivosAsignados.length > 0 && (
                         <div className="mt-4 space-y-2">
@@ -510,9 +515,9 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                         <p className="font-medium text-gray-800">{`${ejec.s_nombre} ${ejec.s_apellido_paterno || ''}`}</p>
                                         <p className="text-xs text-gray-500">{`Área: ${ejec.areaNombre || ''} / Servicio: ${ejec.servicioNombre || ''}`}</p>
                                     </div>
-                                    <button 
+                                    <button
                                         type="button"
-                                        onClick={() => eliminarEjecutivo(ejec.ck_usuario)} 
+                                        onClick={() => eliminarEjecutivo(ejec.ck_usuario)}
                                         className="text-red-500 hover:text-red-700 font-bold text-xl"
                                     >
                                         <FaTimesCircle />
@@ -527,10 +532,10 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                     <div className="flex items-end gap-4">
                         <div className="flex-1">
                             <label className="text-sm font-medium text-gray-700">Usuario</label>
-                            <select 
-                                name="usuario" 
-                                value={asesorActual.usuarioId} 
-                                onChange={handleAsesorChange} 
+                            <select
+                                name="usuario"
+                                value={asesorActual.usuarioId}
+                                onChange={handleAsesorChange}
                                 className="w-full border border-gray-300 rounded-lg p-2 mt-1"
                             >
                                 <option value="">Seleccionar Asesor</option>
@@ -541,15 +546,15 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                 ))}
                             </select>
                         </div>
-                        <button 
-                            type="button" 
-                            onClick={agregarAsesor} 
+                        <button
+                            type="button"
+                            onClick={agregarAsesor}
                             className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-10 h-10 text-xl font-bold flex-shrink-0"
                         >
                             +
                         </button>
                     </div>
-                    
+
                     {/* Lista de asesores agregados */}
                     {asesoresAsignados.length > 0 && (
                         <div className="mt-4 space-y-2">
@@ -559,9 +564,9 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                     <div>
                                         <p className="font-medium text-gray-800">{`${asesor.s_nombre} ${asesor.s_apellido_paterno || ''}`}</p>
                                     </div>
-                                    <button 
+                                    <button
                                         type="button"
-                                        onClick={() => eliminarAsesor(asesor.ck_usuario)} 
+                                        onClick={() => eliminarAsesor(asesor.ck_usuario)}
                                         className="text-red-500 hover:text-red-700 font-bold text-xl"
                                     >
                                         <FaTimesCircle />

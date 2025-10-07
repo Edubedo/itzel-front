@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PageMeta from '../../../components/common/PageMeta';
 import Header from '../../../components/header/Header';
 
@@ -40,7 +40,7 @@ export default function Starter() {
   const [areas, setAreas] = useState<Area[]>([]);
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [areaSeleccionada, setAreaSeleccionada] = useState<Area | null>(null);
-  const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
+  
   const [turnoCreado, setTurnoCreado] = useState<Turno | null>(null);
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(20);
@@ -67,7 +67,7 @@ export default function Starter() {
       setAreas([]);
       setServicios([]);
       setAreaSeleccionada(null);
-      setServicioSeleccionado(null);
+      
       setCurrentStep('clientType');
     };
 
@@ -78,7 +78,7 @@ export default function Starter() {
     };
   }, []);
 
-  // Cargar áreas cuando se seleccione una sucursal
+  // Cargar áreas cuando se seleccione una sucursal y se defina el tipo de cliente
   useEffect(() => {
     if (sucursalSeleccionada && esCliente !== null) {
       cargarAreas();
@@ -128,7 +128,7 @@ export default function Starter() {
     if (!sucursalSeleccionada) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/areas/${sucursalSeleccionada.ck_sucursal}`);
+      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/areas/${sucursalSeleccionada.ck_sucursal}?esCliente=${esCliente ? 1 : 0}`);
       const data = await response.json();
 
       if (data.success) {
@@ -169,7 +169,6 @@ export default function Starter() {
 
   const seleccionarArea = (area: Area) => {
     setAreaSeleccionada(area);
-    setServicioSeleccionado(null);
     setServicios([]);
   };
 
@@ -177,7 +176,7 @@ export default function Starter() {
     if (!sucursalSeleccionada || !areaSeleccionada) return;
 
     setLoading(true);
-    setServicioSeleccionado(servicio);
+    
 
     try {
       const response = await fetch('http://localhost:3001/api/operaciones/turnos/crear', {
@@ -250,18 +249,13 @@ export default function Starter() {
     setCurrentStep('clientType');
     setEsCliente(null);
     setAreaSeleccionada(null);
-    setServicioSeleccionado(null);
     setTurnoCreado(null);
     setServicios([]);
     setCountdown(20);
     setTimer(INACTIVITY_TIME);
   };
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-  };
+  
 
   const renderClientTypeSelection = () => (
     <div className="relative">

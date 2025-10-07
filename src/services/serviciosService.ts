@@ -1,8 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3001/api"; // 👈 cambia esto según tu backend
-
-
+const API_URL = "http://localhost:3001/api"; 
 
 // Tipos de datos
 export interface Servicio {
@@ -11,7 +9,8 @@ export interface Servicio {
   s_descripcion_servicio?: string;
   c_codigo_servicio: string;
   ck_area: string; // id del área relacionada
-  ck_estatus: "ACTIVO" | "INACTIVO";
+  ck_estatus: "ACTIVO" | "INACTI";
+  area_nombre?: string; // nombre del área para mostrar
 }
 
 export interface ServicioFormData {
@@ -19,7 +18,7 @@ export interface ServicioFormData {
   s_descripcion_servicio?: string;
   c_codigo_servicio: string;
   ck_area: string;
-  ck_estatus: "ACTIVO" | "INACTIVO";
+  ck_estatus: "ACTIVO" | "INACTI";
 }
 
 // Interfaces nuevas
@@ -37,65 +36,121 @@ export interface ServicioStatsResponse {
   message?: string;
 }
 
-
-
+export interface ServiciosResponse {
+  success: boolean;
+  data: Servicio[];
+  total?: number;
+  message?: string;
+}
 
 export const serviciosService = {
   // Obtener todos los servicios
- // serviciosService.ts
-  async getAllServicios(params?: { page?: number; limit?: number; search?: string; estatus?: string; area?: string }) {
+  async getAllServicios(params?: { 
+    page?: number; 
+    limit?: number; 
+    search?: string; 
+    estatus?: string; 
+    area?: string 
+  }): Promise<ServiciosResponse> {
     try {
-      const res = await axios.get(API_URL, { params });
+      const res = await axios.get(`${API_URL}/catalogos/servicios`, { params });
       return { 
-      success: true, 
-      data: res.data.items as Servicio[], // 👈 ahora sí son los items
-      total: res.data.total 
-    };
-  } catch (error: any) {
-    return { success: false, message: error.message };
-  }
-},
+        success: true, 
+        data: res.data.getServicios || res.data.data || res.data,
+        total: res.data.total 
+      };
+    } catch (error: any) {
+      console.error("Error en getAllServicios:", error);
+      return { 
+        success: false, 
+        message: error.response?.data?.message || error.message,
+        data: [] 
+      };
+    }
+  },
+
+  // Obtener servicio por ID - MÉTODO AGREGADO
+  async getServicioById(id: string): Promise<{ success: boolean; data: Servicio; message?: string }> {
+    try {
+      const res = await axios.get(`${API_URL}/catalogos/servicios/${id}`);
+      return { 
+        success: true, 
+        data: res.data.data || res.data 
+      };
+    } catch (error: any) {
+      console.error("Error en getServicioById:", error);
+      return { 
+        success: false, 
+        message: error.response?.data?.message || error.message,
+        data: {} as Servicio
+      };
+    }
+  },
 
   // Crear servicio
-  async createServicio(data: ServicioFormData) {
+  async createServicio(data: ServicioFormData): Promise<{ success: boolean; data: Servicio; message?: string }> {
     try {
-      const res = await axios.post(API_URL, data);
-      return { success: true, data: res.data as Servicio };
+      const res = await axios.post(`${API_URL}/catalogos/servicios`, data);
+      return { 
+        success: true, 
+        data: res.data.data || res.data 
+      };
     } catch (error: any) {
-      return { success: false, message: error.message };
+      console.error("Error en createServicio:", error);
+      return { 
+        success: false, 
+        message: error.response?.data?.message || error.message,
+        data: {} as Servicio
+      };
     }
   },
 
   // Actualizar servicio
-  async updateServicio(id: string, data: ServicioFormData) {
+  async updateServicio(id: string, data: ServicioFormData): Promise<{ success: boolean; data: Servicio; message?: string }> {
     try {
-      const res = await axios.put(`${API_URL}/${id}`, data);
-      return { success: true, data: res.data as Servicio };
+      const res = await axios.put(`${API_URL}/catalogos/servicios/${id}`, data);
+      return { 
+        success: true, 
+        data: res.data.data || res.data 
+      };
     } catch (error: any) {
-      return { success: false, message: error.message };
+      console.error("Error en updateServicio:", error);
+      return { 
+        success: false, 
+        message: error.response?.data?.message || error.message,
+        data: {} as Servicio
+      };
     }
   },
 
   // Eliminar servicio
-  async deleteServicio(id: string) {
+  async deleteServicio(id: string): Promise<{ success: boolean; message?: string }> {
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await axios.delete(`${API_URL}/catalogos/servicios/${id}`);
       return { success: true };
     } catch (error: any) {
-      return { success: false, message: error.message };
+      console.error("Error en deleteServicio:", error);
+      return { 
+        success: false, 
+        message: error.response?.data?.message || error.message 
+      };
     }
   },
 
+  // Obtener estadísticas de servicios mensuales
   async getServicioStatsMensual(): Promise<ServicioStatsResponse> {
     try {
       const res = await axios.get(`${API_URL}/operaciones/turnos/servicios-mensual`);
       return {
         success: true,
-        data: res.data.data,  // asumiendo que tu backend envía { data: { labels, series } }
+        data: res.data.data,
       };
     } catch (error: any) {
       console.error("Error en getServicioStatsMensual:", error);
-      return { success: false, message: error.message };
+      return { 
+        success: false, 
+        message: error.response?.data?.message || error.message 
+      };
     }
   }
 };

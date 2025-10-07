@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import PageMeta from "../../../../components/common/PageMeta";
@@ -19,6 +18,7 @@ function FormularioServicios() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingAreas, setLoadingAreas] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [areas, setAreas] = useState<Area[]>([]);
 
@@ -38,29 +38,48 @@ function FormularioServicios() {
 
   const fetchAreas = async () => {
     try {
+      setLoadingAreas(true);
+      console.log("Cargando áreas...");
+      
       const response = await areasService.getAreas();
+      console.log("Respuesta de áreas:", response);
+      
       if (response.success) {
+        console.log("Datos de áreas cargados:", response.data);
         setAreas(response.data);
+      } else {
+        console.error("Error en respuesta de áreas:", response);
+        alert("Error al cargar las áreas: " + response.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al cargar las áreas:", error);
+      alert("Error al cargar las áreas: " + error.message);
+    } finally {
+      setLoadingAreas(false);
     }
   };
 
   const fetchServicioData = async (id: string) => {
     try {
       setLoading(true);
+      console.log("Cargando datos del servicio:", id);
+      
       const response = await serviciosService.getServicioById(id);
+      console.log("Respuesta del servicio:", response);
 
       if (response.success) {
         const servicio: Servicio = response.data;
+        console.log("Datos del servicio a cargar:", servicio);
+        
         setFormData({
-          s_servicio: servicio.s_servicio,
+          s_servicio: servicio.s_servicio || "",
           s_descripcion_servicio: servicio.s_descripcion_servicio || "",
-          ck_area: servicio.ck_area,
-          c_codigo_servicio: servicio.c_codigo_servicio,
-          ck_estatus: servicio.ck_estatus,
+          ck_area: servicio.ck_area || "",
+          c_codigo_servicio: servicio.c_codigo_servicio || "",
+          ck_estatus: servicio.ck_estatus || "ACTIVO",
         });
+      } else {
+        alert("Error al cargar datos del servicio: " + response.message);
       }
     } catch (error: any) {
       console.error("Error al cargar datos del servicio:", error);
@@ -116,6 +135,7 @@ function FormularioServicios() {
 
     try {
       setLoading(true);
+      console.log("Enviando datos:", formData);
 
       let response;
       if (isEditing && typeof window !== "undefined") {
@@ -126,11 +146,15 @@ function FormularioServicios() {
         response = await serviciosService.createServicio(formData);
       }
 
+      console.log("Respuesta del servidor:", response);
+
       if (response.success) {
         alert(isEditing ? "Servicio actualizado correctamente" : "Servicio creado correctamente");
         if (typeof window !== "undefined") {
           window.location.href = "/catalogos/servicios/consulta/";
         }
+      } else {
+        alert("Error al guardar el servicio: " + response.message);
       }
     } catch (error: any) {
       console.error("Error al guardar el servicio:", error);
@@ -198,20 +222,31 @@ function FormularioServicios() {
 
               <div>
                 <Label>Área <span className="text-red-500 text-sm">*</span></Label>
-                <select
-                  value={formData.ck_area}
-                  onChange={(e) => handleInputChange("ck_area", e.target.value)}
-                  className={`w-full px-4 py-2 border rounded-lg ${errors.ck_area ? "border-red-500" : "border-gray-300"}`}
-                >
-                  <option value="">Seleccione un área</option>
-                  {areas.map((area) => (
-                    <option key={area.id} value={area.id}>
-                      {area.s_area}
-                    </option>
-                  ))}
-                </select>
+                {loadingAreas ? (
+                  <div className="px-4 py-2 border border-gray-300 rounded-lg text-gray-500 bg-gray-100">
+                    Cargando áreas...
+                  </div>
+                ) : (
+                  <select
+                    value={formData.ck_area}
+                    onChange={(e) => handleInputChange("ck_area", e.target.value)}
+                    className={`w-full px-4 py-2 border rounded-lg ${errors.ck_area ? "border-red-500" : "border-gray-300"}`}
+                  >
+                    <option value="">Seleccione un área</option>
+                    {areas.map((area) => (
+                      <option key={area.ck_area} value={area.ck_area}>
+                        {area.s_area}
+                      </option>
+                    ))}
+                  </select>
+                )}
                 {errors.ck_area && (
                   <p className="text-red-500 text-sm mt-1">{errors.ck_area}</p>
+                )}
+                {areas.length === 0 && !loadingAreas && (
+                  <p className="text-yellow-600 text-sm mt-1">
+                    No hay áreas disponibles. Por favor, cree áreas primero.
+                  </p>
                 )}
               </div>
 

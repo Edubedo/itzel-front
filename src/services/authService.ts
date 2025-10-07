@@ -18,7 +18,7 @@ api.interceptors.request.use(
       .split('; ')
       .find(row => row.startsWith('authToken='))
       ?.split('=')[1];
-    
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -68,7 +68,10 @@ export const authService = {
       console.log('Response login:', response.data);
       return response.data;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Credenciales Incorrectas');
+      const errData = error.response?.data;
+      const customError = new Error(errData?.message || 'Credenciales Incorrectas') as any;
+      if (errData?.code) customError.code = errData.code;
+      throw customError;
     }
   },
 
@@ -116,7 +119,7 @@ export const authService = {
     }
   },
 
-   async sendRecoveryCode(email: string): Promise<{ message: string }> {
+  async sendRecoveryCode(email: string): Promise<{ message: string }> {
     try {
       const response = await api.post('/auth/forgot-password', { email });
       return response.data;

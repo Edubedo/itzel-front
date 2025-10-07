@@ -24,6 +24,9 @@ export default function SignInForm() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [fieldError, setFieldError] = useState<{ usuario?: string; contrasena?: string }>({});
+
+
   // Obtener la ruta desde donde se redirigió al login
   const from = location.state?.from?.pathname || '/home';
 
@@ -33,8 +36,9 @@ export default function SignInForm() {
       ...prev,
       [name]: value
     }));
-    // Limpiar error cuando el usuario empiece a escribir
-    if (error) setError('');
+    // Limpiar error general y de campo al escribir
+    setError('');
+    setFieldError({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,13 +54,18 @@ export default function SignInForm() {
 
     try {
       await login(formData);
-      // Redirigir a la página desde donde vino o al dashboard
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err.message || 'Credenciales Incorrectas');
+      if (err.code === 'USER_NOT_FOUND') {
+        setFieldError({ usuario: err.message });
+      } else if (err.code === 'WRONG_PASSWORD') {
+        setFieldError({ contrasena: err.message });
+      } else {
+        setError(err.message || 'Credenciales Incorrectas');
+      }
     } finally {
-      setIsLoading(false);
-    }
+        setIsLoading(false); 
+      }
   };
 
   return (
@@ -67,7 +76,7 @@ export default function SignInForm() {
           className="inline-flex items-center text-sm text-[#70A18E] transition-colors hover:text-[#547A6B] dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA]"
         >
           <ChevronLeftIcon className="size-5" />
-          Volver al inicio
+          Volver atrás
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -115,6 +124,9 @@ export default function SignInForm() {
                   disabled={isLoading}
                   className="bg-[#F8F9FA] dark:bg-gray-700 border-[#8ECAB2] dark:border-[#70A18E] focus:border-[#70A18E] dark:focus:border-[#8ECAB2] focus:ring-[#70A18E]/20 dark:focus:ring-[#8ECAB2]/20 text-[#0A1310] dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
                 />
+                {fieldError.usuario && (
+                  <p className="text-red-500 text-sm mt-1">{fieldError.usuario}</p>
+                )}
               </div>
               <div>
                 <Label>
@@ -141,6 +153,9 @@ export default function SignInForm() {
                     )}
                   </span>
                 </div>
+                {fieldError.contrasena && (
+                  <p className="text-red-500 text-sm mt-1">{fieldError.contrasena}</p>
+                )}
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">

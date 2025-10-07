@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import Cookies from 'js-cookie';
 import { Link, useNavigate } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
@@ -111,7 +112,13 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
   const cargarSucursales = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/operaciones/turnos/sucursales');
+      const token = Cookies.get('authToken');
+      const url = token
+        ? 'http://localhost:3001/api/operaciones/turnos/sucursales-usuario'
+        : 'http://localhost:3001/api/operaciones/turnos/sucursales';
+      const response = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       const data = await response.json();
 
       if (data.success) {
@@ -258,7 +265,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                                 </div>
                               )}
 
-   |                           {(sucursal.s_municipio || sucursal.s_estado) && (
+                              {(sucursal.s_municipio || sucursal.s_estado) && (
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
                                   {sucursal.s_municipio && sucursal.s_estado
                                     ? `${sucursal.s_municipio}, ${sucursal.s_estado}`

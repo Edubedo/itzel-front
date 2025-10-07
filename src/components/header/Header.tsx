@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router';
 import { ChevronDown, MapPin } from 'lucide-react';
 import { useLogo } from "../../contexts/LogoContext";
 
@@ -21,6 +23,7 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { logoLight, logoDark } = useLogo();
+  const navigate = useNavigate();
 
   // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
@@ -58,7 +61,14 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
   const cargarSucursales = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/operaciones/turnos/sucursales');
+      const token = Cookies.get('authToken');
+      // Si hay token usamos endpoint filtrado; si no, usamos público
+      const url = token
+        ? 'http://localhost:3001/api/operaciones/turnos/sucursales-usuario'
+        : 'http://localhost:3001/api/operaciones/turnos/sucursales';
+      const response = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       const data = await response.json();
 
       if (data.success) {
@@ -79,6 +89,12 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
   };
 
   const seleccionarSucursal = (sucursal: Sucursal) => {
+    const token = Cookies.get('authToken');
+    if (!token) {
+      // Requiere login para cambiar sucursal en la página pública
+      navigate('/signin', { replace: true, state: { from: { pathname: '/' } } });
+      return;
+    }
     setSucursalActiva(sucursal);
     localStorage.setItem('sucursal_seleccionada', JSON.stringify(sucursal));
     setIsDropdownOpen(false);

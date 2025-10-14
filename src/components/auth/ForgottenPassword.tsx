@@ -54,7 +54,7 @@ export default function ForgottenPassword() {
       <div className="w-full max-w-md pt-10 mx-auto">
         <Link
           to="/signin"
-          className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          className="inline-flex items-center text-sm text-[#70A18E] transition-colors hover:text-[#547A6B] dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA]"
         >
           <ChevronLeftIcon className="size-5" />
           Volver al inicio
@@ -68,21 +68,21 @@ export default function ForgottenPassword() {
         </div>
         <div>
           <div className="mb-5 sm:mb-8">
-            <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
+            <h1 className="mb-2 font-bold text-[#0A1310] text-title-sm dark:text-white sm:text-title-md">
               Recuperar contraseña
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-[#547A6B] dark:text-gray-300">
               Ingresa tu correo para recibir el código de recuperación
             </p>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-lg">
               {error}
             </div>
           )}
           {success && (
-            <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+            <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 rounded-lg">
               {success}
             </div>
           )}
@@ -92,7 +92,7 @@ export default function ForgottenPassword() {
               <div className="space-y-6">
                 <div>
                   <Label>
-                    Correo electrónico <span className="text-error-500">*</span>
+                    Correo electrónico <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     name="email"
@@ -101,12 +101,17 @@ export default function ForgottenPassword() {
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     disabled={isLoading}
+                    className="bg-[#F8F9FA] dark:bg-gray-700 border-[#8ECAB2] dark:border-[#70A18E] focus:border-[#70A18E] dark:focus:border-[#8ECAB2] focus:ring-[#70A18E]/20 dark:focus:ring-[#8ECAB2]/20 text-[#0A1310] dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
                   />
                 </div>
                 <div>
                   <button
                     type="submit"
-                    className="w-full px-4 py-3 text-sm bg-brand-500 text-white rounded hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 text-sm font-semibold text-white rounded-lg transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      background: 'linear-gradient(135deg, #70A18E 0%, #547A6B 100%)',
+                      boxShadow: '0 4px 15px -5px rgba(112, 161, 142, 0.4)'
+                    }}
                     disabled={isLoading || !email}
                   >
                     {isLoading ? "Enviando..." : "Enviar código"}
@@ -121,7 +126,7 @@ export default function ForgottenPassword() {
               <div className="space-y-6">
                 <div>
                   <Label>
-                    Código recibido <span className="text-error-500">*</span>
+                    Código recibido <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     name="code"
@@ -130,11 +135,12 @@ export default function ForgottenPassword() {
                     value={code}
                     onChange={e => setCode(e.target.value)}
                     disabled={isLoading}
+                    className="bg-[#F8F9FA] dark:bg-gray-700 border-[#8ECAB2] dark:border-[#70A18E] focus:border-[#70A18E] dark:focus:border-[#8ECAB2] focus:ring-[#70A18E]/20 dark:focus:ring-[#8ECAB2]/20 text-[#0A1310] dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
                   />
                 </div>
                 <div>
                   <Label>
-                    Nueva contraseña <span className="text-error-500">*</span>
+                    Nueva contraseña <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     name="newPassword"
@@ -143,12 +149,17 @@ export default function ForgottenPassword() {
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
                     disabled={isLoading}
+                    className="bg-[#F8F9FA] dark:bg-gray-700 border-[#8ECAB2] dark:border-[#70A18E] focus:border-[#70A18E] dark:focus:border-[#8ECAB2] focus:ring-[#70A18E]/20 dark:focus:ring-[#8ECAB2]/20 text-[#0A1310] dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
                   />
                 </div>
                 <div>
                   <button
                     type="submit"
-                    className="w-full px-4 py-3 text-sm bg-brand-500 text-white rounded hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 text-sm font-semibold text-white rounded-lg transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      background: 'linear-gradient(135deg, #70A18E 0%, #547A6B 100%)',
+                      boxShadow: '0 4px 15px -5px rgba(112, 161, 142, 0.4)'
+                    }}
                     disabled={isLoading || !code || !newPassword}
                   >
                     {isLoading ? "Verificando..." : "Cambiar contraseña"}
@@ -159,12 +170,24 @@ export default function ForgottenPassword() {
           )}
 
           {step === 3 && (
-            <div className="text-green-600 font-bold text-center py-8">
-              ¡Contraseña cambiada exitosamente!
+            <div className="text-center py-8">
+              <div className="mb-6">
+                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-[#0A1310] dark:text-white mb-2">¡Contraseña cambiada exitosamente!</h3>
+                <p className="text-sm text-[#547A6B] dark:text-gray-300">Ya puedes iniciar sesión con tu nueva contraseña</p>
+              </div>
               <div className="mt-6">
                 <Button
                   onClick={() => navigate("/signin")}
                   className="w-full"
+                  style={{
+                    background: 'linear-gradient(135deg, #70A18E 0%, #547A6B 100%)',
+                    boxShadow: '0 4px 15px -5px rgba(112, 161, 142, 0.4)'
+                  }}
                 >
                   Ir a iniciar sesión
                 </Button>

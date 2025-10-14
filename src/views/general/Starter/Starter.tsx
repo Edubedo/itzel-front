@@ -432,91 +432,252 @@ export default function Starter() {
     </div>
   );
 
+  // Función para obtener el icono del servicio
+  const getServiceIcon = (servicio: string) => {
+    const serviceName = servicio.toLowerCase();
+    if (serviceName.includes('administracion') || serviceName.includes('administración')) {
+      return (
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        </div>
+      );
+    } else if (serviceName.includes('bajas')) {
+      return (
+        <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </div>
+      );
+    } else if (serviceName.includes('cobranza')) {
+      return (
+        <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+          </svg>
+        </div>
+      );
+    } else if (serviceName.includes('contabilidad')) {
+      return (
+        <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+        </div>
+      );
+    } else if (serviceName.includes('recursos humanos') || serviceName.includes('humanos')) {
+      return (
+        <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+      );
+    } else if (serviceName.includes('ventas')) {
+      return (
+        <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+        </div>
+      );
+    } else {
+      return (
+        <div className="w-16 h-16 bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      );
+    }
+  };
+
   const renderServiceSelection = () => (
-    <div className="bg-white rounded-xl shadow-xl overflow-hidden border-2 border-[#5D7166]">
-      <div className="p-6 lg:p-8">
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-bold text-[#0A1310]">
-            SELECCIÓN DE SERVICIO
-          </h2>
-          <p className="text-gray-600 mt-2">
-            Cliente: {esCliente ? 'Cliente CFE' : 'No cliente'} | Sucursal: {sucursalSeleccionada?.s_nombre_sucursal}
-          </p>
-        </div>
+    <div className="relative">
+      {/* Glassmorphism Container */}
+      <div className="backdrop-blur-xl bg-white/40 rounded-2xl shadow-2xl overflow-hidden border border-white/20 relative">
+        {/* Animated Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#B7F2DA]/20 via-[#8ECAB2]/10 to-[#70A18E]/20 animate-pulse"></div>
 
-        {/* Selección de Área */}
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-[#0A1310] mb-4">1. Seleccione el área:</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {areas.map((area) => (
-              <button
-                key={area.ck_area}
-                onClick={() => seleccionarArea(area)}
-                className={`p-4 rounded-lg border-2 transition-all duration-200 ${areaSeleccionada?.ck_area === area.ck_area
-                    ? 'bg-[#70A18E] text-white border-[#547A6B]'
-                    : 'bg-[#B7F2DA] hover:bg-[#8ECAB2] text-[#0A1310] border-[#8ECAB2]'
-                  }`}
-              >
-                <div className="text-center">
-                  <div className="font-bold text-sm">{area.c_codigo_area}</div>
-                  <div className="font-semibold">{area.s_area}</div>
-                  {area.s_descripcion_area && (
-                    <div className="text-xs mt-1 opacity-90">{area.s_descripcion_area}</div>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Selección de Servicio */}
-        {areaSeleccionada && (
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-[#0A1310] mb-4">
-              2. Seleccione el servicio en {areaSeleccionada.s_area}:
-            </h3>
-            {servicios.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                No hay servicios disponibles para esta área
+        <div className="relative p-6 lg:p-8">
+          {/* Header with modern styling */}
+          <div className="text-center mb-8">
+            <div className="inline-block mb-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] blur-xl opacity-50 animate-pulse"></div>
+                <h2 className="relative text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#70A18E] tracking-tight">
+                  SELECCIÓN DE SERVICIO
+                </h2>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {servicios.map((servicio) => (
-                  <button
-                    key={servicio.ck_servicio}
-                    onClick={() => crearTurno(servicio)}
-                    disabled={loading}
-                    className="bg-[#CFF4DE] hover:bg-[#B7F2DA] rounded-lg p-4 border-2 border-[#8ECAB2] transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <div className="text-left">
-                      <div className="font-bold text-[#0A1310]">{servicio.s_servicio}</div>
-                      {servicio.s_descripcion_servicio && (
-                        <div className="text-sm text-gray-600 mt-1">
-                          {servicio.s_descripcion_servicio}
-                        </div>
-                      )}
-                      {servicio.c_codigo_servicio && (
-                        <div className="text-xs text-gray-500 mt-1">
-                          Código: {servicio.c_codigo_servicio}
-                        </div>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm md:text-base">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="font-semibold text-[#3A554B]">Cliente: {esCliente ? 'Cliente CFE' : 'No cliente'}</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
+                <svg className="w-4 h-4 text-[#70A18E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="font-semibold text-[#3A554B]">Sucursal: {sucursalSeleccionada?.s_nombre_sucursal}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Selección de Área */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 bg-gradient-to-br from-[#70A18E] to-[#8ECAB2] rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">1</span>
+              </div>
+              <h3 className="text-xl font-bold text-[#0A1310]">Seleccione el área:</h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {areas.map((area) => (
+                <button
+                  key={area.ck_area}
+                  onClick={() => seleccionarArea(area)}
+                  className={`group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 ${areaSeleccionada?.ck_area === area.ck_area
+                      ? 'bg-gradient-to-br from-[#70A18E] to-[#547A6B] text-white shadow-2xl'
+                      : 'bg-gradient-to-br from-[#B7F2DA] to-[#8ECAB2] text-[#0A1310] hover:shadow-xl'
+                    }`}
+                >
+                  {/* Animated shine effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+                  <div className="relative p-6">
+                    <div className="text-center">
+                      <div className="font-bold text-sm mb-2 opacity-80">{area.c_codigo_area}</div>
+                      <div className="font-bold text-lg mb-2">{area.s_area}</div>
+                      {area.s_descripcion_area && (
+                        <div className="text-sm opacity-90">{area.s_descripcion_area}</div>
                       )}
                     </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                  </div>
 
-        {/* Botón de regreso */}
-        <div className="flex justify-center">
-          <button
-            onClick={regresarAlInicio}
-            className="bg-[#5D7166] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#4A5B52] transition-colors"
-          >
-            ← Regresar al inicio
-          </button>
+                  {/* Corner decoration */}
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-white/20 rounded-bl-full -mr-8 -mt-8"></div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Selección de Servicio */}
+          {areaSeleccionada && (
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-gradient-to-br from-[#70A18E] to-[#8ECAB2] rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">2</span>
+                </div>
+                <h3 className="text-xl font-bold text-[#0A1310]">
+                  Seleccione el servicio en {areaSeleccionada.s_area}:
+                </h3>
+              </div>
+
+              {servicios.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.709M15 6H9a2 2 0 00-2 2v10a2 2 0 002 2h6a2 2 0 002-2V8a2 2 0 00-2-2z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500 text-lg font-medium">No hay servicios disponibles para esta área</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {servicios.map((servicio) => (
+                    <button
+                      key={servicio.ck_servicio}
+                      onClick={() => crearTurno(servicio)}
+                      disabled={loading}
+                      className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:translate-y-0"
+                      style={{
+                        background: 'linear-gradient(135deg, #CFF4DE 0%, #B7F2DA 100%)',
+                        boxShadow: '0 10px 40px -15px rgba(142, 202, 178, 0.4)'
+                      }}
+                    >
+                      {/* Animated shine effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+                      <div className="relative p-6">
+                        {/* Icon and Header */}
+                        <div className="flex items-start gap-4 mb-4">
+                          {getServiceIcon(servicio.s_servicio)}
+                          <div className="flex-1">
+                            <div className="font-bold text-lg text-[#0A1310] mb-1 group-hover:text-[#3A554B] transition-colors">
+                              {servicio.s_servicio}
+                            </div>
+                            {servicio.c_codigo_servicio && (
+                              <div className="text-xs text-[#70A18E] font-semibold bg-white/60 px-2 py-1 rounded-full inline-block">
+                                {servicio.c_codigo_servicio}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Description */}
+                        {servicio.s_descripcion_servicio && (
+                          <div className="text-sm text-gray-600 mb-4 group-hover:text-gray-700 transition-colors">
+                            {servicio.s_descripcion_servicio}
+                          </div>
+                        )}
+
+                        {/* Action indicator */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-[#70A18E] group-hover:gap-3 transition-all">
+                            <span className="text-sm font-bold">SELECCIONAR</span>
+                            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                          </div>
+                          {loading && (
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#70A18E]"></div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Corner decoration */}
+                      <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 rounded-bl-full -mr-10 -mt-10"></div>
+                      <div className="absolute bottom-0 left-0 w-16 h-16 bg-[#70A18E]/20 rounded-tr-full -ml-8 -mb-8"></div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Botón de regreso */}
+          <div className="flex justify-center">
+            <button
+              onClick={regresarAlInicio}
+              className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#5D7166]/50"
+              style={{
+                background: 'linear-gradient(135deg, #5D7166 0%, #4A5B52 100%)',
+                boxShadow: '0 8px 30px -10px rgba(93, 113, 102, 0.4)'
+              }}
+            >
+              {/* Animated shine effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+              <div className="relative flex items-center gap-3 px-8 py-3">
+                <svg className="w-5 h-5 text-white group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span className="text-white font-bold">Regresar al inicio</span>
+              </div>
+            </button>
+          </div>
         </div>
+      </div>
+
+      {/* Floating particles effect */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#8ECAB2] rounded-full opacity-60 animate-ping"></div>
+        <div className="absolute top-1/3 right-1/3 w-3 h-3 bg-[#B7F2DA] rounded-full opacity-40 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-[#70A18E] rounded-full opacity-50 animate-ping" style={{ animationDelay: '2s' }}></div>
       </div>
     </div>
   );

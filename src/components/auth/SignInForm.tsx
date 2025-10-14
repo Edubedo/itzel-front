@@ -24,6 +24,9 @@ export default function SignInForm() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [fieldError, setFieldError] = useState<{ usuario?: string; contrasena?: string }>({});
+
+
   // Obtener la ruta desde donde se redirigió al login
   const from = location.state?.from?.pathname || '/home';
 
@@ -33,8 +36,9 @@ export default function SignInForm() {
       ...prev,
       [name]: value
     }));
-    // Limpiar error cuando el usuario empiece a escribir
-    if (error) setError('');
+    // Limpiar error general y de campo al escribir
+    setError('');
+    setFieldError({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,13 +54,18 @@ export default function SignInForm() {
 
     try {
       await login(formData);
-      // Redirigir a la página desde donde vino o al dashboard
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err.message || 'Credenciales Incorrectas');
+      if (err.code === 'USER_NOT_FOUND') {
+        setFieldError({ usuario: err.message });
+      } else if (err.code === 'WRONG_PASSWORD') {
+        setFieldError({ contrasena: err.message });
+      } else {
+        setError(err.message || 'Credenciales Incorrectas');
+      }
     } finally {
-      setIsLoading(false);
-    }
+        setIsLoading(false); 
+      }
   };
 
   return (
@@ -64,10 +73,10 @@ export default function SignInForm() {
       <div className="w-full max-w-md pt-10 mx-auto">
         <Link
           to="/"
-          className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          className="inline-flex items-center text-sm text-[#70A18E] transition-colors hover:text-[#547A6B] dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA]"
         >
           <ChevronLeftIcon className="size-5" />
-          Volver al inicio
+          Volver atrás
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -86,16 +95,16 @@ export default function SignInForm() {
         </div>
         <div>
           <div className="mb-5 sm:mb-8">
-            <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
+            <h1 className="mb-2 font-bold text-[#0A1310] text-title-sm dark:text-white sm:text-title-md">
               Iniciar Sesión
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-[#547A6B] dark:text-gray-300">
               Ingresa tu usuario/email y contraseña para acceder al sistema de turnos
             </p>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-lg">
               {error}
             </div>
           )}
@@ -104,7 +113,7 @@ export default function SignInForm() {
             <div className="space-y-6">
               <div>
                 <Label>
-                  Usuario o Email <span className="text-error-500">*</span>
+                  Usuario o Email <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   name="s_usuario"
@@ -113,11 +122,15 @@ export default function SignInForm() {
                   value={formData.s_usuario}
                   onChange={handleInputChange}
                   disabled={isLoading}
+                  className="bg-[#F8F9FA] dark:bg-gray-700 border-[#8ECAB2] dark:border-[#70A18E] focus:border-[#70A18E] dark:focus:border-[#8ECAB2] focus:ring-[#70A18E]/20 dark:focus:ring-[#8ECAB2]/20 text-[#0A1310] dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
                 />
+                {fieldError.usuario && (
+                  <p className="text-red-500 text-sm mt-1">{fieldError.usuario}</p>
+                )}
               </div>
               <div>
                 <Label>
-                  Contraseña <span className="text-error-500">*</span>
+                  Contraseña <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
@@ -127,29 +140,33 @@ export default function SignInForm() {
                     value={formData.s_contrasena}
                     onChange={handleInputChange}
                     disabled={isLoading}
+                    className="bg-[#F8F9FA] dark:bg-gray-700 border-[#8ECAB2] dark:border-[#70A18E] focus:border-[#70A18E] dark:focus:border-[#8ECAB2] focus:ring-[#70A18E]/20 dark:focus:ring-[#8ECAB2]/20 text-[#0A1310] dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
                   />
                   <span
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
                   >
                     {showPassword ? (
-                      <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                      <EyeIcon className="fill-[#70A18E] dark:fill-[#8ECAB2] size-5" />
                     ) : (
-                      <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+                      <EyeCloseIcon className="fill-[#70A18E] dark:fill-[#8ECAB2] size-5" />
                     )}
                   </span>
                 </div>
+                {fieldError.contrasena && (
+                  <p className="text-red-500 text-sm mt-1">{fieldError.contrasena}</p>
+                )}
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Checkbox checked={isChecked} onChange={setIsChecked} />
-                  <span className="block font-normal text-gray-700 text-theme-sm dark:text-gray-400">
+                  <span className="block font-normal text-[#3A554B] dark:text-gray-300 text-theme-sm">
                     Mantener sesión iniciada
                   </span>
                 </div>
                 <Link
                   to="/reset-password"
-                  className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                  className="text-sm text-[#70A18E] hover:text-[#547A6B] dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] transition-colors"
                 >
                   ¿Olvidaste tu contraseña?
                 </Link>
@@ -157,7 +174,11 @@ export default function SignInForm() {
               <div>
                 <button
                   type="submit"
-                  className="w-full px-4 py-3 text-sm bg-brand-500 text-white rounded hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-3 text-sm font-semibold text-white rounded-lg transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    background: 'linear-gradient(135deg, #70A18E 0%, #547A6B 100%)',
+                    boxShadow: '0 4px 15px -5px rgba(112, 161, 142, 0.4)'
+                  }}
                   disabled={isLoading}
                 >
                   {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}

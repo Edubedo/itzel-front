@@ -150,15 +150,26 @@ export const areasService = {
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Error al obtener sucursales');
     }
+  },
+
+  // NUEVO MÉTODO: Obtener todas las áreas sin paginación (para dropdowns)
+  async getAreas(): Promise<{ success: boolean; data: Area[] }> {
+    try {
+      const response = await api.get('/catalogos/areas/list');
+      return response.data;
+    } catch (error: any) {
+      // Si el endpoint no existe, usar getAllAreas con límite alto
+      try {
+        const response = await api.get('/catalogos/areas', { 
+          params: { limit: 1000 } 
+        });
+        return {
+          success: true,
+          data: response.data.data?.areas || response.data.data || []
+        };
+      } catch (fallbackError: any) {
+        throw new Error(error.response?.data?.message || 'Error al obtener áreas');
+      }
+    }
   }
 };
-
-
-
-// src/services/areasService.ts
-
-
-const API_URL = "http://localhost:3000/api/areas"; // Ajusta según tu backend
-
-
-

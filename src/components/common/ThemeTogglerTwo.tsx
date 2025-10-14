@@ -5,7 +5,16 @@ export default function ThemeTogglerTwo() {
   return (
     <button
       onClick={toggleTheme}
-      className="inline-flex items-center justify-center text-white transition-colors rounded-full size-14 bg-brand-500 hover:bg-brand-600"
+      className="inline-flex items-center justify-center text-white transition-all duration-300 rounded-full size-14 hover:shadow-lg bg-gradient-to-br from-[#70A18E] to-[#547A6B] dark:from-gray-600 dark:to-gray-700 hover:from-[#8ECAB2] hover:to-[#70A18E] dark:hover:from-gray-500 dark:hover:to-gray-600"
+      style={{
+        boxShadow: '0 4px 15px -5px rgba(112, 161, 142, 0.4)'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'scale(1.05)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'scale(1)';
+      }}
     >
       <svg
         className="hidden dark:block"

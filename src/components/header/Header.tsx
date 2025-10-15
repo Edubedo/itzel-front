@@ -74,11 +74,28 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
       if (data.success) {
         setSucursales(data.sucursales);
 
-        // Si no hay sucursal activa, seleccionar la primera
-        if (!sucursalActiva && data.sucursales.length > 0) {
+        // Verificar si hay una sucursal guardada en localStorage
+        const sucursalGuardada = localStorage.getItem('sucursal_seleccionada');
+
+        if (!sucursalGuardada && data.sucursales.length > 0) {
+          // Solo seleccionar la primera si no hay ninguna guardada
           const primeraSucursal = data.sucursales[0];
           setSucursalActiva(primeraSucursal);
           localStorage.setItem('sucursal_seleccionada', JSON.stringify(primeraSucursal));
+        } else if (sucursalGuardada) {
+          // Verificar que la sucursal guardada exista en las sucursales disponibles
+          try {
+            const sucursal = JSON.parse(sucursalGuardada);
+            const sucursalExiste = data.sucursales.some(s => s.ck_sucursal === sucursal.ck_sucursal);
+            if (!sucursalExiste && data.sucursales.length > 0) {
+              // Si la sucursal guardada no existe en la lista, seleccionar la primera disponible
+              const primeraSucursal = data.sucursales[0];
+              setSucursalActiva(primeraSucursal);
+              localStorage.setItem('sucursal_seleccionada', JSON.stringify(primeraSucursal));
+            }
+          } catch (error) {
+            console.error('Error al procesar sucursal guardada:', error);
+          }
         }
       }
     } catch (error) {
@@ -89,12 +106,6 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
   };
 
   const seleccionarSucursal = (sucursal: Sucursal) => {
-    const token = Cookies.get('authToken');
-    if (!token) {
-      // Requiere login para cambiar sucursal en la página pública
-      navigate('/signin', { replace: true, state: { from: { pathname: '/' } } });
-      return;
-    }
     setSucursalActiva(sucursal);
     localStorage.setItem('sucursal_seleccionada', JSON.stringify(sucursal));
     setIsDropdownOpen(false);
@@ -181,8 +192,8 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
                         key={sucursal.ck_sucursal}
                         onClick={() => seleccionarSucursal(sucursal)}
                         className={`w-full text-left px-4 py-3 transition-all duration-200 border-b border-gray-100 last:border-b-0 group ${sucursalActiva?.ck_sucursal === sucursal.ck_sucursal
-                            ? 'bg-gradient-to-r from-[#B7F2DA]/30 to-[#8ECAB2]/20 border-l-4 border-l-[#70A18E]'
-                            : 'hover:bg-gradient-to-r hover:from-gray-50 hover:to-white'
+                          ? 'bg-gradient-to-r from-[#B7F2DA]/30 to-[#8ECAB2]/20 border-l-4 border-l-[#70A18E]'
+                          : 'hover:bg-gradient-to-r hover:from-gray-50 hover:to-white'
                           }`}
                       >
                         <div className="flex items-start justify-between">

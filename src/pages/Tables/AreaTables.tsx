@@ -163,7 +163,7 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
             >
               <option value="">Todos los estados</option>
               <option value="ACTIVO">Activo</option>
-              <option value="INACTI">Inactivo</option>
+              <option value="INACTIVO">Inactivo</option>
             </select>
           </div>
 

@@ -40,7 +40,7 @@ export default function Starter() {
   const [areas, setAreas] = useState<Area[]>([]);
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [areaSeleccionada, setAreaSeleccionada] = useState<Area | null>(null);
-  
+
   const [turnoCreado, setTurnoCreado] = useState<Turno | null>(null);
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(20);
@@ -48,6 +48,8 @@ export default function Starter() {
   const INACTIVITY_TIME = 30;
   const [timer, setTimer] = useState(INACTIVITY_TIME);
 
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
 
   // Cargar sucursal seleccionada desde localStorage
   useEffect(() => {
@@ -67,8 +69,9 @@ export default function Starter() {
       setAreas([]);
       setServicios([]);
       setAreaSeleccionada(null);
-      
       setCurrentStep('clientType');
+      setShowConfirmation(false);
+      setServicioSeleccionado(null);
     };
 
     window.addEventListener('sucursalCambiada', handleSucursalCambiada as EventListener);
@@ -165,18 +168,38 @@ export default function Starter() {
     setEsCliente(isClient);
     setCurrentStep('serviceSelection');
     setTimer(INACTIVITY_TIME);
+    setShowConfirmation(false);
+    setServicioSeleccionado(null);
   };
 
   const seleccionarArea = (area: Area) => {
     setAreaSeleccionada(area);
     setServicios([]);
+    setTimer(INACTIVITY_TIME);
+  };
+
+  const handleServicioClick = (servicio: Servicio) => {
+    setServicioSeleccionado(servicio);
+    setShowConfirmation(true);
+  };
+
+  const confirmarTurno = async () => {
+    if (!servicioSeleccionado) return;
+
+    setShowConfirmation(false);
+    await crearTurno(servicioSeleccionado);
+  };
+
+  const cancelarTurno = () => {
+    setShowConfirmation(false);
+    setServicioSeleccionado(null);
+    setTimer(INACTIVITY_TIME);
   };
 
   const crearTurno = async (servicio: Servicio) => {
     if (!sucursalSeleccionada || !areaSeleccionada) return;
 
     setLoading(true);
-    
 
     try {
       const response = await fetch('http://localhost:3001/api/operaciones/turnos/crear', {
@@ -189,7 +212,7 @@ export default function Starter() {
           ck_sucursal: sucursalSeleccionada.ck_sucursal,
           ck_servicio: servicio.ck_servicio,
           es_cliente: esCliente,
-          ck_cliente: null // Por ahora sin cliente específico
+          ck_cliente: null
         }),
       });
 
@@ -253,9 +276,9 @@ export default function Starter() {
     setServicios([]);
     setCountdown(20);
     setTimer(INACTIVITY_TIME);
+    setShowConfirmation(false);
+    setServicioSeleccionado(null);
   };
-
-  
 
   const renderClientTypeSelection = () => (
     <div className="relative">
@@ -527,6 +550,35 @@ export default function Starter() {
             </div>
           </div>
 
+          {/* CONTADOR */}
+          <div className="flex justify-center mb-8">
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/30 w-full max-w-sm">
+              {/* Línea superior con indicador y texto */}
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full animate-pulse ${timer <= 10 ? 'bg-red-500' : timer <= 20 ? 'bg-amber-500' : 'bg-green-500'
+                    }`}></div>
+                  <span className="text-sm font-medium text-[#3A554B]">
+                    Tiempo restante:
+                    <span className={`font-bold ml-1 ${timer <= 10 ? 'text-red-600' : timer <= 20 ? 'text-amber-600' : 'text-green-600'
+                      }`}>
+                      {timer}s
+                    </span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Barra de progreso discreta */}
+              <div className="w-full bg-white/30 rounded-full h-1 overflow-hidden">
+                <div
+                  className={`h-1 rounded-full transition-all duration-1000 ${timer <= 10 ? 'bg-red-500' : timer <= 20 ? 'bg-amber-500' : 'bg-green-500'
+                    }`}
+                  style={{ width: `${(timer / INACTIVITY_TIME) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+
           {/* Selección de Área */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-6">
@@ -541,8 +593,8 @@ export default function Starter() {
                   key={area.ck_area}
                   onClick={() => seleccionarArea(area)}
                   className={`group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 ${areaSeleccionada?.ck_area === area.ck_area
-                      ? 'bg-gradient-to-br from-[#70A18E] to-[#547A6B] text-white shadow-2xl'
-                      : 'bg-gradient-to-br from-[#B7F2DA] to-[#8ECAB2] text-[#0A1310] hover:shadow-xl'
+                    ? 'bg-gradient-to-br from-[#70A18E] to-[#547A6B] text-white shadow-2xl'
+                    : 'bg-gradient-to-br from-[#B7F2DA] to-[#8ECAB2] text-[#0A1310] hover:shadow-xl'
                     }`}
                 >
                   {/* Animated shine effect */}
@@ -591,7 +643,7 @@ export default function Starter() {
                   {servicios.map((servicio) => (
                     <button
                       key={servicio.ck_servicio}
-                      onClick={() => crearTurno(servicio)}
+                      onClick={() => handleServicioClick(servicio)}
                       disabled={loading}
                       className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:translate-y-0"
                       style={{
@@ -678,6 +730,80 @@ export default function Starter() {
         <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#8ECAB2] rounded-full opacity-60 animate-ping"></div>
         <div className="absolute top-1/3 right-1/3 w-3 h-3 bg-[#B7F2DA] rounded-full opacity-40 animate-pulse" style={{ animationDelay: '1s' }}></div>
         <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-[#70A18E] rounded-full opacity-50 animate-ping" style={{ animationDelay: '2s' }}></div>
+      </div>
+    </div>
+  );
+
+  // MODAL DE CONFIRMACIÓN 
+  const renderConfirmationModal = () => (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto border border-white/20">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] p-6 rounded-t-2xl text-center">
+          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-white mb-2">¿Confirmar turno?</h3>
+          <p className="text-white/80 text-sm">
+            Está a punto de generar un turno para el servicio seleccionado
+          </p>
+        </div>
+
+        {/* Detalles del turno - SIN LOS DATOS ESPECÍFICOS */}
+        <div className="p-6">
+          <div className="bg-gray-50 rounded-xl p-4 mb-6">
+            <div className="text-center mb-4">
+              <h4 className="font-bold text-[#3A554B] text-lg">{servicioSeleccionado?.s_servicio}</h4>
+              <p className="text-sm text-gray-600 mt-1">{areaSeleccionada?.s_area}</p>
+            </div>
+
+            {/* SOLO MOSTRAR EL SERVICIO Y ÁREA, NO LOS DATOS DE SUCURSAL Y TIPO */}
+            <div className="text-center p-3 bg-white rounded-lg">
+              <div className="text-xs text-gray-500">Servicio seleccionado</div>
+              <div className="font-semibold text-[#3A554B]">
+                {servicioSeleccionado?.s_servicio}
+              </div>
+            </div>
+          </div>
+
+          {/* Botones de acción */}
+          <div className="flex gap-3">
+            <button
+              onClick={cancelarTurno}
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-colors duration-200"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={confirmarTurno}
+              disabled={loading}
+              className="flex-1 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Generando...
+                </div>
+              ) : (
+                'Sí, confirmar turno'
+              )}
+            </button>
+          </div>
+
+          {/* Mensaje de advertencia */}
+          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+            <div className="flex items-start gap-2">
+              <svg className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p className="text-xs text-amber-700">
+                Una vez confirmado, el turno será generado en el sistema y deberá esperar su atención.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -775,6 +901,9 @@ export default function Starter() {
         }}>
 
         <Header showBranchSelector={true} title="Solicitud de Turnos" />
+
+        {/* MODAL DE CONFIRMACIÓN - SOLO MOSTRAR CUANDO showConfirmation SEA true Y currentStep SEA serviceSelection */}
+        {showConfirmation && currentStep === 'serviceSelection' && renderConfirmationModal()}
 
         {/* Main Content - Optimizado para caber en pantalla */}
         <div className="flex-1 flex items-center justify-center px-4 py-2 overflow-auto relative z-0">

@@ -751,20 +751,23 @@ export default function Starter() {
           </p>
         </div>
 
-        {/* Detalles del turno - SIN LOS DATOS ESPECÍFICOS */}
+        {/* Detalles del turno */}
         <div className="p-6">
           <div className="bg-gray-50 rounded-xl p-4 mb-6">
             <div className="text-center mb-4">
               <h4 className="font-bold text-[#3A554B] text-lg">{servicioSeleccionado?.s_servicio}</h4>
-              <p className="text-sm text-gray-600 mt-1">{areaSeleccionada?.s_area}</p>
+              <p className="text-sm text-gray-600 mt-1">{servicioSeleccionado?.s_descripcion_servicio}</p>
             </div>
 
-            {/* SOLO MOSTRAR EL SERVICIO Y ÁREA, NO LOS DATOS DE SUCURSAL Y TIPO */}
-            <div className="text-center p-3 bg-white rounded-lg">
-              <div className="text-xs text-gray-500">Servicio seleccionado</div>
-              <div className="font-semibold text-[#3A554B]">
-                {servicioSeleccionado?.s_servicio}
+            {/* Información contextual */}
+            <div className="space-y-3">
+              <div className="text-center p-3 bg-white rounded-lg">
+                <div className="text-xs text-gray-500">Área</div>
+                <div className="font-semibold text-[#3A554B]">
+                  {areaSeleccionada?.s_area}
+                </div>
               </div>
+             
             </div>
           </div>
 

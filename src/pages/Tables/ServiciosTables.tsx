@@ -19,6 +19,7 @@ interface ServicioStats {
 export default function ServiciosTables({ titleTable = "Catálogo de servicios" }: ServiciosTablesProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [areaFilter, setAreaFilter] = useState("");
+  const [clienteFilter, setClienteFilter] = useState(""); 
   const [servicios, setServicios] = useState<any[]>([]);
   const [stats, setStats] = useState<ServicioStats>({
     total: 0,
@@ -80,6 +81,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
   const clearFilters = () => {
     setSearchTerm("");
     setAreaFilter("");
+    setClienteFilter(""); // NUEVO: Limpiar también este filtro
   };
 
   return (
@@ -158,6 +160,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
               <span className="absolute left-3 top-3 text-gray-400 dark:text-gray-500">🔍</span>
             </div>
           </div>
+          
           {/* Filtro por Área */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -176,6 +179,23 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
               ))}
             </select>
           </div>
+
+          {/* NUEVO: Filtro por Cliente/No Cliente */}
+          <div className="min-w-48">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Tipo de Cliente
+            </label>
+            <select
+              value={clienteFilter}
+              onChange={(e) => setClienteFilter(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
+            >
+              <option value="">Todos los tipos</option>
+              <option value="1">Clientes</option>
+              <option value="0">No clientes</option>
+            </select>
+          </div>
+
           {/* Botón limpiar filtros */}
           <div>
             <button
@@ -195,6 +215,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
             setServicios={setServicios}
             searchTerm={searchTerm}
             areaFilter={areaFilter}
+            clienteFilter={clienteFilter} // NUEVO: Pasar el filtro al componente de tabla
             estatusFilter={""} // No se usa el filtro de estado
             onStatsUpdate={handleStatsUpdate}
           />

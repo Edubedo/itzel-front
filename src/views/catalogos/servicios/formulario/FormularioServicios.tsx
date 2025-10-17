@@ -14,6 +14,7 @@ function FormularioServicios() {
     ck_area: "",
     c_codigo_servicio: "",
     ck_estatus: "ACTIVO",
+    i_es_para_clientes: 1,
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -21,6 +22,7 @@ function FormularioServicios() {
   const [loadingAreas, setLoadingAreas] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [areas, setAreas] = useState<Area[]>([]);
+  const [selectedAreaSucursal, setSelectedAreaSucursal] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -47,6 +49,13 @@ function FormularioServicios() {
       if (response.success) {
         console.log("Datos de áreas cargados:", response.data);
         setAreas(response.data);
+        
+        if (isEditing && formData.ck_area) {
+          const areaSeleccionada = response.data.find((area: Area) => area.ck_area === formData.ck_area);
+          if (areaSeleccionada) {
+            setSelectedAreaSucursal(areaSeleccionada.sucursal_nombre || "N/A");
+          }
+        }
       } else {
         console.error("Error en respuesta de áreas:", response);
         alert("Error al cargar las áreas: " + response.message);
@@ -77,7 +86,15 @@ function FormularioServicios() {
           ck_area: servicio.ck_area || "",
           c_codigo_servicio: servicio.c_codigo_servicio || "",
           ck_estatus: servicio.ck_estatus || "ACTIVO",
+          i_es_para_clientes: servicio.i_es_para_clientes !== undefined ? servicio.i_es_para_clientes : 1,
         });
+
+        if (servicio.ck_area && areas.length > 0) {
+          const areaSeleccionada = areas.find(area => area.ck_area === servicio.ck_area);
+          if (areaSeleccionada) {
+            setSelectedAreaSucursal(areaSeleccionada.sucursal_nombre || "N/A");
+          }
+        }
       } else {
         alert("Error al cargar datos del servicio: " + response.message);
       }
@@ -97,6 +114,11 @@ function FormularioServicios() {
       ...prev,
       [field]: value,
     }));
+
+    if (field === "ck_area") {
+      const areaSeleccionada = areas.find(area => area.ck_area === value);
+      setSelectedAreaSucursal(areaSeleccionada?.sucursal_nombre || "N/A");
+    }
 
     if (errors[field]) {
       setErrors((prev) => ({
@@ -220,34 +242,83 @@ function FormularioServicios() {
                 )}
               </div>
 
+              {/* ¿Es para clientes? */}
               <div>
-                <Label>Área <span className="text-red-500 text-sm">*</span></Label>
-                {loadingAreas ? (
-                  <div className="px-4 py-2 border border-gray-300 rounded-lg text-gray-500 bg-gray-100">
-                    Cargando áreas...
+                <Label>¿Es para clientes o no clientes? <span className="text-red-500 text-sm">*</span></Label>
+                <div className="flex items-center space-x-4">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="es_para_clientes"
+                      value="1"
+                      checked={formData.i_es_para_clientes === 1}
+                      onChange={(e) => handleInputChange("i_es_para_clientes", parseInt(e.target.value))}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">Clientes</span>
+                  </label>
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="es_para_clientes"
+                      value="0"
+                      checked={formData.i_es_para_clientes === 0}
+                      onChange={(e) => handleInputChange("i_es_para_clientes", parseInt(e.target.value))}
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">No clientes</span>
+                  </label>
+                </div>
+                <p className="text-gray-500 text-sm mt-1">
+                  Selecciona si este servicio es para clientes o no clientes.
+                </p>
+              </div>
+
+              {/* Área con información de sucursal */}
+              <div className="md:col-span-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Área <span className="text-red-500 text-sm">*</span></Label>
+                    {loadingAreas ? (
+                      <div className="px-4 py-2 border border-gray-300 rounded-lg text-gray-500 bg-gray-100">
+                        Cargando áreas...
+                      </div>
+                    ) : (
+                      <select
+                        value={formData.ck_area}
+                        onChange={(e) => handleInputChange("ck_area", e.target.value)}
+                        className={`w-full px-4 py-2 border rounded-lg ${errors.ck_area ? "border-red-500" : "border-gray-300"}`}
+                      >
+                        <option value="">Seleccione un área</option>
+                        {areas.map((area) => (
+                          <option key={area.ck_area} value={area.ck_area}>
+                            {area.s_area} - {area.sucursal_nombre || "Sin sucursal"}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    {errors.ck_area && (
+                      <p className="text-red-500 text-sm mt-1">{errors.ck_area}</p>
+                    )}
+                    {areas.length === 0 && !loadingAreas && (
+                      <p className="text-yellow-600 text-sm mt-1">
+                        No hay áreas disponibles. Por favor, cree áreas primero.
+                      </p>
+                    )}
                   </div>
-                ) : (
-                  <select
-                    value={formData.ck_area}
-                    onChange={(e) => handleInputChange("ck_area", e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg ${errors.ck_area ? "border-red-500" : "border-gray-300"}`}
-                  >
-                    <option value="">Seleccione un área</option>
-                    {areas.map((area) => (
-                      <option key={area.ck_area} value={area.ck_area}>
-                        {area.s_area}
-                      </option>
-                    ))}
-                  </select>
-                )}
-                {errors.ck_area && (
-                  <p className="text-red-500 text-sm mt-1">{errors.ck_area}</p>
-                )}
-                {areas.length === 0 && !loadingAreas && (
-                  <p className="text-yellow-600 text-sm mt-1">
-                    No hay áreas disponibles. Por favor, cree áreas primero.
-                  </p>
-                )}
+
+                  <div>
+                    <Label>Sucursal del Área</Label>
+                    <div className={`px-4 py-2 border rounded-lg ${
+                      selectedAreaSucursal ? "border-gray-300 bg-gray-50 text-gray-700" : "border-gray-200 bg-gray-100 text-gray-500"
+                    }`}>
+                      {selectedAreaSucursal || "Seleccione un área"}
+                    </div>
+                    <p className="text-gray-500 text-sm mt-1">
+                      Sucursal a la que pertenece el área seleccionada
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <div>

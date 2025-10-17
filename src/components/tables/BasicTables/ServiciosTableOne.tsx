@@ -15,6 +15,7 @@ interface ServiciosTableProps {
   setServicios: (servicios: any[]) => void;
   searchTerm: string;
   areaFilter: string;
+  clienteFilter: string; // NUEVO: Filtro para cliente/no cliente
   estatusFilter: string;
   onStatsUpdate: (stats: any) => void;
 }
@@ -24,6 +25,7 @@ export default function ServiciosTableOne({
   setServicios,
   searchTerm,
   areaFilter,
+  clienteFilter, // NUEVO: Recibir el filtro
   estatusFilter,
   onStatsUpdate,
 }: ServiciosTableProps) {
@@ -54,7 +56,7 @@ export default function ServiciosTableOne({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, estatusFilter, areaFilter]);
+  }, [searchTerm, estatusFilter, areaFilter, clienteFilter]); // NUEVO: Agregar clienteFilter
 
   // Calcular estadísticas cuando cambien los servicios o filtros
   useEffect(() => {
@@ -66,8 +68,10 @@ export default function ServiciosTableOne({
         
         const matchesEstatus = !estatusFilter || servicio.ck_estatus === estatusFilter;
         const matchesArea = !areaFilter || servicio.ck_area === areaFilter;
+        // NUEVO: Filtrar por tipo de cliente
+        const matchesCliente = !clienteFilter || servicio.i_es_para_clientes?.toString() === clienteFilter;
 
-        return matchesSearch && matchesEstatus && matchesArea;
+        return matchesSearch && matchesEstatus && matchesArea && matchesCliente;
       });
 
       const total = filteredServicios.length;
@@ -85,7 +89,7 @@ export default function ServiciosTableOne({
     };
 
     calculateStats();
-  }, [servicios, searchTerm, estatusFilter, areaFilter, onStatsUpdate]);
+  }, [servicios, searchTerm, estatusFilter, areaFilter, clienteFilter, onStatsUpdate]); // NUEVO: Agregar clienteFilter
 
   // Calcular paginación
   useEffect(() => {
@@ -96,13 +100,15 @@ export default function ServiciosTableOne({
       
       const matchesEstatus = !estatusFilter || servicio.ck_estatus === estatusFilter;
       const matchesArea = !areaFilter || servicio.ck_area === areaFilter;
+      // NUEVO: Filtrar por tipo de cliente
+      const matchesCliente = !clienteFilter || servicio.i_es_para_clientes?.toString() === clienteFilter;
 
-      return matchesSearch && matchesEstatus && matchesArea;
+      return matchesSearch && matchesEstatus && matchesArea && matchesCliente;
     });
 
     setTotalPages(Math.ceil(filteredServicios.length / itemsPerPage));
     setTotalItems(filteredServicios.length);
-  }, [servicios, searchTerm, estatusFilter, areaFilter, itemsPerPage]);
+  }, [servicios, searchTerm, estatusFilter, areaFilter, clienteFilter, itemsPerPage]); // NUEVO: Agregar clienteFilter
 
   const goToPage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -175,13 +181,25 @@ export default function ServiciosTableOne({
     
     const matchesEstatus = !estatusFilter || servicio.ck_estatus === estatusFilter;
     const matchesArea = !areaFilter || servicio.ck_area === areaFilter;
+    // NUEVO: Filtrar por tipo de cliente
+    const matchesCliente = !clienteFilter || servicio.i_es_para_clientes?.toString() === clienteFilter;
 
-    return matchesSearch && matchesEstatus && matchesArea;
+    return matchesSearch && matchesEstatus && matchesArea && matchesCliente;
   });
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, filteredServicios.length);
   const serviciosPaginados = filteredServicios.slice(startIndex, endIndex);
+
+  // NUEVO: Función para mostrar el texto del tipo de cliente
+  const getTipoClienteText = (esParaClientes: number) => {
+    return esParaClientes === 1 ? "Clientes" : "No clientes";
+  };
+
+  // NUEVO: Función para obtener el color del badge del tipo de cliente
+  const getTipoClienteColor = (esParaClientes: number) => {
+    return esParaClientes === 1 ? "success" : "warning";
+  };
 
   if (loading && servicios.length === 0) {
     return (
@@ -310,6 +328,9 @@ export default function ServiciosTableOne({
                 Área
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                Tipo de Cliente {/* NUEVA COLUMNA */}
+              </TableCell>
+              <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                 Estado
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
@@ -320,12 +341,12 @@ export default function ServiciosTableOne({
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-700">
             {serviciosPaginados.length === 0 && !loading ? (
               <TableRow>
-                <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400"> {/* Cambiado a 7 columnas */}
                   <div className="flex flex-col items-center">
                     <span className="text-2xl mb-2">🛠️</span>
                     <span>No se encontraron servicios</span>
                     <span className="text-sm mt-1">
-                      {searchTerm || estatusFilter || areaFilter
+                      {searchTerm || estatusFilter || areaFilter || clienteFilter
                         ? 'Intente ajustar los filtros de búsqueda'
                         : 'No hay servicios registrados en el sistema'
                       }
@@ -349,6 +370,15 @@ export default function ServiciosTableOne({
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                     {servicio.area_nombre || '-'}
+                  </TableCell>
+                  {/* NUEVA COLUMNA: Tipo de Cliente */}
+                  <TableCell className="px-4 py-3 text-start">
+                    <Badge
+                      size="sm"
+                      color={getTipoClienteColor(servicio.i_es_para_clientes)}
+                    >
+                      {getTipoClienteText(servicio.i_es_para_clientes)}
+                    </Badge>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-start">
                     <Badge

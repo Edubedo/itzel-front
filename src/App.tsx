@@ -44,6 +44,10 @@ import { LogoProvider } from "./contexts/LogoContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
+// Importar componentes de accesibilidad
+import { AccessibilityProvider } from "./components/accessibility/AccessibilityProvider";
+import AccessibilityPanel from "./components/accessibility/AccessibilityPanel";
+
 // ▼▼▼ 1. IMPORTA EL NUEVO COMPONENTE DE PÁGINA ▼▼▼
 import PaginaServicio from "./views/catalogos/servicios/PaginaServicio";
 import Configuration from "./pages/Configuration";
@@ -60,11 +64,13 @@ const USER_TYPES = {
 
 export default function App() {
   return (
-    <LogoProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
+    <AccessibilityProvider>
+      <LogoProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <AccessibilityPanel />
+            <Routes>
             {/* Rutas públicas */}
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
@@ -218,5 +224,6 @@ export default function App() {
         </BrowserRouter>
       </AuthProvider>
     </LogoProvider>
+    </AccessibilityProvider>
   );
 }

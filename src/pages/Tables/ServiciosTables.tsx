@@ -14,8 +14,8 @@ interface ServicioStats {
   total: number;
   activos: number;
   porArea: Record<string, number>;
-  paraClientes: number; 
-  paraNoClientes: number; 
+  paraClientes: number;
+  paraNoClientes: number;
 }
 
 export default function ServiciosTables({ titleTable = "Catálogo de servicios" }: ServiciosTablesProps) {
@@ -27,8 +27,8 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
     total: 0,
     activos: 0,
     porArea: {},
-    paraClientes: 0, 
-    paraNoClientes: 0 
+    paraClientes: 0,
+    paraNoClientes: 0
   });
 
   const [areas, setAreas] = useState<Area[]>([]);
@@ -214,7 +214,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
               <option value="">Todas las áreas</option>
               {areas.map((area) => (
                 <option key={area.ck_area} value={area.ck_area}>
-                  {area.s_area}
+                  {area.s_area} - {area.sucursal_nombre || "Sin sucursal"}
                 </option>
               ))}
             </select>

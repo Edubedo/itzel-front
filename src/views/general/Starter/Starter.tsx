@@ -373,7 +373,12 @@ export default function Starter() {
 
               {/* Glowing badge - Más pequeño */}
               <div className="absolute top-4 right-4 px-2 py-0.5 bg-[#B7F2DA] rounded-full text-[10px] md:text-xs font-bold text-[#3A554B] shadow-lg animate-pulse">
-                ⭐ PREMIUM
+                <div className="flex items-center gap-2 px-2 py-0.5 bg-[#B7F2DA] rounded-full text-xs font-bold text-[#3A554B] shadow-lg">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <polygon points="12,2 22,9 12,22 2,9" stroke="#3A554B" strokeWidth="2" fill="#B7F2DA" />
+                  </svg>
+                  GRANDES USUARIOS
+                </div>
               </div>
 
               <div className="relative p-6 md:p-8">
@@ -767,7 +772,7 @@ export default function Starter() {
                   {areaSeleccionada?.s_area}
                 </div>
               </div>
-             
+
             </div>
           </div>
 

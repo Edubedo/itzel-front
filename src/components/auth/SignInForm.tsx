@@ -7,9 +7,13 @@ import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { useAuth } from "../../contexts/AuthContext";
 import { useLogo } from "../../contexts/LogoContext";
+import { useAccessibility } from "../accessibility/AccessibilityProvider";
+import VoiceReader from "../accessibility/VoiceReader";
+import VoiceControl from "../accessibility/VoiceControl";
 
 
 export default function SignInForm() {
+  const { announceToScreenReader } = useAccessibility();
   const [formData, setFormData] = useState({
     s_usuario: '',
     s_contrasena: ''
@@ -45,23 +49,33 @@ export default function SignInForm() {
     e.preventDefault();
 
     if (!formData.s_usuario || !formData.s_contrasena) {
-      setError('Por favor completa todos los campos');
+      const message = 'Por favor completa todos los campos';
+      setError(message);
+      announceToScreenReader(message);
       return;
     }
 
     setIsLoading(true);
     setError('');
+    const message = 'Iniciando sesión, por favor espere...';
+    announceToScreenReader(message);
 
     try {
       await login(formData);
+      const successMessage = 'Sesión iniciada exitosamente';
+      announceToScreenReader(successMessage);
       navigate(from, { replace: true });
     } catch (err: any) {
       if (err.code === 'USER_NOT_FOUND') {
         setFieldError({ usuario: err.message });
+        announceToScreenReader(`Error: ${err.message}`);
       } else if (err.code === 'WRONG_PASSWORD') {
         setFieldError({ contrasena: err.message });
+        announceToScreenReader(`Error: ${err.message}`);
       } else {
-        setError(err.message || 'Credenciales Incorrectas');
+        const errorMessage = err.message || 'Credenciales Incorrectas';
+        setError(errorMessage);
+        announceToScreenReader(`Error: ${errorMessage}`);
       }
     } finally {
         setIsLoading(false); 
@@ -69,27 +83,66 @@ export default function SignInForm() {
   };
 
   return (
-    <div className="flex flex-col flex-1">
-      <div className="w-full max-w-md pt-10 mx-auto">
-        <Link
-          to="/"
-          className="inline-flex items-center text-sm text-[#70A18E] transition-colors hover:text-[#547A6B] dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA]"
-        >
-          <ChevronLeftIcon className="size-5" />
-          Volver 
-        </Link>
-      </div>
-      <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
+    <VoiceControl
+      onNavigate={(direction) => {
+        const message = `Navegando ${direction}`;
+        announceToScreenReader(message);
+      }}
+      onActivate={() => {
+        const message = 'Elemento activado';
+        announceToScreenReader(message);
+      }}
+      onGoBack={() => {
+        const message = 'Regresando a la página principal';
+        announceToScreenReader(message);
+      }}
+      onHelp={() => {
+        const message = 'Mostrando ayuda del formulario de inicio de sesión';
+        announceToScreenReader(message);
+      }}
+      onForm={() => {
+        const message = 'Navegando a los campos del formulario';
+        announceToScreenReader(message);
+      }}
+      onButton={() => {
+        const message = 'Navegando a los botones';
+        announceToScreenReader(message);
+      }}
+      onLink={() => {
+        const message = 'Navegando a los enlaces';
+        announceToScreenReader(message);
+      }}
+      onField={() => {
+        const message = 'Navegando a los campos de entrada';
+        announceToScreenReader(message);
+      }}
+      onText={() => {
+        const message = 'Navegando al contenido de texto';
+        announceToScreenReader(message);
+      }}
+    >
+      <div className="flex flex-col flex-1">
+        <div className="w-full max-w-md pt-10 mx-auto">
+          <Link
+            to="/"
+            className="inline-flex items-center text-sm text-[#70A18E] transition-colors hover:text-[#547A6B] dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] accessibility-link"
+            aria-label="Volver a la página principal"
+          >
+            <ChevronLeftIcon className="size-5" aria-hidden="true" />
+            Volver 
+          </Link>
+        </div>
+        <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         {/* Logo dinámico */}
         <div className="flex justify-center mb-6">
           <img
             src={logoLight}
-            alt="Logo"
+            alt="Logo de ITZEL"
             className="h-14 dark:hidden"
           />
           <img
             src={logoDark}
-            alt="Logo"
+            alt="Logo de ITZEL"
             className="h-14 hidden dark:block"
           />
         </div>
@@ -101,6 +154,11 @@ export default function SignInForm() {
             <p className="text-sm text-[#547A6B] dark:text-gray-300">
               Ingresa tu usuario/email y contraseña para acceder al sistema de turnos
             </p>
+            <VoiceReader 
+              text="Formulario de inicio de sesión. Ingrese su usuario o email y contraseña para acceder al sistema."
+              autoRead={true}
+              delay={1000}
+            />
           </div>
 
           {error && (
@@ -109,11 +167,11 @@ export default function SignInForm() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} role="form" aria-label="Formulario de inicio de sesión">
             <div className="space-y-6">
-              <div>
-                <Label>
-                  Usuario o Email <span className="text-red-500">*</span>
+              <div className="accessibility-field-group">
+                <Label className="accessibility-label">
+                  Usuario o Email <span className="text-red-500 accessibility-required">*</span>
                 </Label>
                 <Input
                   name="s_usuario"
@@ -122,15 +180,20 @@ export default function SignInForm() {
                   value={formData.s_usuario}
                   onChange={handleInputChange}
                   disabled={isLoading}
-                  className="bg-[#F8F9FA] dark:bg-gray-700 border-[#8ECAB2] dark:border-[#70A18E] focus:border-[#70A18E] dark:focus:border-[#8ECAB2] focus:ring-[#70A18E]/20 dark:focus:ring-[#8ECAB2]/20 text-[#0A1310] dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
+                  className="accessibility-input bg-[#F8F9FA] dark:bg-gray-700 border-[#8ECAB2] dark:border-[#70A18E] focus:border-[#70A18E] dark:focus:border-[#8ECAB2] focus:ring-[#70A18E]/20 dark:focus:ring-[#8ECAB2]/20 text-[#0A1310] dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
+                  aria-label="Campo de usuario o email"
+                  aria-required="true"
+                  aria-describedby={fieldError.usuario ? "usuario-error" : "usuario-help"}
                 />
-                {fieldError.usuario && (
-                  <p className="text-red-500 text-sm mt-1">{fieldError.usuario}</p>
+                {fieldError.usuario ? (
+                  <p id="usuario-error" className="text-red-500 text-sm mt-1 accessibility-error" role="alert">{fieldError.usuario}</p>
+                ) : (
+                  <p id="usuario-help" className="text-gray-500 text-sm mt-1 accessibility-help">Ingrese su usuario o dirección de email</p>
                 )}
               </div>
-              <div>
-                <Label>
-                  Contraseña <span className="text-red-500">*</span>
+              <div className="accessibility-field-group">
+                <Label className="accessibility-label">
+                  Contraseña <span className="text-red-500 accessibility-required">*</span>
                 </Label>
                 <div className="relative">
                   <Input
@@ -140,33 +203,45 @@ export default function SignInForm() {
                     value={formData.s_contrasena}
                     onChange={handleInputChange}
                     disabled={isLoading}
-                    className="bg-[#F8F9FA] dark:bg-gray-700 border-[#8ECAB2] dark:border-[#70A18E] focus:border-[#70A18E] dark:focus:border-[#8ECAB2] focus:ring-[#70A18E]/20 dark:focus:ring-[#8ECAB2]/20 text-[#0A1310] dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
+                    className="accessibility-input bg-[#F8F9FA] dark:bg-gray-700 border-[#8ECAB2] dark:border-[#70A18E] focus:border-[#70A18E] dark:focus:border-[#8ECAB2] focus:ring-[#70A18E]/20 dark:focus:ring-[#8ECAB2]/20 text-[#0A1310] dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
+                    aria-label="Campo de contraseña"
+                    aria-required="true"
+                    aria-describedby={fieldError.contrasena ? "contrasena-error" : "contrasena-help"}
                   />
-                  <span
+                  <button
+                    type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                    className="absolute z-30 -translate-y-1/2 right-4 top-1/2 p-1"
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   >
                     {showPassword ? (
-                      <EyeIcon className="fill-[#70A18E] dark:fill-[#8ECAB2] size-5" />
+                      <EyeIcon className="fill-[#70A18E] dark:fill-[#8ECAB2] size-5" aria-hidden="true" />
                     ) : (
-                      <EyeCloseIcon className="fill-[#70A18E] dark:fill-[#8ECAB2] size-5" />
+                      <EyeCloseIcon className="fill-[#70A18E] dark:fill-[#8ECAB2] size-5" aria-hidden="true" />
                     )}
-                  </span>
+                  </button>
                 </div>
-                {fieldError.contrasena && (
-                  <p className="text-red-500 text-sm mt-1">{fieldError.contrasena}</p>
+                {fieldError.contrasena ? (
+                  <p id="contrasena-error" className="text-red-500 text-sm mt-1 accessibility-error" role="alert">{fieldError.contrasena}</p>
+                ) : (
+                  <p id="contrasena-help" className="text-gray-500 text-sm mt-1 accessibility-help">Ingrese su contraseña</p>
                 )}
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={isChecked} onChange={setIsChecked} />
+                  <Checkbox 
+                    checked={isChecked} 
+                    onChange={setIsChecked}
+                    aria-label="Mantener sesión iniciada"
+                  />
                   <span className="block font-normal text-[#3A554B] dark:text-gray-300 text-theme-sm">
                     Mantener sesión iniciada
                   </span>
                 </div>
                 <Link
                   to="/reset-password"
-                  className="text-sm text-[#70A18E] hover:text-[#547A6B] dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] transition-colors"
+                  className="text-sm text-[#70A18E] hover:text-[#547A6B] dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] transition-colors accessibility-link"
+                  aria-label="Recuperar contraseña olvidada"
                 >
                   ¿Olvidaste tu contraseña?
                 </Link>
@@ -174,12 +249,13 @@ export default function SignInForm() {
               <div>
                 <button
                   type="submit"
-                  className="w-full px-4 py-3 text-sm font-semibold text-white rounded-lg transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-3 text-sm font-semibold text-white rounded-lg transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed accessibility-action-button"
                   style={{
                     background: 'linear-gradient(135deg, #70A18E 0%, #547A6B 100%)',
                     boxShadow: '0 4px 15px -5px rgba(112, 161, 142, 0.4)'
                   }}
                   disabled={isLoading}
+                  aria-label={isLoading ? "Iniciando sesión, por favor espere" : "Iniciar sesión en el sistema"}
                 >
                   {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                 </button>
@@ -189,6 +265,7 @@ export default function SignInForm() {
 
         </div>
       </div>
-    </div>
+      </div>
+    </VoiceControl>
   );
 }

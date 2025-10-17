@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import PageMeta from '../../../components/common/PageMeta';
 import Header from '../../../components/header/Header';
+import { useAccessibility } from '../../../components/accessibility/AccessibilityProvider';
+import VoiceReader from '../../../components/accessibility/VoiceReader';
+import KeyboardNavigation from '../../../components/accessibility/KeyboardNavigation';
+import VoiceControl from '../../../components/accessibility/VoiceControl';
 
 interface Sucursal {
   ck_sucursal: string;
@@ -34,6 +38,7 @@ interface Turno {
 }
 
 export default function Starter() {
+  const { settings, announceToScreenReader } = useAccessibility();
   const [currentStep, setCurrentStep] = useState<'clientType' | 'serviceSelection' | 'ticket'>('clientType');
   const [esCliente, setEsCliente] = useState<boolean | null>(null);
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState<Sucursal | null>(null);
@@ -161,7 +166,9 @@ export default function Starter() {
 
   const handleClientTypeSelection = (isClient: boolean) => {
     if (!sucursalSeleccionada) {
-      alert('Por favor seleccione una sucursal primero');
+      const message = 'Por favor seleccione una sucursal primero';
+      alert(message);
+      announceToScreenReader(message);
       return;
     }
 
@@ -170,23 +177,34 @@ export default function Starter() {
     setTimer(INACTIVITY_TIME);
     setShowConfirmation(false);
     setServicioSeleccionado(null);
+    
+    const message = `Tipo de cliente seleccionado: ${isClient ? 'Cliente CFE' : 'No cliente'}. Ahora seleccione el área de servicio.`;
+    announceToScreenReader(message);
   };
 
   const seleccionarArea = (area: Area) => {
     setAreaSeleccionada(area);
     setServicios([]);
     setTimer(INACTIVITY_TIME);
+    
+    const message = `Área seleccionada: ${area.s_area}. Cargando servicios disponibles...`;
+    announceToScreenReader(message);
   };
 
   const handleServicioClick = (servicio: Servicio) => {
     setServicioSeleccionado(servicio);
     setShowConfirmation(true);
+    
+    const message = `Servicio seleccionado: ${servicio.s_servicio}. Se abrirá la ventana de confirmación.`;
+    announceToScreenReader(message);
   };
 
   const confirmarTurno = async () => {
     if (!servicioSeleccionado) return;
 
     setShowConfirmation(false);
+    const message = 'Confirmando turno. Por favor espere...';
+    announceToScreenReader(message);
     await crearTurno(servicioSeleccionado);
   };
 
@@ -194,6 +212,9 @@ export default function Starter() {
     setShowConfirmation(false);
     setServicioSeleccionado(null);
     setTimer(INACTIVITY_TIME);
+    
+    const message = 'Turno cancelado. Puede seleccionar otro servicio.';
+    announceToScreenReader(message);
   };
 
   const crearTurno = async (servicio: Servicio) => {
@@ -222,8 +243,13 @@ export default function Starter() {
         setTurnoCreado(data.turno);
         setCurrentStep('ticket');
         setCountdown(20);
+        
+        const message = `Turno creado exitosamente. Número de turno: ${data.turno.i_numero_turno}. Área: ${data.turno.s_area}. Servicio: ${data.turno.s_servicio}.`;
+        announceToScreenReader(message);
       } else {
-        alert('Error al crear el turno: ' + data.message);
+        const errorMessage = 'Error al crear el turno: ' + data.message;
+        alert(errorMessage);
+        announceToScreenReader(errorMessage);
       }
     } catch (error) {
       console.error('Error al crear turno:', error);
@@ -278,30 +304,44 @@ export default function Starter() {
     setTimer(INACTIVITY_TIME);
     setShowConfirmation(false);
     setServicioSeleccionado(null);
+    
+    const message = 'Regresando al inicio. Seleccione su tipo de cliente.';
+    announceToScreenReader(message);
   };
 
   const renderClientTypeSelection = () => (
-    <div className="relative">
-      {/* Glassmorphism Container */}
-      <div className="backdrop-blur-xl bg-white/40 rounded-2xl shadow-2xl overflow-hidden border border-white/20 relative">
-        {/* Animated Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#B7F2DA]/20 via-[#8ECAB2]/10 to-[#70A18E]/20 animate-pulse"></div>
+    <KeyboardNavigation
+      onEscape={() => {
+        const message = 'Presione Enter para seleccionar una opción o use las flechas para navegar';
+        announceToScreenReader(message);
+      }}
+    >
+      <div className="relative">
+        {/* Glassmorphism Container */}
+        <div className="backdrop-blur-xl bg-white/40 rounded-2xl shadow-2xl overflow-hidden border border-white/20 relative">
+          {/* Animated Background Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#B7F2DA]/20 via-[#8ECAB2]/10 to-[#70A18E]/20 animate-pulse"></div>
 
-        <div className="relative p-4 md:p-6 lg:p-8">
-          {/* Header with modern styling - Compacto */}
-          <div className="text-center mb-6">
-            <div className="inline-block mb-2">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] blur-xl opacity-50 animate-pulse"></div>
-                <h2 className="relative text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#70A18E] tracking-tight">
-                  TIPO DE CLIENTE
-                </h2>
+          <div className="relative p-4 md:p-6 lg:p-8">
+            {/* Header with modern styling - Compacto */}
+            <div className="text-center mb-6">
+              <div className="inline-block mb-2">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] blur-xl opacity-50 animate-pulse"></div>
+                  <h2 className="relative text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#70A18E] tracking-tight">
+                    TIPO DE CLIENTE
+                  </h2>
+                </div>
               </div>
+              <p className="text-gray-700 text-sm md:text-base font-medium max-w-2xl mx-auto">
+                Seleccione su perfil para acceder a nuestros servicios personalizados
+              </p>
+              <VoiceReader 
+                text="Seleccione su tipo de cliente: No soy cliente o Soy cliente CFE. Use las flechas para navegar y Enter para seleccionar."
+                autoRead={true}
+                delay={2000}
+              />
             </div>
-            <p className="text-gray-700 text-sm md:text-base font-medium max-w-2xl mx-auto">
-              Seleccione su perfil para acceder a nuestros servicios personalizados
-            </p>
-          </div>
 
           {/* Cards Grid with hover effects - Más compacto */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4 max-w-5xl mx-auto">
@@ -309,11 +349,14 @@ export default function Starter() {
             {/* Card No Cliente - Compacto */}
             <button
               onClick={() => handleClientTypeSelection(false)}
-              className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50"
+              className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 accessibility-large-button"
               style={{
                 background: 'linear-gradient(135deg, #B7F2DA 0%, #8ECAB2 100%)',
                 boxShadow: '0 20px 60px -15px rgba(142, 202, 178, 0.5)'
               }}
+              aria-label="Seleccionar: No soy cliente. Acceso a servicios públicos y atención general."
+              role="button"
+              tabIndex={0}
             >
               {/* Animated shine effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
@@ -362,11 +405,14 @@ export default function Starter() {
             {/* Card Cliente CFE - Compacto */}
             <button
               onClick={() => handleClientTypeSelection(true)}
-              className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#70A18E]/50"
+              className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#70A18E]/50 accessibility-large-button"
               style={{
                 background: 'linear-gradient(135deg, #70A18E 0%, #547A6B 100%)',
                 boxShadow: '0 20px 60px -15px rgba(112, 161, 142, 0.6)'
               }}
+              aria-label="Seleccionar: Soy cliente CFE. Atención preferencial y servicios exclusivos."
+              role="button"
+              tabIndex={0}
             >
               {/* Animated shine effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
@@ -453,6 +499,7 @@ export default function Starter() {
         <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-[#70A18E] rounded-full opacity-50 animate-ping" style={{ animationDelay: '2s' }}></div>
       </div>
     </div>
+    </KeyboardNavigation>
   );
 
   // Función para obtener el icono del servicio
@@ -518,37 +565,48 @@ export default function Starter() {
   };
 
   const renderServiceSelection = () => (
-    <div className="relative">
-      {/* Glassmorphism Container */}
-      <div className="backdrop-blur-xl bg-white/40 rounded-2xl shadow-2xl overflow-hidden border border-white/20 relative">
-        {/* Animated Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#B7F2DA]/20 via-[#8ECAB2]/10 to-[#70A18E]/20 animate-pulse"></div>
+    <KeyboardNavigation
+      onEscape={() => {
+        const message = 'Presione Enter para seleccionar un área o servicio, o use las flechas para navegar';
+        announceToScreenReader(message);
+      }}
+    >
+      <div className="relative">
+        {/* Glassmorphism Container */}
+        <div className="backdrop-blur-xl bg-white/40 rounded-2xl shadow-2xl overflow-hidden border border-white/20 relative">
+          {/* Animated Background Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#B7F2DA]/20 via-[#8ECAB2]/10 to-[#70A18E]/20 animate-pulse"></div>
 
-        <div className="relative p-6 lg:p-8">
-          {/* Header with modern styling */}
-          <div className="text-center mb-8">
-            <div className="inline-block mb-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] blur-xl opacity-50 animate-pulse"></div>
-                <h2 className="relative text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#70A18E] tracking-tight">
-                  SELECCIÓN DE SERVICIO
-                </h2>
+          <div className="relative p-6 lg:p-8">
+            {/* Header with modern styling */}
+            <div className="text-center mb-8">
+              <div className="inline-block mb-4">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] blur-xl opacity-50 animate-pulse"></div>
+                  <h2 className="relative text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#70A18E] tracking-tight">
+                    SELECCIÓN DE SERVICIO
+                  </h2>
+                </div>
               </div>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm md:text-base">
+                <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="font-semibold text-[#3A554B]">Cliente: {esCliente ? 'Cliente CFE' : 'No cliente'}</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
+                  <svg className="w-4 h-4 text-[#70A18E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span className="font-semibold text-[#3A554B]">Sucursal: {sucursalSeleccionada?.s_nombre_sucursal}</span>
+                </div>
+              </div>
+              <VoiceReader 
+                text={`Selección de servicio. Cliente: ${esCliente ? 'Cliente CFE' : 'No cliente'}. Sucursal: ${sucursalSeleccionada?.s_nombre_sucursal}. Seleccione primero el área y luego el servicio.`}
+                autoRead={true}
+                delay={1000}
+              />
             </div>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm md:text-base">
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="font-semibold text-[#3A554B]">Cliente: {esCliente ? 'Cliente CFE' : 'No cliente'}</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
-                <svg className="w-4 h-4 text-[#70A18E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span className="font-semibold text-[#3A554B]">Sucursal: {sucursalSeleccionada?.s_nombre_sucursal}</span>
-              </div>
-            </div>
-          </div>
 
           {/* CONTADOR */}
           <div className="flex justify-center mb-8">
@@ -592,10 +650,13 @@ export default function Starter() {
                 <button
                   key={area.ck_area}
                   onClick={() => seleccionarArea(area)}
-                  className={`group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 ${areaSeleccionada?.ck_area === area.ck_area
+                  className={`group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 accessibility-large-button ${areaSeleccionada?.ck_area === area.ck_area
                     ? 'bg-gradient-to-br from-[#70A18E] to-[#547A6B] text-white shadow-2xl'
                     : 'bg-gradient-to-br from-[#B7F2DA] to-[#8ECAB2] text-[#0A1310] hover:shadow-xl'
                     }`}
+                  aria-label={`Seleccionar área: ${area.s_area}. ${area.s_descripcion_area || ''}`}
+                  role="button"
+                  tabIndex={0}
                 >
                   {/* Animated shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
@@ -645,11 +706,14 @@ export default function Starter() {
                       key={servicio.ck_servicio}
                       onClick={() => handleServicioClick(servicio)}
                       disabled={loading}
-                      className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:translate-y-0"
+                      className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:translate-y-0 accessibility-large-button"
                       style={{
                         background: 'linear-gradient(135deg, #CFF4DE 0%, #B7F2DA 100%)',
                         boxShadow: '0 10px 40px -15px rgba(142, 202, 178, 0.4)'
                       }}
+                      aria-label={`Seleccionar servicio: ${servicio.s_servicio}. ${servicio.s_descripcion_servicio || ''}`}
+                      role="button"
+                      tabIndex={0}
                     >
                       {/* Animated shine effect */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
@@ -732,12 +796,13 @@ export default function Starter() {
         <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-[#70A18E] rounded-full opacity-50 animate-ping" style={{ animationDelay: '2s' }}></div>
       </div>
     </div>
+    </KeyboardNavigation>
   );
 
   // MODAL DE CONFIRMACIÓN 
   const renderConfirmationModal = () => (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto border border-white/20">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 accessibility-modal">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto border border-white/20 accessibility-modal-content" role="dialog" aria-labelledby="confirmation-title" aria-describedby="confirmation-description">
         {/* Header */}
         <div className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] p-6 rounded-t-2xl text-center">
           <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -745,8 +810,8 @@ export default function Starter() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">¿Confirmar turno?</h3>
-          <p className="text-white/80 text-sm">
+          <h3 id="confirmation-title" className="text-xl font-bold text-white mb-2">¿Confirmar turno?</h3>
+          <p id="confirmation-description" className="text-white/80 text-sm">
             Está a punto de generar un turno para el servicio seleccionado
           </p>
         </div>
@@ -775,14 +840,16 @@ export default function Starter() {
           <div className="flex gap-3">
             <button
               onClick={cancelarTurno}
-              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-colors duration-200"
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-colors duration-200 accessibility-action-button"
+              aria-label="Cancelar la creación del turno"
             >
               Cancelar
             </button>
             <button
               onClick={confirmarTurno}
               disabled={loading}
-              className="flex-1 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed accessibility-action-button"
+              aria-label={loading ? "Generando turno, por favor espere" : "Confirmar la creación del turno"}
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
@@ -812,11 +879,22 @@ export default function Starter() {
   );
 
   const renderTicket = () => (
-    <div className="bg-white rounded-xl shadow-xl overflow-hidden border-2 border-[#5D7166] max-w-md mx-auto">
-      <div className="bg-[#3A554B] text-white p-4 text-center">
-        <h2 className="text-xl font-bold">¡SERVICIO ASIGNADO!</h2>
-        <p className="text-[#B7F2DA]">Su turno ha sido generado exitosamente</p>
-      </div>
+    <KeyboardNavigation
+      onEscape={() => {
+        const message = 'Presione Enter para descargar el ticket o para regresar al inicio';
+        announceToScreenReader(message);
+      }}
+    >
+      <div className="bg-white rounded-xl shadow-xl overflow-hidden border-2 border-[#5D7166] max-w-md mx-auto accessibility-card">
+        <div className="bg-[#3A554B] text-white p-4 text-center">
+          <h2 className="text-xl font-bold">¡SERVICIO ASIGNADO!</h2>
+          <p className="text-[#B7F2DA]">Su turno ha sido generado exitosamente</p>
+          <VoiceReader 
+            text={`Turno asignado exitosamente. Número de turno: ${turnoCreado?.i_numero_turno}. Área: ${turnoCreado?.s_area}. Servicio: ${turnoCreado?.s_servicio}.`}
+            autoRead={true}
+            delay={1000}
+          />
+        </div>
 
       <div className="p-6">
         {/* Ticket Visual */}
@@ -859,14 +937,16 @@ export default function Starter() {
         <div className="space-y-3">
           <button
             onClick={descargarTicket}
-            className="w-full bg-[#70A18E] hover:bg-[#547A6B] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            className="w-full bg-[#70A18E] hover:bg-[#547A6B] text-white font-semibold py-3 px-6 rounded-lg transition-colors accessibility-action-button"
+            aria-label="Descargar el ticket del turno en formato PDF"
           >
             📄 Descargar Ticket
           </button>
 
           <button
             onClick={regresarAlInicio}
-            className="w-full bg-[#5D7166] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#4A5B52] transition-colors"
+            className="w-full bg-[#5D7166] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#4A5B52] transition-colors accessibility-action-button"
+            aria-label="Regresar al inicio para crear otro turno"
           >
             ← Regresar al inicio
           </button>
@@ -878,14 +958,20 @@ export default function Starter() {
         </div>
       </div>
     </div>
+    </KeyboardNavigation>
   );
 
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#F4F4F4] to-[#CAC9C9]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3A554B] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3A554B] mx-auto mb-4" role="status" aria-label="Cargando"></div>
           <p className="text-[#3A554B] font-semibold">Generando su turno...</p>
+          <VoiceReader 
+            text="Generando su turno, por favor espere..."
+            autoRead={true}
+            delay={500}
+          />
         </div>
       </div>
     );
@@ -898,12 +984,59 @@ export default function Starter() {
         description="Sistema de gestión de turnos ITZEL - Página inicial de selección de tipo de cliente"
       />
 
-      <div className="h-screen flex flex-col overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, #F4F4F4 0%, #DFDFDF 50%, #CAC9C9 100%)'
-        }}>
+      <VoiceControl
+        onNavigate={(direction) => {
+          const message = `Navegando ${direction}`;
+          announceToScreenReader(message);
+        }}
+        onActivate={() => {
+          const message = 'Elemento activado';
+          announceToScreenReader(message);
+        }}
+        onGoBack={() => {
+          regresarAlInicio();
+        }}
+        onHelp={() => {
+          const message = 'Mostrando ayuda del sistema de turnos';
+          announceToScreenReader(message);
+        }}
+        onMenu={() => {
+          const message = 'Navegando al menú principal';
+          announceToScreenReader(message);
+        }}
+        onHome={() => {
+          const message = 'Navegando al inicio';
+          announceToScreenReader(message);
+        }}
+        onForm={() => {
+          const message = 'Navegando a los campos de formulario';
+          announceToScreenReader(message);
+        }}
+        onButton={() => {
+          const message = 'Navegando a los botones';
+          announceToScreenReader(message);
+        }}
+        onLink={() => {
+          const message = 'Navegando a los enlaces';
+          announceToScreenReader(message);
+        }}
+        onField={() => {
+          const message = 'Navegando a los campos de entrada';
+          announceToScreenReader(message);
+        }}
+        onText={() => {
+          const message = 'Navegando al contenido de texto';
+          announceToScreenReader(message);
+        }}
+      >
+        <div className="h-screen flex flex-col overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #F4F4F4 0%, #DFDFDF 50%, #CAC9C9 100%)'
+          }}
+          role="main"
+          aria-label="Sistema de gestión de turnos ITZEL">
 
-        <Header showBranchSelector={true} title="Solicitud de Turnos" />
+          <Header showBranchSelector={true} title="Solicitud de Turnos" />
 
         {/* MODAL DE CONFIRMACIÓN - SOLO MOSTRAR CUANDO showConfirmation SEA true Y currentStep SEA serviceSelection */}
         {showConfirmation && currentStep === 'serviceSelection' && renderConfirmationModal()}
@@ -924,7 +1057,7 @@ export default function Starter() {
                     <div className="relative">
                       <div className="absolute inset-0 bg-[#8ECAB2] blur-xl opacity-40"></div>
                       <div className="relative w-12 h-12 bg-gradient-to-br from-[#70A18E] to-[#8ECAB2] rounded-xl flex items-center justify-center shadow-lg rotate-3 hover:rotate-6 transition-transform duration-300">
-                        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                       </div>
@@ -941,7 +1074,7 @@ export default function Starter() {
                     </div>
 
                     {/* Decorative element */}
-                    <div className="hidden md:flex gap-1">
+                    <div className="hidden md:flex gap-1" aria-hidden="true">
                       <div className="w-1.5 h-1.5 bg-[#70A18E] rounded-full animate-bounce"></div>
                       <div className="w-1.5 h-1.5 bg-[#8ECAB2] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       <div className="w-1.5 h-1.5 bg-[#B7F2DA] rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
@@ -959,6 +1092,7 @@ export default function Starter() {
           </div>
         </div>
       </div>
+      </VoiceControl>
     </>
   );
 }

@@ -15,6 +15,7 @@ interface ServiciosTableProps {
   setServicios: (servicios: any[]) => void;
   searchTerm: string;
   areaFilter: string;
+  clienteFilter: string; // NUEVO: Filtro para cliente/no cliente
   estatusFilter: string;
   onStatsUpdate: (stats: any) => void;
 }
@@ -24,6 +25,7 @@ export default function ServiciosTableOne({
   setServicios,
   searchTerm,
   areaFilter,
+  clienteFilter, // NUEVO: Recibir el filtro
   estatusFilter,
   onStatsUpdate,
 }: ServiciosTableProps) {
@@ -34,9 +36,9 @@ export default function ServiciosTableOne({
   const [error, setError] = useState<string | null>(null);
 
   // Toast notification state
-  const [toast, setToast] = useState<{ 
-    show: boolean; 
-    message: string; 
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
     type: "warning" | "success" | "error";
     servicioToDelete?: {
       id: string;
@@ -54,25 +56,29 @@ export default function ServiciosTableOne({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, estatusFilter, areaFilter]);
+  }, [searchTerm, estatusFilter, areaFilter, clienteFilter]); // NUEVO: Agregar clienteFilter
 
   // Calcular estadísticas cuando cambien los servicios o filtros
   useEffect(() => {
     const calculateStats = () => {
       const filteredServicios = servicios.filter(servicio => {
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
           servicio.s_servicio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           servicio.c_codigo_servicio?.toLowerCase().includes(searchTerm.toLowerCase());
-        
+
         const matchesEstatus = !estatusFilter || servicio.ck_estatus === estatusFilter;
         const matchesArea = !areaFilter || servicio.ck_area === areaFilter;
+        // NUEVO: Filtrar por tipo de cliente
+        const matchesCliente = !clienteFilter || servicio.i_es_para_clientes?.toString() === clienteFilter;
 
-        return matchesSearch && matchesEstatus && matchesArea;
+        return matchesSearch && matchesEstatus && matchesArea && matchesCliente;
       });
 
       const total = filteredServicios.length;
       const activos = filteredServicios.filter(s => s.ck_estatus === "ACTIVO").length;
       const inactivos = filteredServicios.filter(s => s.ck_estatus === "INACTI").length;
+      const paraClientes = filteredServicios.filter(s => s.i_es_para_clientes === 1).length;
+      const paraNoClientes = filteredServicios.filter(s => s.i_es_para_clientes === 0).length;
       const porArea: Record<string, number> = {};
 
       filteredServicios.forEach(servicio => {
@@ -80,29 +86,31 @@ export default function ServiciosTableOne({
         porArea[area] = (porArea[area] || 0) + 1;
       });
 
-      const newStats = { total, activos, inactivos, porArea };
+      const newStats = { total, activos, inactivos, porArea, paraClientes, paraNoClientes };
       onStatsUpdate(newStats);
     };
 
     calculateStats();
-  }, [servicios, searchTerm, estatusFilter, areaFilter, onStatsUpdate]);
+  }, [servicios, searchTerm, estatusFilter, areaFilter, clienteFilter, onStatsUpdate]); 
 
   // Calcular paginación
   useEffect(() => {
     const filteredServicios = servicios.filter(servicio => {
-      const matchesSearch = !searchTerm || 
+      const matchesSearch = !searchTerm ||
         servicio.s_servicio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         servicio.c_codigo_servicio?.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesEstatus = !estatusFilter || servicio.ck_estatus === estatusFilter;
       const matchesArea = !areaFilter || servicio.ck_area === areaFilter;
+      // NUEVO: Filtrar por tipo de cliente
+      const matchesCliente = !clienteFilter || servicio.i_es_para_clientes?.toString() === clienteFilter;
 
-      return matchesSearch && matchesEstatus && matchesArea;
+      return matchesSearch && matchesEstatus && matchesArea && matchesCliente;
     });
 
     setTotalPages(Math.ceil(filteredServicios.length / itemsPerPage));
     setTotalItems(filteredServicios.length);
-  }, [servicios, searchTerm, estatusFilter, areaFilter, itemsPerPage]);
+  }, [servicios, searchTerm, estatusFilter, areaFilter, clienteFilter, itemsPerPage]); // NUEVO: Agregar clienteFilter
 
   const goToPage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -169,19 +177,31 @@ export default function ServiciosTableOne({
 
   // Filtrar servicios para la página actual
   const filteredServicios = servicios.filter(servicio => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       servicio.s_servicio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       servicio.c_codigo_servicio?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesEstatus = !estatusFilter || servicio.ck_estatus === estatusFilter;
     const matchesArea = !areaFilter || servicio.ck_area === areaFilter;
+    // NUEVO: Filtrar por tipo de cliente
+    const matchesCliente = !clienteFilter || servicio.i_es_para_clientes?.toString() === clienteFilter;
 
-    return matchesSearch && matchesEstatus && matchesArea;
+    return matchesSearch && matchesEstatus && matchesArea && matchesCliente;
   });
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, filteredServicios.length);
   const serviciosPaginados = filteredServicios.slice(startIndex, endIndex);
+
+  // NUEVO: Función para mostrar el texto del tipo de cliente
+  const getTipoClienteText = (esParaClientes: number) => {
+    return esParaClientes === 1 ? "Clientes" : "No clientes";
+  };
+
+  // NUEVO: Función para obtener el color del badge del tipo de cliente
+  const getTipoClienteColor = (esParaClientes: number) => {
+    return esParaClientes === 1 ? "success" : "warning";
+  };
 
   if (loading && servicios.length === 0) {
     return (
@@ -215,32 +235,28 @@ export default function ServiciosTableOne({
       {/* Toast notification */}
       {toast.show && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
-          <div className={`relative max-w-md w-full mx-4 rounded-xl shadow-2xl border transition-all duration-200 ${
-            toast.type === "warning" ? "bg-white border-orange-100 dark:bg-gray-800 dark:border-orange-900" :
+          <div className={`relative max-w-md w-full mx-4 rounded-xl shadow-2xl border transition-all duration-200 ${toast.type === "warning" ? "bg-white border-orange-100 dark:bg-gray-800 dark:border-orange-900" :
             toast.type === "success" ? "bg-white border-green-100 dark:bg-gray-800 dark:border-green-900" :
-            "bg-white border-red-100 dark:bg-gray-800 dark:border-red-900"
-          }`}>
-            {/* Header con icono */}
-            <div className={`flex items-center px-6 py-4 rounded-t-xl ${
-              toast.type === "warning" ? "bg-orange-50 border-b border-orange-100 dark:bg-orange-900/20 dark:border-orange-800" :
-              toast.type === "success" ? "bg-green-50 border-b border-green-100 dark:bg-green-900/20 dark:border-green-800" :
-              "bg-red-50 border-b border-red-100 dark:bg-red-900/20 dark:border-red-800"
+              "bg-white border-red-100 dark:bg-gray-800 dark:border-red-900"
             }`}>
-              <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-                toast.type === "warning" ? "bg-orange-100 text-orange-600 dark:bg-orange-800 dark:text-orange-300" :
-                toast.type === "success" ? "bg-green-100 text-green-600 dark:bg-green-800 dark:text-green-300" :
-                "bg-red-100 text-red-600 dark:bg-red-800 dark:text-red-300"
+            {/* Header con icono */}
+            <div className={`flex items-center px-6 py-4 rounded-t-xl ${toast.type === "warning" ? "bg-orange-50 border-b border-orange-100 dark:bg-orange-900/20 dark:border-orange-800" :
+              toast.type === "success" ? "bg-green-50 border-b border-green-100 dark:bg-green-900/20 dark:border-green-800" :
+                "bg-red-50 border-b border-red-100 dark:bg-red-900/20 dark:border-red-800"
               }`}>
+              <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${toast.type === "warning" ? "bg-orange-100 text-orange-600 dark:bg-orange-800 dark:text-orange-300" :
+                toast.type === "success" ? "bg-green-100 text-green-600 dark:bg-green-800 dark:text-green-300" :
+                  "bg-red-100 text-red-600 dark:bg-red-800 dark:text-red-300"
+                }`}>
                 {toast.type === "warning" ? "🗑️" : toast.type === "success" ? "✅" : "❌"}
               </div>
               <div className="ml-4">
-                <h3 className={`text-lg font-semibold ${
-                  toast.type === "warning" ? "text-orange-800 dark:text-orange-300" :
+                <h3 className={`text-lg font-semibold ${toast.type === "warning" ? "text-orange-800 dark:text-orange-300" :
                   toast.type === "success" ? "text-green-800 dark:text-green-300" :
-                  "text-red-800 dark:text-red-300"
-                }`}>
+                    "text-red-800 dark:text-red-300"
+                  }`}>
                   {toast.type === "warning" ? "Confirmar Eliminación" :
-                   toast.type === "success" ? "¡Éxito!" : "Error"}
+                    toast.type === "success" ? "¡Éxito!" : "Error"}
                 </h3>
               </div>
             </div>
@@ -263,9 +279,8 @@ export default function ServiciosTableOne({
                   </button>
                   <button
                     onClick={confirmarEliminarServicio}
-                    className={`px-5 py-2.5 text-sm font-medium text-white rounded-lg transition-colors duration-150 ${
-                      loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700"
-                    }`}
+                    className={`px-5 py-2.5 text-sm font-medium text-white rounded-lg transition-colors duration-150 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700"
+                      }`}
                     disabled={loading}
                   >
                     {loading ? "Eliminando..." : "Eliminar"}
@@ -278,11 +293,10 @@ export default function ServiciosTableOne({
                 <div className="flex justify-end">
                   <button
                     onClick={() => setToast({ show: false, message: "", type: "warning" })}
-                    className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-colors duration-150 ${
-                      toast.type === "success" ? 
-                        "text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800 dark:hover:bg-green-900/30" :
-                        "text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/30"
-                    }`}
+                    className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-colors duration-150 ${toast.type === "success" ?
+                      "text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800 dark:hover:bg-green-900/30" :
+                      "text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/30"
+                      }`}
                   >
                     Aceptar
                   </button>
@@ -310,6 +324,9 @@ export default function ServiciosTableOne({
                 Área
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                Tipo de Cliente {/* NUEVA COLUMNA */}
+              </TableCell>
+              <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                 Estado
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
@@ -320,12 +337,12 @@ export default function ServiciosTableOne({
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-700">
             {serviciosPaginados.length === 0 && !loading ? (
               <TableRow>
-                <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400"> {/* Cambiado a 7 columnas */}
                   <div className="flex flex-col items-center">
                     <span className="text-2xl mb-2">🛠️</span>
                     <span>No se encontraron servicios</span>
                     <span className="text-sm mt-1">
-                      {searchTerm || estatusFilter || areaFilter
+                      {searchTerm || estatusFilter || areaFilter || clienteFilter
                         ? 'Intente ajustar los filtros de búsqueda'
                         : 'No hay servicios registrados en el sistema'
                       }
@@ -349,6 +366,15 @@ export default function ServiciosTableOne({
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                     {servicio.area_nombre || '-'}
+                  </TableCell>
+                  {/* NUEVA COLUMNA: Tipo de Cliente */}
+                  <TableCell className="px-4 py-3 text-start">
+                    <Badge
+                      size="sm"
+                      color={getTipoClienteColor(servicio.i_es_para_clientes)}
+                    >
+                      {getTipoClienteText(servicio.i_es_para_clientes)}
+                    </Badge>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-start">
                     <Badge

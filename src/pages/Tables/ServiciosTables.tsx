@@ -14,16 +14,21 @@ interface ServicioStats {
   total: number;
   activos: number;
   porArea: Record<string, number>;
+  paraClientes: number;
+  paraNoClientes: number;
 }
 
 export default function ServiciosTables({ titleTable = "Catálogo de servicios" }: ServiciosTablesProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [areaFilter, setAreaFilter] = useState("");
+  const [clienteFilter, setClienteFilter] = useState("");
   const [servicios, setServicios] = useState<any[]>([]);
   const [stats, setStats] = useState<ServicioStats>({
     total: 0,
     activos: 0,
-    porArea: {}
+    porArea: {},
+    paraClientes: 0,
+    paraNoClientes: 0
   });
 
   const [areas, setAreas] = useState<Area[]>([]);
@@ -40,6 +45,8 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
         // Calcular estadísticas iniciales
         const total = serviciosData.length;
         const activos = serviciosData.filter((s: any) => s.ck_estatus === "ACTIVO").length;
+        const paraClientes = serviciosData.filter((s: any) => s.i_es_para_clientes === 1).length; // NUEVO
+        const paraNoClientes = serviciosData.filter((s: any) => s.i_es_para_clientes === 0).length; // NUEVO
         const porArea: Record<string, number> = {};
 
         serviciosData.forEach((servicio: any) => {
@@ -47,7 +54,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
           porArea[area] = (porArea[area] || 0) + 1;
         });
 
-        setStats({ total, activos, porArea });
+        setStats({ total, activos, porArea, paraClientes, paraNoClientes }); // NUEVO
       } catch (error) {
         console.error('Error al obtener servicios:', error);
       }
@@ -80,6 +87,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
   const clearFilters = () => {
     setSearchTerm("");
     setAreaFilter("");
+    setClienteFilter("");
   };
 
   return (
@@ -111,7 +119,8 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
       </div>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Total Servicios */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 relative overflow-hidden group hover:shadow-md transition-all duration-300 dark:bg-gray-800 dark:border-gray-700">
           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#70A18E]/10 to-[#8ECAB2]/10 rounded-bl-full"></div>
           <div className="flex items-center justify-between mb-4">
@@ -125,6 +134,8 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.total}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] rounded-full mt-3"></div>
         </div>
+
+        {/* Activos */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 relative overflow-hidden group hover:shadow-md transition-all duration-300 dark:bg-gray-800 dark:border-gray-700">
           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#8ECAB2]/10 to-[#B7F2DA]/10 rounded-bl-full"></div>
           <div className="flex items-center justify-between mb-4">
@@ -137,6 +148,37 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
           <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Activos</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.activos}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#8ECAB2] to-[#B7F2DA] rounded-full mt-3"></div>
+        </div>
+
+
+        {/* Para Clientes */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 relative overflow-hidden group hover:shadow-md transition-all duration-300 dark:bg-gray-800 dark:border-gray-700">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-50 to-teal-50 rounded-bl-full dark:from-cyan-900/20 dark:to-teal-900/20"></div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-teal-600 rounded-lg flex items-center justify-center shadow-sm">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          </div>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Para Clientes</h3>
+          <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.paraClientes}</p>
+          <div className="w-8 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 rounded-full mt-3"></div>
+        </div>
+
+        {/* Para No Clientes */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 relative overflow-hidden group hover:shadow-md transition-all duration-300 dark:bg-gray-800 dark:border-gray-700">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#F59E0B]/10 to-[#FBBF24]/10 rounded-bl-full"></div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#F59E0B] to-[#FBBF24] rounded-lg flex items-center justify-center shadow-sm">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Total Para No Clientes</h3>
+          <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.paraNoClientes}</p>
+          <div className="w-8 h-1 bg-gradient-to-r from-[#F59E0B] to-[#FBBF24] rounded-full mt-3"></div>
         </div>
       </div>
 
@@ -158,6 +200,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
               <span className="absolute left-3 top-3 text-gray-400 dark:text-gray-500">🔍</span>
             </div>
           </div>
+
           {/* Filtro por Área */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -171,11 +214,28 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
               <option value="">Todas las áreas</option>
               {areas.map((area) => (
                 <option key={area.ck_area} value={area.ck_area}>
-                  {area.s_area}
+                  {area.s_area} - {area.sucursal_nombre || "Sin sucursal"}
                 </option>
               ))}
             </select>
           </div>
+
+          {/* Filtro por Cliente/No Cliente */}
+          <div className="min-w-48">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Tipo de Cliente
+            </label>
+            <select
+              value={clienteFilter}
+              onChange={(e) => setClienteFilter(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
+            >
+              <option value="">Todos los tipos</option>
+              <option value="1">Clientes</option>
+              <option value="0">No clientes</option>
+            </select>
+          </div>
+
           {/* Botón limpiar filtros */}
           <div>
             <button
@@ -195,7 +255,8 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
             setServicios={setServicios}
             searchTerm={searchTerm}
             areaFilter={areaFilter}
-            estatusFilter={""} // No se usa el filtro de estado
+            clienteFilter={clienteFilter}
+            estatusFilter={""}
             onStatsUpdate={handleStatsUpdate}
           />
         </ComponentCard>

@@ -173,7 +173,7 @@ function FormularioAreas() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
           setTimeout(() => {
             window.location.href = '/catalogos/areas/consulta/';
-          }, 3000);
+          }, 1800);
         } else {
           alert(response.message || 'Error al crear área');
         }

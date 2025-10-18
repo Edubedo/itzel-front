@@ -36,9 +36,9 @@ export default function ServiciosTableOne({
   const [error, setError] = useState<string | null>(null);
 
   // Toast notification state
-  const [toast, setToast] = useState<{ 
-    show: boolean; 
-    message: string; 
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
     type: "warning" | "success" | "error";
     servicioToDelete?: {
       id: string;
@@ -62,10 +62,10 @@ export default function ServiciosTableOne({
   useEffect(() => {
     const calculateStats = () => {
       const filteredServicios = servicios.filter(servicio => {
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
           servicio.s_servicio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           servicio.c_codigo_servicio?.toLowerCase().includes(searchTerm.toLowerCase());
-        
+
         const matchesEstatus = !estatusFilter || servicio.ck_estatus === estatusFilter;
         const matchesArea = !areaFilter || servicio.ck_area === areaFilter;
         // NUEVO: Filtrar por tipo de cliente
@@ -77,6 +77,8 @@ export default function ServiciosTableOne({
       const total = filteredServicios.length;
       const activos = filteredServicios.filter(s => s.ck_estatus === "ACTIVO").length;
       const inactivos = filteredServicios.filter(s => s.ck_estatus === "INACTI").length;
+      const paraClientes = filteredServicios.filter(s => s.i_es_para_clientes === 1).length;
+      const paraNoClientes = filteredServicios.filter(s => s.i_es_para_clientes === 0).length;
       const porArea: Record<string, number> = {};
 
       filteredServicios.forEach(servicio => {
@@ -84,20 +86,20 @@ export default function ServiciosTableOne({
         porArea[area] = (porArea[area] || 0) + 1;
       });
 
-      const newStats = { total, activos, inactivos, porArea };
+      const newStats = { total, activos, inactivos, porArea, paraClientes, paraNoClientes };
       onStatsUpdate(newStats);
     };
 
     calculateStats();
-  }, [servicios, searchTerm, estatusFilter, areaFilter, clienteFilter, onStatsUpdate]); // NUEVO: Agregar clienteFilter
+  }, [servicios, searchTerm, estatusFilter, areaFilter, clienteFilter, onStatsUpdate]); 
 
   // Calcular paginación
   useEffect(() => {
     const filteredServicios = servicios.filter(servicio => {
-      const matchesSearch = !searchTerm || 
+      const matchesSearch = !searchTerm ||
         servicio.s_servicio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         servicio.c_codigo_servicio?.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesEstatus = !estatusFilter || servicio.ck_estatus === estatusFilter;
       const matchesArea = !areaFilter || servicio.ck_area === areaFilter;
       // NUEVO: Filtrar por tipo de cliente
@@ -175,10 +177,10 @@ export default function ServiciosTableOne({
 
   // Filtrar servicios para la página actual
   const filteredServicios = servicios.filter(servicio => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       servicio.s_servicio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       servicio.c_codigo_servicio?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesEstatus = !estatusFilter || servicio.ck_estatus === estatusFilter;
     const matchesArea = !areaFilter || servicio.ck_area === areaFilter;
     // NUEVO: Filtrar por tipo de cliente
@@ -233,32 +235,28 @@ export default function ServiciosTableOne({
       {/* Toast notification */}
       {toast.show && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
-          <div className={`relative max-w-md w-full mx-4 rounded-xl shadow-2xl border transition-all duration-200 ${
-            toast.type === "warning" ? "bg-white border-orange-100 dark:bg-gray-800 dark:border-orange-900" :
+          <div className={`relative max-w-md w-full mx-4 rounded-xl shadow-2xl border transition-all duration-200 ${toast.type === "warning" ? "bg-white border-orange-100 dark:bg-gray-800 dark:border-orange-900" :
             toast.type === "success" ? "bg-white border-green-100 dark:bg-gray-800 dark:border-green-900" :
-            "bg-white border-red-100 dark:bg-gray-800 dark:border-red-900"
-          }`}>
-            {/* Header con icono */}
-            <div className={`flex items-center px-6 py-4 rounded-t-xl ${
-              toast.type === "warning" ? "bg-orange-50 border-b border-orange-100 dark:bg-orange-900/20 dark:border-orange-800" :
-              toast.type === "success" ? "bg-green-50 border-b border-green-100 dark:bg-green-900/20 dark:border-green-800" :
-              "bg-red-50 border-b border-red-100 dark:bg-red-900/20 dark:border-red-800"
+              "bg-white border-red-100 dark:bg-gray-800 dark:border-red-900"
             }`}>
-              <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-                toast.type === "warning" ? "bg-orange-100 text-orange-600 dark:bg-orange-800 dark:text-orange-300" :
-                toast.type === "success" ? "bg-green-100 text-green-600 dark:bg-green-800 dark:text-green-300" :
-                "bg-red-100 text-red-600 dark:bg-red-800 dark:text-red-300"
+            {/* Header con icono */}
+            <div className={`flex items-center px-6 py-4 rounded-t-xl ${toast.type === "warning" ? "bg-orange-50 border-b border-orange-100 dark:bg-orange-900/20 dark:border-orange-800" :
+              toast.type === "success" ? "bg-green-50 border-b border-green-100 dark:bg-green-900/20 dark:border-green-800" :
+                "bg-red-50 border-b border-red-100 dark:bg-red-900/20 dark:border-red-800"
               }`}>
+              <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${toast.type === "warning" ? "bg-orange-100 text-orange-600 dark:bg-orange-800 dark:text-orange-300" :
+                toast.type === "success" ? "bg-green-100 text-green-600 dark:bg-green-800 dark:text-green-300" :
+                  "bg-red-100 text-red-600 dark:bg-red-800 dark:text-red-300"
+                }`}>
                 {toast.type === "warning" ? "🗑️" : toast.type === "success" ? "✅" : "❌"}
               </div>
               <div className="ml-4">
-                <h3 className={`text-lg font-semibold ${
-                  toast.type === "warning" ? "text-orange-800 dark:text-orange-300" :
+                <h3 className={`text-lg font-semibold ${toast.type === "warning" ? "text-orange-800 dark:text-orange-300" :
                   toast.type === "success" ? "text-green-800 dark:text-green-300" :
-                  "text-red-800 dark:text-red-300"
-                }`}>
+                    "text-red-800 dark:text-red-300"
+                  }`}>
                   {toast.type === "warning" ? "Confirmar Eliminación" :
-                   toast.type === "success" ? "¡Éxito!" : "Error"}
+                    toast.type === "success" ? "¡Éxito!" : "Error"}
                 </h3>
               </div>
             </div>
@@ -281,9 +279,8 @@ export default function ServiciosTableOne({
                   </button>
                   <button
                     onClick={confirmarEliminarServicio}
-                    className={`px-5 py-2.5 text-sm font-medium text-white rounded-lg transition-colors duration-150 ${
-                      loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700"
-                    }`}
+                    className={`px-5 py-2.5 text-sm font-medium text-white rounded-lg transition-colors duration-150 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700"
+                      }`}
                     disabled={loading}
                   >
                     {loading ? "Eliminando..." : "Eliminar"}
@@ -296,11 +293,10 @@ export default function ServiciosTableOne({
                 <div className="flex justify-end">
                   <button
                     onClick={() => setToast({ show: false, message: "", type: "warning" })}
-                    className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-colors duration-150 ${
-                      toast.type === "success" ? 
-                        "text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800 dark:hover:bg-green-900/30" :
-                        "text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/30"
-                    }`}
+                    className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-colors duration-150 ${toast.type === "success" ?
+                      "text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800 dark:hover:bg-green-900/30" :
+                      "text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/30"
+                      }`}
                   >
                     Aceptar
                   </button>

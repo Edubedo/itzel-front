@@ -4,6 +4,7 @@ import PageMeta from "../../../../components/common/PageMeta";
 import ComponentCard from "../../../../components/common/ComponentCard";
 import Label from "../../../../components/form/Label";
 import Input from "../../../../components/form/input/InputField";
+import Alert from "../../../../components/ui/alert/Alert";
 import { serviciosService, ServicioFormData, Servicio } from "../../../../services/serviciosService";
 import { areasService, Area } from "../../../../services/areasService";
 
@@ -23,6 +24,10 @@ function FormularioServicios() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [areas, setAreas] = useState<Area[]>([]);
   const [selectedAreaSucursal, setSelectedAreaSucursal] = useState("");
+
+  // Estados para alertas - IGUAL QUE FORMULARIO AREAS
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -151,7 +156,7 @@ function FormularioServicios() {
     e.preventDefault();
 
     if (!validateForm()) {
-      alert("Por favor, corrija los errores en el formulario");
+      alert('Por favor, corrija los errores en el formulario');
       return;
     }
 
@@ -171,10 +176,20 @@ function FormularioServicios() {
       console.log("Respuesta del servidor:", response);
 
       if (response.success) {
-        alert(isEditing ? "Servicio actualizado correctamente" : "Servicio creado correctamente");
-        if (typeof window !== "undefined") {
-          window.location.href = "/catalogos/servicios/consulta/";
-        }
+        setShowSuccess(true);
+        setSuccessMessage(
+          isEditing 
+            ? "Servicio actualizado correctamente" 
+            : "Servicio creado correctamente"
+        );
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        setTimeout(() => {
+          if (typeof window !== "undefined") {
+            window.location.href = "/catalogos/servicios/consulta/";
+          }
+        }, isEditing ? 1800 : 1800); 
       } else {
         alert("Error al guardar el servicio: " + response.message);
       }
@@ -209,6 +224,17 @@ function FormularioServicios() {
       />
 
       <PageBreadcrumb pageTitle={isEditing ? "Editar Servicio" : "Crear Nuevo Servicio"} />
+
+      {/* ALERTA DE ÉXITO */}
+      {showSuccess && (
+        <div className="mb-8 mt-2">
+          <Alert
+            variant="success"
+            title="¡Operación exitosa!"
+            message={successMessage}
+          />
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-6">
@@ -358,7 +384,7 @@ function FormularioServicios() {
             <button
               type="button"
               onClick={handleCancel}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               Cancelar
@@ -366,12 +392,9 @@ function FormularioServicios() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading && (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              )}
-              {loading ? "Guardando..." : isEditing ? "Actualizar Servicio" : "Crear Servicio"}
+              {loading ? 'Guardando...' : (isEditing ? 'Actualizar Servicio' : 'Crear Servicio')}
             </button>
           </div>
         </div>

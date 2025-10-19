@@ -173,6 +173,7 @@ export default function Starter() {
   };
 
   const seleccionarArea = (area: Area) => {
+    if (areaSeleccionada?.ck_area === area.ck_area) return;
     setAreaSeleccionada(area);
     setServicios([]);
     setTimer(INACTIVITY_TIME);

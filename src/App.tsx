@@ -47,6 +47,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 // ▼▼▼ 1. IMPORTA EL NUEVO COMPONENTE DE PÁGINA ▼▼▼
 import PaginaServicio from "./views/catalogos/servicios/PaginaServicio";
 import Configuration from "./pages/Configuration";
+import VistaNotificaciones from "./components/header/VistaNotificaciones";
 
 // Definir constantes para tipos de usuario (basado en el backend)
 const USER_TYPES = {
@@ -166,6 +167,8 @@ export default function App() {
               {/* TURNOS - Accesibles por todos los usuarios autenticados */}
               <Route path="/operaciones/turnos/consulta/" element={<ConsultaTurnos />} />
               <Route path="/operaciones/turnos/formulario/" element={<FormularioTurnos />} />
+              <Route path="/notificaciones/" element={<VistaNotificaciones />} />
+
 
               {/* Páginas generales */}
               <Route path="/configuration" element={<Configuration />} />

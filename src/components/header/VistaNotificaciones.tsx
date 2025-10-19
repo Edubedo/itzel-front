@@ -1,75 +1,102 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Button from "../ui/button/Button";
 import { Bell, CheckCircle } from "lucide-react";
-import { getNotificaciones, marcarComoLeida } from "../../services/notificacionesService";
 import { useNavigate } from "react-router-dom";
 
 interface Notificacion {
-  id: number;
+  id: string;
   mensaje: string;
-  area: string;
-  fecha: string;
-  leida: boolean;
-  sucursal: string;
+  area?: string;
+  fecha?: string;
+  fechaLlegada?: string;
+  leida?: boolean;
+  sucursal?: string;
   servicio?: string;
+  numero_turno?: string;
 }
 
-interface VistaNotificacionesProps {
-  onClose: () => void; // obligatorio para cerrar la vista
-}
-
-export default function VistaNotificaciones({ onClose }: VistaNotificacionesProps) {
-  const navigate = useNavigate(); // <- Declaramos navigate aquí
+export default function VistaNotificaciones() {
+  const navigate = useNavigate();
   const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
   const [filtro, setFiltro] = useState<"todas" | "noLeidas" | "leidas">("todas");
 
-  const usuarioActual = JSON.parse(localStorage.getItem("userData") || "{}");
+  // Limpieza diaria de notificaciones leídas
+  useEffect(() => {
+    const ultimaFecha = localStorage.getItem("ultimaFechaNotificaciones");
+    const hoy = new Date().toISOString().split("T")[0];
+    if (ultimaFecha !== hoy) {
+      localStorage.setItem("notificacionesLeidas", JSON.stringify([]));
+      localStorage.setItem("ultimaFechaNotificaciones", hoy);
+    }
+  }, []);
+
+  // Cargar notificaciones sincronizadas desde el dropdown
+  const cargar = () => {
+    const dataStr = localStorage.getItem("notificacionesDropdown") || "[]";
+    const data: Notificacion[] = JSON.parse(dataStr);
+    const leidasLocal: string[] = JSON.parse(localStorage.getItem("notificacionesLeidas") || "[]");
+    const ahora = new Date().toISOString();
+
+    const sincronizadas = data.map((n) => ({
+      ...n,
+      leida: leidasLocal.includes(n.id),
+      fechaLlegada: n.fechaLlegada || ahora,
+    }));
+
+    setNotificaciones(sincronizadas);
+  };
 
   useEffect(() => {
-    if (!usuarioActual.uk_usuario) return;
-
-    async function cargar() {
-      const data = await getNotificaciones(usuarioActual.uk_usuario);
-      setNotificaciones(data);
-    }
-
     cargar();
-  }, [usuarioActual.uk_usuario]);
+    const listener = () => cargar();
+    window.addEventListener("storage", listener);
+    return () => window.removeEventListener("storage", listener);
+  }, []);
 
-  const handleMarcarComoLeida = async (id: number) => {
-    await marcarComoLeida(id);
-    setNotificaciones((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, leida: true } : n))
-    );
+  const handleMarcarComoLeida = (n: Notificacion) => {
+    if (!n.leida) {
+      const leidasLocal: string[] = JSON.parse(localStorage.getItem("notificacionesLeidas") || "[]");
+      localStorage.setItem("notificacionesLeidas", JSON.stringify([...leidasLocal, n.id]));
+      setNotificaciones((prev) =>
+        prev.map((item) => (item.id === n.id ? { ...item, leida: true } : item))
+      );
+      localStorage.setItem("syncNotificaciones", Date.now().toString());
+    }
   };
 
-  // Función para cerrar la vista y regresar
-  const handleClose = () => {
-    navigate(-1); // regresa a la vista anterior
+  const handleClickNotificacion = (n: Notificacion) => {
+    handleMarcarComoLeida(n);
+    navigate("/operaciones/turnos/consulta", {
+      state: { sucursalId: n.sucursal, turnoId: n.id },
+    });
   };
 
-  const notificacionesFiltradas = notificaciones.filter((n) =>
-    filtro === "todas" ? true : filtro === "leidas" ? n.leida : !n.leida
+  const notificacionesFiltradas = useMemo(
+    () =>
+      notificaciones.filter((n) =>
+        filtro === "todas" ? true : filtro === "leidas" ? !!n.leida : !n.leida
+      ),
+    [notificaciones, filtro]
   );
 
   return (
-    <div className="p-6 space-y-4 bg-white rounded-lg shadow-md relative">
-      {/* Encabezado con título y X */}
+    <div className="p-6 space-y-4 bg-white dark:bg-gray-900 dark:text-gray-100 rounded-2xl shadow-lg transition-colors duration-300">
+      {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Bell className="w-6 h-6" /> Notificaciones
+          <Bell className="w-6 h-6 text-[#6B8E7E] dark:text-[#9DC3B4]" /> Notificaciones
         </h1>
         <button
-          onClick={handleClose} // usamos la función aquí
-          className="text-green-600 hover:text-green-800 font-bold text-4xl"
+          onClick={() => navigate(-1)}
+          className="text-[#6B8E7E] hover:text-[#56766A] dark:text-[#9DC3B4] dark:hover:text-[#B9E3D5] font-bold text-4xl"
           title="Cerrar"
         >
           ×
         </button>
       </div>
 
-      {/* Botones de filtro con línea animada */}
-      <div className="flex gap-3 relative border-b border-gray-200 pb-2 mt-2">
+      {/* Filtros */}
+      <div className="flex gap-3 border-b border-gray-200 dark:border-gray-700 pb-2 mt-2">
         {(["todas", "noLeidas", "leidas"] as const).map((tipo) => {
           const labels: Record<typeof tipo, string> = {
             todas: "Todas",
@@ -77,51 +104,59 @@ export default function VistaNotificaciones({ onClose }: VistaNotificacionesProp
             leidas: "Leídas",
           };
           const activo = filtro === tipo;
-
           return (
             <button
               key={tipo}
               onClick={() => setFiltro(tipo)}
-              className={`
-                flex-1 text-center px-6 py-3 rounded-t-lg border transition-all duration-300 ease-in-out
-                font-medium text-sm
-                ${activo
-                  ? "bg-[#8BA869] text-white shadow-sm"
-                  : "bg-[#D6E3C7] text-gray-700 border-[#C8D7B6] hover:bg-[#A0BB7F]"}
-              `}
+              className={`flex-1 text-center px-6 py-3 rounded-t-lg border transition-all duration-300 font-medium text-sm ${
+                activo
+                  ? "bg-[#6B8E7E] text-white shadow-sm dark:bg-[#9DC3B4] dark:text-gray-900"
+                  : "bg-[#E9F5EF] text-gray-700 border-[#A6C0B3] hover:bg-[#D7EBE0] dark:bg-gray-800 dark:text-gray-300 dark:border-[#56766A] dark:hover:bg-gray-700"
+              }`}
             >
               {labels[tipo]}
             </button>
           );
         })}
-        <span
-          className="absolute bottom-0 h-1 bg-green-700 transition-all duration-300 ease-in-out rounded"
-          style={{
-            left: filtro === "todas" ? "0%" : filtro === "noLeidas" ? "33.33%" : "66.66%",
-            width: "33.33%",
-          }}
-        />
       </div>
 
-      {/* Tarjetas de notificación */}
-      <div className="grid gap-4 mt-2">
+      {/* Lista de notificaciones */}
+      <div className="grid gap-4 mt-2 max-h-[520px] overflow-y-auto">
         {notificacionesFiltradas.length > 0 ? (
           notificacionesFiltradas.map((n) => (
             <div
               key={n.id}
-              className={`border rounded-lg p-4 ${n.leida ? "opacity-60" : "border-green-800"}`}
+              className={`border rounded-lg p-4 cursor-pointer transition-colors duration-200 ${
+                n.leida
+                  ? "opacity-70 border-gray-300 dark:border-gray-600 bg-[#F7FBF9] dark:bg-gray-800"
+                  : "border-[#6B8E7E] bg-[#E9F5EF] hover:bg-[#D7EBE0] dark:border-[#9DC3B4] dark:bg-[#1E2A28] dark:hover:bg-[#2C3A37]"
+              }`}
+              onClick={() => handleClickNotificacion(n)}
             >
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-lg">{n.mensaje}</p>
-                  <p className="text-sm text-gray-500">{n.fecha}</p>
+                  <p
+                    className={`text-lg font-medium ${
+                      n.leida
+                        ? "text-gray-700 dark:text-gray-300"
+                        : "text-[#3B4E45] dark:text-[#A6D5C0]"
+                    }`}
+                  >
+                    {n.mensaje}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {new Date(n.fechaLlegada || n.fecha || Date.now()).toLocaleString()}
+                  </p>
                 </div>
                 {!n.leida && (
                   <Button
-                   className="border-green-400"
+                    className="border-[#A6C0B3] text-[#56766A] dark:text-[#9DC3B4] dark:border-[#56766A] hover:bg-[#E9F5EF] dark:hover:bg-[#2C3A37]"
                     variant="outline"
                     size="sm"
-                    onClick={() => handleMarcarComoLeida(n.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleMarcarComoLeida(n);
+                    }}
                   >
                     <CheckCircle className="w-4 h-4 mr-2" /> Marcar como leída
                   </Button>
@@ -130,7 +165,9 @@ export default function VistaNotificaciones({ onClose }: VistaNotificacionesProp
             </div>
           ))
         ) : (
-          <p className="text-gray-500 text-center">No hay notificaciones</p>
+          <p className="text-gray-500 dark:text-gray-400 text-center">
+            No hay notificaciones
+          </p>
         )}
       </div>
     </div>

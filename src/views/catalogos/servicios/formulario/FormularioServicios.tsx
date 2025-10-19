@@ -189,7 +189,7 @@ function FormularioServicios() {
           if (typeof window !== "undefined") {
             window.location.href = "/catalogos/servicios/consulta/";
           }
-        }, isEditing ? 1800 : 1800); 
+        }, isEditing ? 1300 : 1300); 
       } else {
         alert("Error al guardar el servicio: " + response.message);
       }

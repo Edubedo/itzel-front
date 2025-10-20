@@ -208,7 +208,7 @@ export const clientesService = {
       return {
         success: data.success,
         data: {
-          total: data?.total_clientes || 0,
+          total: data?.data?.total || 0,
         },
       };
     } catch (error) {

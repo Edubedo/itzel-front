@@ -1,5 +1,12 @@
 // src/services/turnosService.ts
 // services/turnosService.ts
+
+
+
+
+
+
+
 export const turnosService = {
   getTurnosDelDia: async () => {
     try {
@@ -17,7 +24,7 @@ export const turnosService = {
       return {
         success: data.success,
         data: {
-          total: data?.estadisticas?.total_turnos ?? 0,
+          total: data?.data?.total_turnos ?? 0,
         },
       };
     } catch (error) {
@@ -26,28 +33,28 @@ export const turnosService = {
     }
   },
 
-  // 🔹 NUEVO: obtener estadísticas mensuales
   getEstadisticasMensuales: async (sucursalId?: string) => {
-    try {
-      let url = "http://localhost:3001/api/operaciones/turnos/estadisticas-mensuales";
-      if (sucursalId) {
-        url += `?sucursalId=${sucursalId}`;
-      }
-
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Error en la respuesta del servidor");
-
-      const data = await response.json();
-
-      return {
-        success: data.success,
-        data: data.estadisticas ?? [],
-      };
-    } catch (error) {
-      console.error("Error en getEstadisticasMensuales:", error);
-      return { success: false, data: [] };
+  try {
+    let url = "http://localhost:3001/api/operaciones/turnos/estadisticas-mensuales";
+    if (sucursalId) {
+      url += `?ck_sucursal=${sucursalId}`; // 👈 Asegúrate de que coincida con lo que espera el backend
     }
-  },
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Error en la respuesta del servidor");
+
+    const data = await response.json();
+
+    return {
+      success: data.success,
+      data: data.data ?? [], // ✅ aquí estaba el error
+    };
+  } catch (error) {
+    console.error("Error en getEstadisticasMensuales:", error);
+    return { success: false, data: [] };
+  }
+}
+
 };
 
 

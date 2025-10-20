@@ -4,6 +4,8 @@ import { ApexOptions } from "apexcharts";
 import { turnosService } from "../../services/turnosService";
 import { useSucursalActiva } from "../../components/header/Header";
 
+
+
 interface EstadisticaMensual {
   mes: string;
   numero_mes: number;

@@ -38,6 +38,8 @@ import ConsultaTurnos from "./views/operaciones/turnos/consulta/ConsultaTurnos";
 import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTurnos";
 import RecoverPassword from "./pages/AuthPages/RecoverPassword";
 import { LogoProvider } from "./contexts/LogoContext";
+import AccessibilityDemo from "./pages/AccessibilityDemo";
+import ClientSelectionDemo from "./pages/ClientSelectionDemo";
 
 
 // Importar componentes de autenticación
@@ -69,6 +71,7 @@ export default function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/" element={<Starter />} />
+            <Route path="/client-selection-demo" element={<ClientSelectionDemo />} />
             <Route path="/reset-password" element={<RecoverPassword />} />
 
 
@@ -171,6 +174,7 @@ export default function App() {
               <Route path="/configuration" element={<Configuration />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/blank" element={<Blank />} />
+              <Route path="/accessibility-demo" element={<AccessibilityDemo />} />
 
               {/* Forms */}
               <Route path="/form-elements" element={<FormElements />} />

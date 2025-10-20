@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import PageMeta from '../../../components/common/PageMeta';
 import Header from '../../../components/header/Header';
+import { useAccessibility } from '../../../contexts/AccessibilityContext';
+import AdvancedAccessibilityModal from '../../../components/accessibility/AdvancedAccessibilityModal';
+import AccessibilityHelp from '../../../components/accessibility/AccessibilityHelp';
+import SkipLink from '../../../components/accessibility/SkipLink';
 
 interface Sucursal {
   ck_sucursal: string;
@@ -51,6 +55,11 @@ export default function Starter() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
 
+  // Estados para accesibilidad
+  const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const { settings, announce } = useAccessibility();
+
   // Cargar sucursal seleccionada desde localStorage
   useEffect(() => {
     const sucursalGuardada = localStorage.getItem('sucursal_seleccionada');
@@ -80,6 +89,22 @@ export default function Starter() {
       window.removeEventListener('sucursalCambiada', handleSucursalCambiada as EventListener);
     };
   }, []);
+
+  // Manejar tecla F1 para mostrar ayuda
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'F1') {
+        event.preventDefault();
+        setIsHelpOpen(true);
+        announce('Abriendo guía de accesibilidad', 'polite');
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [announce]);
 
   // Cargar áreas cuando se seleccione una sucursal y se defina el tipo de cliente
   useEffect(() => {
@@ -161,6 +186,7 @@ export default function Starter() {
 
   const handleClientTypeSelection = (isClient: boolean) => {
     if (!sucursalSeleccionada) {
+      announce('Por favor seleccione una sucursal primero', 'assertive');
       alert('Por favor seleccione una sucursal primero');
       return;
     }
@@ -170,6 +196,10 @@ export default function Starter() {
     setTimer(INACTIVITY_TIME);
     setShowConfirmation(false);
     setServicioSeleccionado(null);
+    
+    // Anuncio de accesibilidad
+    const tipoCliente = isClient ? 'Cliente CFE' : 'No cliente';
+    announce(`Tipo de cliente seleccionado: ${tipoCliente}. Procediendo a la selección de servicios.`, 'polite');
   };
 
   const seleccionarArea = (area: Area) => {
@@ -294,12 +324,12 @@ export default function Starter() {
             <div className="inline-block mb-2">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] blur-xl opacity-50 animate-pulse"></div>
-                <h2 className="relative text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#70A18E] tracking-tight">
+                <h2 className="relative text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#70A18E] tracking-tight text-scalable">
                   TIPO DE CLIENTE
                 </h2>
               </div>
             </div>
-            <p className="text-gray-700 text-sm md:text-base font-medium max-w-2xl mx-auto">
+            <p className="text-gray-700 text-sm md:text-base font-medium max-w-2xl mx-auto text-scalable">
               Seleccione su perfil para acceder a nuestros servicios personalizados
             </p>
           </div>
@@ -310,11 +340,14 @@ export default function Starter() {
             {/* Card No Cliente - Compacto */}
             <button
               onClick={() => handleClientTypeSelection(false)}
-              className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50"
+              className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 text-scalable"
               style={{
                 background: 'linear-gradient(135deg, #B7F2DA 0%, #8ECAB2 100%)',
                 boxShadow: '0 20px 60px -15px rgba(142, 202, 178, 0.5)'
               }}
+              aria-label="Seleccionar como No Cliente - Acceso a servicios públicos y atención general"
+              role="button"
+              tabIndex={0}
             >
               {/* Animated shine effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
@@ -338,10 +371,10 @@ export default function Starter() {
 
                 {/* Text */}
                 <div className="space-y-2">
-                  <h3 className="text-xl md:text-2xl font-black text-[#0A1310] group-hover:text-[#3A554B] transition-colors">
+                  <h3 className="text-xl md:text-2xl font-black text-[#0A1310] group-hover:text-[#3A554B] transition-colors text-scalable">
                     NO SOY CLIENTE
                   </h3>
-                  <p className="text-xs md:text-sm text-[#3A554B]/80 font-medium">
+                  <p className="text-xs md:text-sm text-[#3A554B]/80 font-medium text-scalable">
                     Acceso a servicios públicos y atención general
                   </p>
 
@@ -363,11 +396,14 @@ export default function Starter() {
             {/* Card Cliente CFE - Compacto */}
             <button
               onClick={() => handleClientTypeSelection(true)}
-              className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#70A18E]/50"
+              className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#70A18E]/50 text-scalable"
               style={{
                 background: 'linear-gradient(135deg, #70A18E 0%, #547A6B 100%)',
                 boxShadow: '0 20px 60px -15px rgba(112, 161, 142, 0.6)'
               }}
+              aria-label="Seleccionar como Cliente CFE - Atención preferencial y servicios exclusivos"
+              role="button"
+              tabIndex={0}
             >
               {/* Animated shine effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
@@ -401,10 +437,10 @@ export default function Starter() {
 
                 {/* Text */}
                 <div className="space-y-2">
-                  <h3 className="text-xl md:text-2xl font-black text-white group-hover:text-[#CFF4DE] transition-colors">
+                  <h3 className="text-xl md:text-2xl font-black text-white group-hover:text-[#CFF4DE] transition-colors text-scalable">
                     SOY CLIENTE CFE
                   </h3>
-                  <p className="text-xs md:text-sm text-[#B7F2DA] font-medium">
+                  <p className="text-xs md:text-sm text-[#B7F2DA] font-medium text-scalable">
                     Atención preferencial y servicios exclusivos
                   </p>
 
@@ -901,13 +937,21 @@ export default function Starter() {
           background: 'linear-gradient(135deg, #F4F4F4 0%, #DFDFDF 50%, #CAC9C9 100%)'
         }}>
 
-        <Header showBranchSelector={true} title="Solicitud de Turnos" />
+        {/* Skip Links para navegación por teclado */}
+        <SkipLink href="#main-content">Saltar al contenido principal</SkipLink>
+        <SkipLink href="#client-selection">Saltar a la selección de cliente</SkipLink>
+
+        <Header 
+          showBranchSelector={false} 
+          title="Solicitud de Turnos" 
+          onAccessibilityClick={() => setIsAccessibilityModalOpen(true)}
+        />
 
         {/* MODAL DE CONFIRMACIÓN - SOLO MOSTRAR CUANDO showConfirmation SEA true Y currentStep SEA serviceSelection */}
         {showConfirmation && currentStep === 'serviceSelection' && renderConfirmationModal()}
 
         {/* Main Content - Optimizado para caber en pantalla */}
-        <div className="flex-1 flex items-center justify-center px-4 py-2 overflow-auto relative z-0">
+        <main id="main-content" className="flex-1 flex items-center justify-center px-4 py-2 overflow-auto relative z-0">
           <div className="w-full max-w-6xl my-auto">
 
             {/* Welcome Message - Compacto */}
@@ -950,12 +994,28 @@ export default function Starter() {
             </div>
 
             {/* Dynamic Content Based on Step */}
-            {currentStep === 'clientType' && renderClientTypeSelection()}
+            {currentStep === 'clientType' && (
+              <div id="client-selection" role="region" aria-label="Selección de tipo de cliente">
+                {renderClientTypeSelection()}
+              </div>
+            )}
             {currentStep === 'serviceSelection' && renderServiceSelection()}
             {currentStep === 'ticket' && renderTicket()}
 
           </div>
-        </div>
+        </main>
+
+        {/* Modal de Accesibilidad Avanzada */}
+        <AdvancedAccessibilityModal 
+          isOpen={isAccessibilityModalOpen} 
+          onClose={() => setIsAccessibilityModalOpen(false)} 
+        />
+
+        {/* Guía de Accesibilidad */}
+        <AccessibilityHelp 
+          isOpen={isHelpOpen} 
+          onClose={() => setIsHelpOpen(false)} 
+        />
       </div>
     </>
   );

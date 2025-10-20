@@ -71,11 +71,11 @@ function FormularioAreas() {
         console.log('Datos recibidos del backend:', response.data);
         console.log('Estado original:', `"${response.data.ck_estatus}"`);
         console.log('Longitud del estado:', response.data.ck_estatus?.length);
-        
+
         // Limpiar espacios en blanco del estado
         const estatusLimpio = response.data.ck_estatus?.trim() || 'ACTIVO';
         console.log('Estado limpio:', `"${estatusLimpio}"`);
-        
+
         // Mapear los datos del backend al formato del formulario
         setFormData({
           c_codigo_area: response.data.c_codigo_area || '',
@@ -158,9 +158,10 @@ function FormularioAreas() {
           if (response.success) {
             setShowSuccess(true);
             setSuccessMessage('Área actualizada correctamente');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(() => {
               window.location.href = '/catalogos/areas/consulta/';
-            }, 1800);
+            }, 1300); 
           } else {
             alert(response.message || 'Error al actualizar área');
           }
@@ -173,7 +174,7 @@ function FormularioAreas() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
           setTimeout(() => {
             window.location.href = '/catalogos/areas/consulta/';
-          }, 1800);
+          }, 1300);
         } else {
           alert(response.message || 'Error al crear área');
         }

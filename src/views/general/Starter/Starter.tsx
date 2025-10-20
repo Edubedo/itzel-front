@@ -173,6 +173,7 @@ export default function Starter() {
   };
 
   const seleccionarArea = (area: Area) => {
+    if (areaSeleccionada?.ck_area === area.ck_area) return;
     setAreaSeleccionada(area);
     setServicios([]);
     setTimer(INACTIVITY_TIME);
@@ -573,7 +574,7 @@ export default function Starter() {
                 </div>
               </div>
 
-              {/* Barra de progreso discreta */}
+              {/* Barra de progreso */}
               <div className="w-full bg-white/30 rounded-full h-1 overflow-hidden">
                 <div
                   className={`h-1 rounded-full transition-all duration-1000 ${timer <= 10 ? 'bg-red-500' : timer <= 20 ? 'bg-amber-500' : 'bg-green-500'
@@ -607,7 +608,6 @@ export default function Starter() {
 
                   <div className="relative p-6">
                     <div className="text-center">
-                      <div className="font-bold text-sm mb-2 opacity-80">{area.c_codigo_area}</div>
                       <div className="font-bold text-lg mb-2">{area.s_area}</div>
                       {area.s_descripcion_area && (
                         <div className="text-sm opacity-90">{area.s_descripcion_area}</div>
@@ -656,34 +656,28 @@ export default function Starter() {
                         boxShadow: '0 10px 40px -15px rgba(142, 202, 178, 0.4)'
                       }}
                     >
-                      {/* Animated shine effect */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
 
                       <div className="relative p-6">
                         {/* Icon and Header */}
-                        <div className="flex items-start gap-4 mb-4">
+                        <div className="flex items-start gap-4">
                           {getServiceIcon(servicio.s_servicio)}
                           <div className="flex-1">
-                            <div className="font-bold text-lg text-[#0A1310] mb-1 group-hover:text-[#3A554B] transition-colors">
+                            <div className="font-bold text-lg text-[#0A1310] mb-2 group-hover:text-[#3A554B] transition-colors">
                               {servicio.s_servicio}
                             </div>
-                            {servicio.c_codigo_servicio && (
-                              <div className="text-xs text-[#70A18E] font-semibold bg-white/60 px-2 py-1 rounded-full inline-block">
-                                {servicio.c_codigo_servicio}
+
+                            {/* Description - Más cerca del título */}
+                            {servicio.s_descripcion_servicio && (
+                              <div className="text-sm text-gray-600 mt-1 group-hover:text-gray-700 transition-colors"> {/* mt-1 en lugar de mb-4 */}
+                                {servicio.s_descripcion_servicio}
                               </div>
                             )}
                           </div>
                         </div>
 
-                        {/* Description */}
-                        {servicio.s_descripcion_servicio && (
-                          <div className="text-sm text-gray-600 mb-4 group-hover:text-gray-700 transition-colors">
-                            {servicio.s_descripcion_servicio}
-                          </div>
-                        )}
-
-                        {/* Action indicator */}
-                        <div className="flex items-center justify-between">
+                        {/* Action indicator - Movido fuera del flex container */}
+                        <div className="flex items-center justify-between mt-4"> {/* Agregado mt-4 */}
                           <div className="flex items-center gap-2 text-[#70A18E] group-hover:gap-3 transition-all">
                             <span className="text-sm font-bold">SELECCIONAR</span>
                             <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -696,7 +690,6 @@ export default function Starter() {
                         </div>
                       </div>
 
-                      {/* Corner decoration */}
                       <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 rounded-bl-full -mr-10 -mt-10"></div>
                       <div className="absolute bottom-0 left-0 w-16 h-16 bg-[#70A18E]/20 rounded-tr-full -ml-8 -mb-8"></div>
                     </button>

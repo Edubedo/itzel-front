@@ -139,20 +139,5 @@ export const serviciosService = {
     }
   },
 
-  // Obtener estadísticas de servicios mensuales
-  async getServicioStatsMensual(): Promise<ServicioStatsResponse> {
-    try {
-      const res = await axios.get(`${API_URL}/operaciones/turnos/servicios-mensual`);
-      return {
-        success: true,
-        data: res.data.data,
-      };
-    } catch (error: any) {
-      console.error("Error en getServicioStatsMensual:", error);
-      return {
-        success: false,
-        message: error.response?.data?.message || error.message
-      };
-    }
-  }
+  
 };

@@ -3,18 +3,12 @@ import { Outlet } from "react-router";
 import AppHeader from "./AppHeader";
 import Backdrop from "./Backdrop";
 import AppSidebar from "./AppSidebar";
-import AccessibilityButton from "../components/accessibility/AccessibilityButton";
-import SkipLink from "../components/accessibility/SkipLink";
 
 const LayoutContent: React.FC = () => {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 
   return (
     <div className="min-h-screen xl:flex">
-      {/* Skip Links para navegación por teclado */}
-      <SkipLink href="#main-content">Saltar al contenido principal</SkipLink>
-      <SkipLink href="#navigation">Saltar a la navegación</SkipLink>
-      
       <div>
         <AppSidebar />
         <Backdrop />
@@ -25,11 +19,10 @@ const LayoutContent: React.FC = () => {
         } ${isMobileOpen ? "ml-0" : ""}`}
       >
         <AppHeader />
-        <main id="main-content" className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
           <Outlet />
-        </main>
+        </div>
       </div>
-      <AccessibilityButton />
     </div>
   );
 };

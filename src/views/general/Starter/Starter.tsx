@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import PageMeta from '../../../components/common/PageMeta';
 import Header from '../../../components/header/Header';
+import { useNavigate } from 'react-router';
+import QRCode from 'qrcode';
 
 interface Sucursal {
   ck_sucursal: string;
@@ -44,12 +46,27 @@ export default function Starter() {
   const [turnoCreado, setTurnoCreado] = useState<Turno | null>(null);
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(20);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
   const INACTIVITY_TIME = 30;
   const [timer, setTimer] = useState(INACTIVITY_TIME);
 
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
+
+  // Controlar navegación
+  const navigate = useNavigate();
+
+   useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      event.preventDefault();
+      navigate("/"); // redirige a la página principal
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [navigate]);
+
 
   // Cargar sucursal seleccionada desde localStorage
   useEffect(() => {
@@ -126,6 +143,13 @@ export default function Starter() {
 
     return () => clearInterval(intervalId);
   }, [currentStep, timer]);
+
+  // useEffect para generar el QR cuando se crea el turno
+  useEffect(() => {
+    if (turnoCreado && currentStep === 'ticket') {
+      generarQR();
+    }
+  }, [turnoCreado, currentStep]);
 
   const cargarAreas = async () => {
     if (!sucursalSeleccionada) return;
@@ -222,7 +246,7 @@ export default function Starter() {
       if (data.success) {
         setTurnoCreado(data.turno);
         setCurrentStep('ticket');
-        setCountdown(20);
+        setCountdown(2000);
       } else {
         alert('Error al crear el turno: ' + data.message);
       }
@@ -266,6 +290,29 @@ export default function Starter() {
     } catch (error) {
       console.error('Error al descargar ticket:', error);
       alert('Error al descargar el ticket. Por favor, intente nuevamente.');
+    }
+  };
+
+  const generarQR = async () => {
+    if (!turnoCreado) return;
+
+    try {
+      // URL que apunta al endpoint de descarga del PDF
+      const downloadUrl = `http://localhost:3001/api/operaciones/turnos/ticket/${turnoCreado.ck_turno}/pdf`;
+      
+      // Generar el código QR
+      const qrDataURL = await QRCode.toDataURL(downloadUrl, {
+        width: 150,
+        margin: 2,
+        color: {
+          dark: '#3A554B', // Color del QR
+          light: '#FFFFFF' // Color de fondo
+        }
+      });
+      
+      setQrCodeUrl(qrDataURL);
+    } catch (error) {
+      console.error('Error al generar el QR:', error);
     }
   };
 
@@ -850,6 +897,21 @@ export default function Starter() {
             <p className="text-xs text-gray-600">
               Por favor conserve este ticket y espere a ser llamado
             </p>
+          </div>
+
+          <div className="border-t border-gray-300 pt-4 mt-4 text-center">
+            <p className="text-xs text-gray-600 mb-3">
+              Escanee el código QR para descargar su ticket
+            </p>
+            {qrCodeUrl && (
+              <div className="flex justify-center">
+                <img 
+                  src={qrCodeUrl} 
+                  alt="Código QR para descargar ticket" 
+                  className="w-32 h-32 border border-gray-300 rounded-lg"
+                />
+              </div>
+            )}
           </div>
         </div>
 

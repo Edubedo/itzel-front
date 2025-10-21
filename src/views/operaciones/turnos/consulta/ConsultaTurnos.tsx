@@ -422,10 +422,8 @@ function ConsultaTurnos() {
                           {turno.c_codigo_area}
                         </div>
                         <div className="text-xs text-gray-500">
-                          {new Date(turno.t_tiempo_espera).toLocaleTimeString('es-MX', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
+                          {turno.t_tiempo_espera}
+                        
                         </div>
                         {index === 0 && (
                           <div className="text-xs font-medium text-blue-600 mt-1">

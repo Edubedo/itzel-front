@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { useLogo } from "../contexts/LogoContext";
+import { useLanguage } from "../context/LanguageContext";
 
 // Assume these icons are imported from an icon library
 import {
@@ -25,35 +26,41 @@ type NavItem = {
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
-const catalogosSecciones: NavItem[] = [
-  {
-    name: "Catálogos",
-    icon: <GridIcon />,
-    subItems: [
-      { name: "Áreas", path: "/catalogos/areas/consulta", pro: false },
-      { name: "Servicios", path: "/catalogos/servicios/consulta", pro: false },
-      { name: "Sucursales", path: "/catalogos/sucursales", pro: false },
-      { name: "Usuarios", path: "/catalogos/usuarios/consulta", pro: false },
-      { name: "Clientes", path: "/catalogos/clientes/consulta", pro: false }
-    ]
-  }
-];
-
-const othersItems: NavItem[] = [
-  {
-    icon: <PieChartIcon />,
-    name: "Operaciones",
-    subItems: [
-      { name: "Turnos", path: "/operaciones/turnos/consulta", pro: false },
-      { name: "Reportes", path: "/operaciones/reportes/consulta", pro: false },
-    ],
-  },
-];
+// Función para crear las secciones de navegación con traducciones
+const createNavSections = (t: (key: string) => string) => ({
+  catalogosSecciones: [
+    {
+      name: t("nav.catalogues"),
+      icon: <GridIcon />,
+      subItems: [
+        { name: t("nav.areas"), path: "/catalogos/areas/consulta", pro: false },
+        { name: t("nav.services"), path: "/catalogos/servicios/consulta", pro: false },
+        { name: t("nav.branches"), path: "/catalogos/sucursales", pro: false },
+        { name: t("nav.users"), path: "/catalogos/usuarios/consulta", pro: false },
+        { name: t("nav.clients"), path: "/catalogos/clientes/consulta", pro: false }
+      ]
+    }
+  ],
+  othersItems: [
+    {
+      icon: <PieChartIcon />,
+      name: t("nav.operations"),
+      subItems: [
+        { name: t("nav.shifts"), path: "/operaciones/turnos/consulta", pro: false },
+        { name: t("nav.reports"), path: "/operaciones/reportes/consulta", pro: false },
+      ],
+    },
+  ]
+});
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const { logoLight, logoDark } = useLogo();
+  const { t } = useLanguage();
   const location = useLocation();
+  
+  // Crear las secciones de navegación con traducciones
+  const { catalogosSecciones, othersItems } = createNavSections(t);
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
@@ -308,7 +315,7 @@ const AppSidebar: React.FC = () => {
                   }`}
               >
                 {isSidebarExpanded ? (
-                  "General"
+                  t("nav.catalogues")
                 ) : (
                   <HorizontaLDots className="size-6" />
                 )}
@@ -325,7 +332,7 @@ const AppSidebar: React.FC = () => {
                   }`}
               >
                 {isSidebarExpanded ? (
-                  "Operaciones"
+                  t("nav.operations")
                 ) : (
                   <HorizontaLDots />
                 )}

@@ -2,13 +2,14 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     svgr({
       svgrOptions: {
         icon: true,
+        // This will transform your SVG to a React component
         exportType: "named",
         namedExport: "ReactComponent",
       },
@@ -16,12 +17,7 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      "/api": "http://localhost:3001",
-    },
-  },
-  build: {
-    outDir: "dist", // Carpeta de salida (por defecto Vite ya la usa)
-    emptyOutDir: true, // Limpia la carpeta antes del build
-  },
-  base: "./", // ✅ Esto asegura que las rutas funcionen correctamente en Vercel
+      '/api': 'http://localhost:3001'
+    }
+  }
 });

@@ -244,7 +244,7 @@ const EstadisticasGenerales: React.FC<{ datos: EstadisticasGenerales }> = ({ dat
 // Componente de Gráfica de Turnos por Hora
 const TurnosPorHora: React.FC<{ datos: TurnoPorHora[] }> = ({ datos }) => {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+    <div className="bg-white rounded-xl shadow-lg p-6 h-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
           <Clock className="w-5 h-5 text-[#70A18E]" />
@@ -252,7 +252,7 @@ const TurnosPorHora: React.FC<{ datos: TurnoPorHora[] }> = ({ datos }) => {
         </h3>
       </div>
       
-      <div className="h-64">
+      <div className="h-[300px] overflow-y-auto pr-2">
         <div className="flex flex-col h-full">
           {datos.map((hora, index) => (
             <div key={index} className="flex items-center mb-3">
@@ -266,7 +266,7 @@ const TurnosPorHora: React.FC<{ datos: TurnoPorHora[] }> = ({ datos }) => {
                   <div
                     className="bg-gradient-to-r from-[#70A18E] to-[#547A6B] h-3 rounded-full"
                     style={{
-                      width: `${(hora.atendidos / hora.turnos) * 100}%`
+                      width: `${hora.turnos > 0 ? (hora.atendidos / hora.turnos) * 100 : 0}%`
                     }}
                   ></div>
                 </div>

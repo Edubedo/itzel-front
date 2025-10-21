@@ -46,8 +46,9 @@ export default function Starter() {
   const [turnoCreado, setTurnoCreado] = useState<Turno | null>(null);
   const [notificacion, setNotificacion] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
-  const [loadingState, setLoadingState] = useState<'idle' | 'creating' | 'canceling'>('idle');      const [countdown, setCountdown] = useState(20);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [loadingState, setLoadingState] = useState<'idle' | 'creating' | 'canceling'>('idle');  
+  const [countdown, setCountdown] = useState(20);
+    const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
   const INACTIVITY_TIME = 60;
   const [timer, setTimer] = useState(INACTIVITY_TIME);
@@ -226,6 +227,7 @@ export default function Starter() {
     if (!sucursalSeleccionada || !areaSeleccionada) return;
 
     setLoadingState('creating');
+    setLoadingState('creating');
 
     try {
       const response = await fetch('http://localhost:3001/api/operaciones/turnos/crear', {
@@ -255,6 +257,7 @@ export default function Starter() {
       console.error('Error al crear turno:', error);
       alert('Error al crear el turno');
     } finally {
+      setLoadingState('idle');
       setLoadingState('idle');
     }
   };
@@ -375,7 +378,8 @@ export default function Starter() {
     setServicioSeleccionado(null);
   };
 
-   const renderCancelModal = () => (
+  // ▼▼▼ PEGA ESTA FUNCIÓN COMPLETA ▼▼▼
+  const renderCancelModal = () => (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto border border-white/20">
         
@@ -409,7 +413,7 @@ export default function Starter() {
           {/* Botones de acción */}
           <div className="flex gap-3">
             <button
-              onClick={() => setShowCancelModal(false)} 
+              onClick={() => setShowCancelModal(false)} // <-- Solo cierra el modal
               className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-colors duration-200"
             >
               No, regresar
@@ -428,6 +432,8 @@ export default function Starter() {
       </div>
     </div>
   );
+
+
 
   const renderClientTypeSelection = () => (
     <div className="relative">
@@ -798,6 +804,7 @@ export default function Starter() {
                       key={servicio.ck_servicio}
                       onClick={() => handleServicioClick(servicio)}
                       disabled={loadingState !== 'idle'}
+                      disabled={loadingState !== 'idle'}
                       className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:translate-y-0"
                       style={{
                         background: 'linear-gradient(135deg, #CFF4DE 0%, #B7F2DA 100%)',
@@ -1025,14 +1032,15 @@ export default function Starter() {
             📄 Descargar Ticket
           </button>
 
-          
           <button
-          onClick={handleCancelarTurno} 
+          // onclick={imprimirTicket} // Tu código original
+          onClick={handleCancelarTurno} // <-- AÑADE ESTA LÍNEA
           className="w-full bg-[#e66f6f] hover:bg-[#ef2525] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
             Cancelar turno
           </button>
 
+          
           <button
             onClick={regresarAlInicio}
             className="w-full bg-[#5D7166] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#4A5B52] transition-colors"

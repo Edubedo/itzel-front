@@ -26,9 +26,14 @@ export default function StatisticsChart() {
 
       if (result.success) {
         // 📊 Ordenar los datos por número de mes y mapear solo los totales
-        const datosOrdenados = result.data
-          .sort((a: EstadisticaMensual, b: EstadisticaMensual) => a.numero_mes - b.numero_mes)
-          .map((item: EstadisticaMensual) => item.total_turnos);
+        const datosOrdenados = new Array(12).fill(0);
+
+result.data.forEach((item: EstadisticaMensual) => {
+  const index = item.numero_mes - 1; // índice 0-based
+  datosOrdenados[index] = item.total_turnos;
+});
+
+setData(datosOrdenados);
 
         setData(datosOrdenados);
       }

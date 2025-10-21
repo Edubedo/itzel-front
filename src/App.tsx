@@ -52,8 +52,7 @@ import Configuration from "./pages/Configuration";
 const USER_TYPES = {
   ADMINISTRADOR: 1,
   EJECUTIVO: 2,
-  CLIENTE: 3,
-  ASESOR: 4
+  ASESOR: 3
 };
 
 
@@ -116,12 +115,12 @@ export default function App() {
 
               {/* CLIENTES - Solo Administradores y Ejecutivos pueden ver todos los clientes */}
               <Route path="/catalogos/clientes/consulta/" element={
-                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO, USER_TYPES.ASESOR]}>
                   <ConsultaClientes />
                 </ProtectedRoute>
               } />
               <Route path="/catalogos/clientes/formulario/" element={
-                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO, USER_TYPES.ASESOR]}>
                   <FormularioClientes />
                 </ProtectedRoute>
               } />
@@ -135,12 +134,12 @@ export default function App() {
 
               {/* USUARIOS - Solo Administradores */}
               <Route path="/catalogos/usuarios/consulta/" element={
-                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
+                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR,USER_TYPES.ASESOR]}>
                   <ConsultaUsuarios />
                 </ProtectedRoute>
               } />
               <Route path="/catalogos/usuarios/formulario/" element={
-                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
+                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR,USER_TYPES.ASESOR]}>
                   <FormularioUsuarios />
                 </ProtectedRoute>
               } />
@@ -153,12 +152,12 @@ export default function App() {
 
               {/* REPORTES - Solo Administradores y Ejecutivos */}
               <Route path="/operaciones/reportes/consulta/" element={
-                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO,USER_TYPES.ASESOR]}>
                   <ConsultaReportes />
                 </ProtectedRoute>
               } />
               <Route path="/operaciones/reportes/formulario/" element={
-                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
+                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO,USER_TYPES.ASESOR]}>
                   <FormularioReportes />
                 </ProtectedRoute>
               } />

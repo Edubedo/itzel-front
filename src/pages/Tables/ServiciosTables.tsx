@@ -5,6 +5,7 @@ import PageMeta from "../../components/common/PageMeta";
 import ServiciosTableOne from "../../components/tables/BasicTables/ServiciosTableOne";
 import { useAuth } from "../../contexts/AuthContext";
 import { areasService, Area } from "../../services/areasService";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface ServiciosTablesProps {
   titleTable?: string;
@@ -33,6 +34,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
 
   const [areas, setAreas] = useState<Area[]>([]);
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const getAllServicios = async () => {
@@ -101,7 +103,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{titleTable}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Gestiona y consulta los servicios del sistema</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{t("services.manageAndConsultServices")}</p>
         </div>
         {user?.tipo_usuario === 1 && (
           <button
@@ -113,7 +115,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
               </svg>
             </div>
-            <span className="font-medium">Nuevo Servicio</span>
+            <span className="font-medium">{t("services.newService")}</span>
           </button>
         )}
       </div>
@@ -130,7 +132,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Total Servicios</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("services.totalServices")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.total}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] rounded-full mt-3"></div>
         </div>
@@ -145,7 +147,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Activos</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("services.active")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.activos}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#8ECAB2] to-[#B7F2DA] rounded-full mt-3"></div>
         </div>
@@ -161,7 +163,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Para Clientes</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("services.forClients")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.paraClientes}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 rounded-full mt-3"></div>
         </div>
@@ -176,7 +178,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Total Para No Clientes</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("services.forNonClients")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.paraNoClientes}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#F59E0B] to-[#FBBF24] rounded-full mt-3"></div>
         </div>
@@ -187,12 +189,12 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex-1 min-w-64">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Buscar Servicio
+              {t("services.searchService")}
             </label>
             <div className="relative">
               <input
                 type="text"
-                placeholder="Buscar por código o nombre..."
+                placeholder={t("services.searchByCodeOrName")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
@@ -204,14 +206,14 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
           {/* Filtro por Área */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Área
+              {t("services.area")}
             </label>
             <select
               value={areaFilter}
               onChange={(e) => setAreaFilter(e.target.value)}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
             >
-              <option value="">Todas las áreas</option>
+              <option value="">{t("services.allAreas")}</option>
               {areas.map((area) => (
                 <option key={area.ck_area} value={area.ck_area}>
                   {area.s_area} - {area.sucursal_nombre || "Sin sucursal"}
@@ -223,16 +225,16 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
           {/* Filtro por Cliente/No Cliente */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Tipo de Cliente
+              {t("services.clientType")}
             </label>
             <select
               value={clienteFilter}
               onChange={(e) => setClienteFilter(e.target.value)}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
             >
-              <option value="">Todos los tipos</option>
-              <option value="1">Clientes</option>
-              <option value="0">No clientes</option>
+              <option value="">{t("services.allTypes")}</option>
+              <option value="1">{t("services.clients")}</option>
+              <option value="0">{t("services.nonClients")}</option>
             </select>
           </div>
 
@@ -242,14 +244,14 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
               onClick={clearFilters}
               className="px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200 font-medium dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 dark:border-gray-600"
             >
-              Limpiar
+{t("common.clear")}
             </button>
           </div>
         </div>
       </div>
 
       <div className="space-y-6">
-        <ComponentCard title="Consulta de Servicios">
+        <ComponentCard title={t("services.serviceQuery")}>
           <ServiciosTableOne
             servicios={servicios}
             setServicios={setServicios}

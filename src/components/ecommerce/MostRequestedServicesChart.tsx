@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
+import { useLanguage } from "../../context/LanguageContext";
 import dashboardService from "../../services/dashboardService";
 
 export default function MostRequestedServicesChart() {
   const [labels, setLabels] = useState<string[]>([]);
   const [series, setSeries] = useState<{ name: string; data: number[] }[]>([]);
+  const { t } = useLanguage();
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -96,12 +98,12 @@ export default function MostRequestedServicesChart() {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
       <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4">
-        Servicios más solicitados
+        {t("dashboard.mostRequestedServices")}
       </h3>
       {series.length > 0 && labels.length > 0 ? (
         <Chart options={options} series={series} type="bar" height={300} />
       ) : (
-        <p className="text-center text-gray-500">No hay datos para mostrar</p>
+        <p className="text-center text-gray-500">{t("dashboard.noDataToShow")}</p>
       )}
     </div>
   );

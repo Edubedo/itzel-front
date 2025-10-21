@@ -38,6 +38,7 @@ import ConsultaTurnos from "./views/operaciones/turnos/consulta/ConsultaTurnos";
 import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTurnos";
 import RecoverPassword from "./pages/AuthPages/RecoverPassword";
 import { LogoProvider } from "./contexts/LogoContext";
+import { LanguageProvider } from "./context/LanguageContext";
 
 
 // Importar componentes de autenticación
@@ -47,6 +48,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 // ▼▼▼ 1. IMPORTA EL NUEVO COMPONENTE DE PÁGINA ▼▼▼
 import PaginaServicio from "./views/catalogos/servicios/PaginaServicio";
 import Configuration from "./pages/Configuration";
+import VistaNotificaciones from "./components/header/VistaNotificaciones";
 
 // Definir constantes para tipos de usuario (basado en el backend)
 const USER_TYPES = {
@@ -59,9 +61,10 @@ const USER_TYPES = {
 
 export default function App() {
   return (
-    <LogoProvider>
-      <AuthProvider>
-        <BrowserRouter>
+    <LanguageProvider>
+      <LogoProvider>
+        <AuthProvider>
+          <BrowserRouter>
           <ScrollToTop />
           <Routes>
             {/* Rutas públicas */}
@@ -165,6 +168,8 @@ export default function App() {
               {/* TURNOS - Accesibles por todos los usuarios autenticados */}
               <Route path="/operaciones/turnos/consulta/" element={<ConsultaTurnos />} />
               <Route path="/operaciones/turnos/formulario/" element={<FormularioTurnos />} />
+              <Route path="/notificaciones/" element={<VistaNotificaciones />} />
+
 
               {/* Páginas generales */}
               <Route path="/configuration" element={<Configuration />} />
@@ -215,7 +220,8 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-      </AuthProvider>
-    </LogoProvider>
+        </AuthProvider>
+      </LogoProvider>
+    </LanguageProvider>
   );
 }

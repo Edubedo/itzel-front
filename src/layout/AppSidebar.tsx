@@ -45,7 +45,6 @@ const othersItems: NavItem[] = [
     name: "Operaciones",
     subItems: [
       { name: "Turnos", path: "/operaciones/turnos/consulta", pro: false },
-      { name: "Citas", path: "/operaciones/citas/consulta", pro: false },
       { name: "Reportes", path: "/operaciones/reportes/consulta", pro: false },
     ],
   },

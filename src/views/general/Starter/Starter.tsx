@@ -44,11 +44,12 @@ export default function Starter() {
   const [areaSeleccionada, setAreaSeleccionada] = useState<Area | null>(null);
 
   const [turnoCreado, setTurnoCreado] = useState<Turno | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [countdown, setCountdown] = useState(20);
+  const [notificacion, setNotificacion] = useState<string | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [loadingState, setLoadingState] = useState<'idle' | 'creating' | 'canceling'>('idle');      const [countdown, setCountdown] = useState(20);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
-  const INACTIVITY_TIME = 30;
+  const INACTIVITY_TIME = 60;
   const [timer, setTimer] = useState(INACTIVITY_TIME);
 
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -224,7 +225,7 @@ export default function Starter() {
   const crearTurno = async (servicio: Servicio) => {
     if (!sucursalSeleccionada || !areaSeleccionada) return;
 
-    setLoading(true);
+    setLoadingState('creating');
 
     try {
       const response = await fetch('http://localhost:3001/api/operaciones/turnos/crear', {
@@ -254,7 +255,7 @@ export default function Starter() {
       console.error('Error al crear turno:', error);
       alert('Error al crear el turno');
     } finally {
-      setLoading(false);
+      setLoadingState('idle');
     }
   };
 
@@ -316,6 +317,52 @@ export default function Starter() {
     }
   };
 
+  const handleCancelarTurno = async () => {
+    // Asegurarnos que hay un turno creado
+    if (!turnoCreado) {
+      alert("No hay un turno seleccionado para cancelar.");
+      return;
+    }
+
+    setLoadingState('canceling');
+
+    try {
+      // Llamamos a la API pública
+      const response = await fetch(
+        `http://localhost:3001/api/operaciones/turnos/cancelar/${turnoCreado.ck_turno}`,
+        {
+          method: 'DELETE',
+        }
+      );
+      
+      const data = await response.json();
+
+      if (response.ok) {
+        setLoadingState('idle');
+        setNotificacion(data.message || 'Turno cancelado exitosamente');
+        setTimeout(() => {
+          setNotificacion(null);
+          regresarAlInicio(); 
+        }, 1500);
+      } else {
+        setLoadingState('idle');
+        throw new Error(data.message || 'Error al cancelar el turno');
+      }
+
+    } catch (error) {
+      
+      console.error('Error al cancelar el turno:', error);
+      
+      let errorMessage = 'No se pudo cancelar el turno.';
+      if (error instanceof Error) {
+        // Si es un error estándar, usamos su mensaje
+        errorMessage = `Error: ${error.message}`;
+      }
+      
+      alert(errorMessage); 
+      setLoadingState('idle');
+    } 
+  };
   const regresarAlInicio = () => {
     setCurrentStep('clientType');
     setEsCliente(null);
@@ -327,6 +374,60 @@ export default function Starter() {
     setShowConfirmation(false);
     setServicioSeleccionado(null);
   };
+
+   const renderCancelModal = () => (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto border border-white/20">
+        
+        {/* Header (Rojo para 'cancelar') */}
+        <div className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] p-6 rounded-t-2xl text-center">
+          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-white mb-2">Confirmar Cancelación</h3>
+          <p className="text-white/80 text-sm">
+            ¿Estás seguro de que deseas cancelar este turno?
+          </p>
+        </div>
+
+        {/* Detalles y Botones */}
+        <div className="p-6">
+          <div className="bg-gray-50 rounded-xl p-4 mb-6">
+            <div className="text-center">
+              <div className="text-xs text-gray-500">Turno a cancelar</div>
+              <div className="font-semibold text-[#3A554B] text-lg">
+                TURNO No. {turnoCreado?.i_numero_turno}
+              </div>
+              <div className="font-semibold text-gray-600 text-sm">
+                {turnoCreado?.s_servicio}
+              </div>
+            </div>
+          </div>
+
+          {/* Botones de acción */}
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowCancelModal(false)} 
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-colors duration-200"
+            >
+              No, regresar
+            </button>
+            <button
+              onClick={() => {
+                setShowCancelModal(false); // Cierra el modal
+                handleCancelarTurno();      // Llama a la lógica
+              }}
+              className="flex-1 bg-gradient-to-r from-[#e66f6f] to-[#ef2525] hover:from-[#ef2525] hover:to-[#e66f6f] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200"
+            >
+              Sí, cancelar turno
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   const renderClientTypeSelection = () => (
     <div className="relative">
@@ -696,7 +797,7 @@ export default function Starter() {
                     <button
                       key={servicio.ck_servicio}
                       onClick={() => handleServicioClick(servicio)}
-                      disabled={loading}
+                      disabled={loadingState !== 'idle'}
                       className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:translate-y-0"
                       style={{
                         background: 'linear-gradient(135deg, #CFF4DE 0%, #B7F2DA 100%)',
@@ -731,7 +832,7 @@ export default function Starter() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                             </svg>
                           </div>
-                          {loading && (
+                          {loadingState === 'creating' && servicioSeleccionado?.ck_servicio === servicio.ck_servicio && (
                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#70A18E]"></div>
                           )}
                         </div>
@@ -826,10 +927,10 @@ export default function Starter() {
             </button>
             <button
               onClick={confirmarTurno}
-              disabled={loading}
+              disabled={loadingState !== 'idle'}
               className="flex-1 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? (
+              {loadingState === 'creating' ? (
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   Generando...
@@ -924,6 +1025,14 @@ export default function Starter() {
             📄 Descargar Ticket
           </button>
 
+          
+          <button
+          onClick={handleCancelarTurno} 
+          className="w-full bg-[#e66f6f] hover:bg-[#ef2525] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+          >
+            Cancelar turno
+          </button>
+
           <button
             onClick={regresarAlInicio}
             className="w-full bg-[#5D7166] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#4A5B52] transition-colors"
@@ -940,16 +1049,24 @@ export default function Starter() {
     </div>
   );
 
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#F4F4F4] to-[#CAC9C9]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3A554B] mx-auto mb-4"></div>
-          <p className="text-[#3A554B] font-semibold">Generando su turno...</p>
+
+  if (loadingState !== 'idle') {
+      // Determina el texto basado en el estado
+      const loadingText = loadingState === 'creating' 
+        ? 'Generando su turno...' 
+        : 'Cancelando su turno...';
+
+      return (
+        <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#F4F4F4] to-[#CAC9C9]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3A554B] mx-auto mb-4"></div>
+            {/* Usa la variable de texto dinámico */}
+            <p className="text-[#3A554B] font-semibold">{loadingText}</p>
         </div>
       </div>
-    );
+      );
   }
+
 
   return (
     <>
@@ -957,6 +1074,23 @@ export default function Starter() {
         title="Starter Users - ITZEL"
         description="Sistema de gestión de turnos ITZEL - Página inicial de selección de tipo de cliente"
       />
+
+            {notificacion && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          {/* Contenedor para limitar el ancho */}
+          <div className="w-full max-w-md"> 
+            <div className="bg-gradient-to-r from-[#e66f6f] to-[#ef2525] text-white font-bold text-center p-4 rounded-xl shadow-2xl border border-white/30">
+              <div className="flex items-center justify-center gap-3">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{notificacion}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showCancelModal && renderCancelModal()}
 
       <div className="h-screen flex flex-col overflow-hidden"
         style={{

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { ClipboardList, CheckCircle, Play, Square, RotateCcw, Filter } from "lucide-react";
 import { useSucursalActiva } from '../../../../components/header/Header';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 interface Turno {
   ck_turno: string;
@@ -27,6 +28,7 @@ interface Area {
 function ConsultaTurnos() {
   const { user } = useAuth();
   const sucursalActiva = useSucursalActiva();
+  const { t } = useLanguage();
   
   const [areas, setAreas] = useState<Area[]>([]);
   const [areaSeleccionada, setAreaSeleccionada] = useState<string>('');
@@ -199,10 +201,10 @@ function ConsultaTurnos() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="text-lg font-semibold text-gray-800 mb-2">
-            No hay sucursal seleccionada
+{t("shifts.noBranchSelected")}
           </div>
           <p className="text-gray-600">
-            Por favor seleccione una sucursal en el menú superior.
+{t("shifts.selectBranchMessage")}
           </p>
         </div>
       </div>
@@ -215,11 +217,11 @@ function ConsultaTurnos() {
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Gestión de Turnos</h1>
+            <h1 className="text-2xl font-bold text-gray-800">{t("shifts.shiftManagement")}</h1>
             <p className="text-gray-600">
-              Sucursal: {sucursalActiva.s_nombre_sucursal}
-              {user?.tipo_usuario === 1 && ' (Administrador)'}
-              {user?.tipo_usuario === 2 && ' (Ejecutivo)'}
+{t("shifts.branch")}: {sucursalActiva.s_nombre_sucursal}
+              {user?.tipo_usuario === 1 && ` (${t("userRoles.1")})`}
+              {user?.tipo_usuario === 2 && ` (${t("userRoles.2")})`}
             </p>
           </div>
           
@@ -250,7 +252,7 @@ function ConsultaTurnos() {
                 <ClipboardList className="w-6 h-6 text-white"/>
               </div>
             </div>
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Total Hoy</h3>
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("shifts.totalToday")}</h3>
             <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{estadisticas.total_turnos}</p>
             <div className="w-8 h-1 bg-gradient-to-r from-blue-500 to-blue-700 rounded-full mt-3"></div>
           </div>
@@ -262,7 +264,7 @@ function ConsultaTurnos() {
                 <Play className="w-6 h-6 text-white"/>
               </div>
             </div>
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">En Espera</h3>
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("shifts.waiting")}</h3>
             <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{estadisticas.turnos_pendientes}</p>
             <div className="w-8 h-1 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full mt-3"></div>
           </div>
@@ -274,7 +276,7 @@ function ConsultaTurnos() {
                 <RotateCcw className="w-6 h-6 text-white"/>
               </div>
             </div>
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">En Proceso</h3>
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("shifts.inProgress")}</h3>
             <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{estadisticas.turnos_en_proceso}</p>
             <div className="w-8 h-1 bg-gradient-to-r from-green-400 to-green-500 rounded-full mt-3"></div>
           </div>
@@ -286,7 +288,7 @@ function ConsultaTurnos() {
                 <CheckCircle className="w-6 h-6 text-white"/>
               </div>
             </div>
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Atendidos</h3>
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("shifts.attended")}</h3>
             <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{estadisticas.turnos_atendidos}</p>
             <div className="w-8 h-1 bg-gradient-to-r from-gray-400 to-gray-500 rounded-full mt-3"></div>
           </div>
@@ -301,7 +303,7 @@ function ConsultaTurnos() {
           className="flex items-center gap-2 bg-[#457B68] hover:bg-[#65AC93] disabled:bg-gray-400 text-white font-medium px-4 py-2 rounded-lg transition-colors disabled:cursor-not-allowed"
         >
           <Play className="w-4 h-4" />
-          Atender Próximo Turno
+{t("shifts.attendNextShift")}
         </button>
         
         {turnoActual && (
@@ -311,7 +313,7 @@ function ConsultaTurnos() {
             className="flex items-center gap-2 bg-red-500 hover:bg-red-900 disabled:bg-gray-400 text-white font-medium px-4 py-2 rounded-lg transition-colors disabled:cursor-not-allowed"
           >
             <Square className="w-4 h-4" />
-            Finalizar Atención
+{t("shifts.finishAttention")}
           </button>
         )}
         
@@ -324,7 +326,7 @@ function ConsultaTurnos() {
           className="flex items-center gap-2 bg-[#1EC2EC] hover:bg-[#119ABD] disabled:bg-gray-400 text-gray-800 font-medium px-4 py-2 rounded-lg transition-colors disabled:cursor-not-allowed"
         >
           <RotateCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          Actualizar
+{t("shifts.update")}
         </button>
       </div>
 
@@ -335,7 +337,7 @@ function ConsultaTurnos() {
           <div className="bg-gradient-to-r from-[#3A554B] to-[#64917F] text-white p-4">
             <h2 className="text-xl font-bold flex items-center gap-2">
               <ClipboardList className="w-6 h-6" />
-              Turno en Atención
+{t("shifts.shiftInAttention")}
             </h2>
           </div>
           
@@ -348,23 +350,23 @@ function ConsultaTurnos() {
                 
                 <div className="space-y-3 text-left bg-[#D3EEE3] rounded-lg p-4">
                   <div className="flex justify-between">
-                    <span className="font-medium text-gray-600">Área:</span>
+                    <span className="font-medium text-gray-600">{t("shifts.area")}:</span>
                     <span className="font-bold">{turnoActual.s_area}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-gray-600">Servicio:</span>
+                    <span className="font-medium text-gray-600">{t("shifts.service")}:</span>
                     <span>{turnoActual.s_servicio}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-gray-600">Cliente:</span>
+                    <span className="font-medium text-gray-600">{t("shifts.client")}:</span>
                     <span>{turnoActual.nombre_cliente}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-gray-600">Atendido por:</span>
+                    <span className="font-medium text-gray-600">{t("shifts.attendedBy")}:</span>
                     <span>{turnoActual.nombre_asesor || 'Sistema'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-gray-600">Inicio:</span>
+                    <span className="font-medium text-gray-600">{t("shifts.start")}:</span>
                     <span>
                       {turnoActual.d_fecha_atendido 
                         ? new Date(turnoActual.d_fecha_atendido).toLocaleTimeString('es-MX')
@@ -381,8 +383,8 @@ function ConsultaTurnos() {
             ) : (
               <div className="text-center py-12 text-gray-500">
                 <ClipboardList className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium">No hay turno en atención</p>
-                <p className="text-sm">Seleccione "Atender Próximo Turno" para comenzar</p>
+                <p className="text-lg font-medium">{t("shifts.noShiftInAttention")}</p>
+                <p className="text-sm">{t("shifts.selectNextShiftMessage")}</p>
               </div>
             )}
           </div>
@@ -394,7 +396,7 @@ function ConsultaTurnos() {
             <h2 className="text-xl font-bold flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <ClipboardList className="w-6 h-6" />
-                Próximos Turnos
+{t("shifts.nextShifts")}
               </span>
               <span className="text-sm bg-[#89BBA8] px-2 py-1 rounded">
                 {turnosSiguientes.length}

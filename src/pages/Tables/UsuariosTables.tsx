@@ -4,6 +4,7 @@ import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
 import UsuariosTableOne from "../../components/tables/BasicTables/UsuariosTableOne";
 import { useAuth } from "../../contexts/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 
 interface UsuariosTablesProps {
@@ -37,6 +38,7 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
   });
 
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   // Función para navegar al formulario de añadir usuario
   const handleAddUsuario = () => {
@@ -67,7 +69,7 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{titleTable}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Gestiona y consulta los usuarios del sistema</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{t("users.manageAndConsultUsers")}</p>
         </div>
         {user?.tipo_usuario === 1 && (
           <button
@@ -79,7 +81,7 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
               </svg>
             </div>
-            <span className="font-medium">Nuevo Usuario</span>
+            <span className="font-medium">{t("users.newUser")}</span>
           </button>
         )}
       </div>
@@ -96,7 +98,7 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Total Usuarios</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("users.totalUsers")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.total}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] rounded-full mt-3"></div>
         </div>
@@ -111,7 +113,7 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Activos</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("users.active")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.activos}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#8ECAB2] to-[#B7F2DA] rounded-full mt-3"></div>
         </div>
@@ -126,7 +128,7 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Inactivos</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("users.inactive")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.inactivos}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#FF8E8E] to-[#FFB7B7] rounded-full mt-3"></div>
         </div>
@@ -141,11 +143,11 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Por Tipo</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("users.byType")}</h3>
           <div className="text-sm space-y-1 mt-2 dark:text-gray-200">
-            <div>Admin: {stats.porTipo.administradores}</div>
-            <div>Ejecutivos: {stats.porTipo.ejecutivos}</div>
-            <div>Asesores: {stats.porTipo.asesores}</div>
+            <div>{t("users.admin")}: {stats.porTipo.administradores}</div>
+            <div>{t("users.executives")}: {stats.porTipo.ejecutivos}</div>
+            <div>{t("users.advisors")}: {stats.porTipo.asesores}</div>
           </div>
           <div className="w-8 h-1 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full mt-3"></div>
         </div>
@@ -157,12 +159,12 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
           {/* Buscador */}
           <div className="flex-1 min-w-64">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Buscar Usuario
+              {t("users.searchUser")}
             </label>
             <div className="relative">
               <input
                 type="text"
-                placeholder="Buscar por nombre, apellido o correo..."
+                placeholder={t("users.searchByNameSurnameEmail")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
@@ -174,33 +176,33 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
           {/* Filtro por Tipo de Usuario */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Tipo de Usuario
+              {t("users.userType")}
             </label>
             <select
               value={tipoUsuarioFilter}
               onChange={(e) => setTipoUsuarioFilter(e.target.value)}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
             >
-              <option value="">Todos los tipos</option>
-              <option value="1">Administrador</option>
-              <option value="2">Ejecutivo</option>
-              <option value="3">Asesor</option>
+              <option value="">{t("users.allTypes")}</option>
+              <option value="1">{t("users.administrator")}</option>
+              <option value="2">{t("users.executive")}</option>
+              <option value="3">{t("users.advisor")}</option>
             </select>
           </div>
 
           {/* Filtro por Estado */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Estado
+              {t("users.status")}
             </label>
             <select
               value={estatusFilter}
               onChange={(e) => setEstatusFilter(e.target.value)}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
             >
-              <option value="">Todos los estados</option>
-              <option value="ACTIVO">Activo</option>
-              <option value="INACTI">Inactivo</option>
+              <option value="">{t("users.allStatuses")}</option>
+              <option value="ACTIVO">{t("users.active")}</option>
+              <option value="INACTI">{t("users.inactive")}</option>
             </select>
           </div>
 
@@ -210,7 +212,7 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
               onClick={clearFilters}
               className="px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200 font-medium dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 dark:border-gray-600"
             >
-              Limpiar
+{t("common.clear")}
             </button>
           </div>
         </div>
@@ -218,7 +220,7 @@ export default function UsuariosTables({ titleTable = "Gestión de Usuarios" }: 
 
       {/* Tabla de usuarios */}
       <div className="space-y-6">
-        <ComponentCard title="Lista de Usuarios">
+        <ComponentCard title={t("users.userList")}>
           <UsuariosTableOne
             searchTerm={searchTerm}
             tipoUsuarioFilter={tipoUsuarioFilter}

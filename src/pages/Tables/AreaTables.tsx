@@ -5,6 +5,7 @@ import PageMeta from "../../components/common/PageMeta";
 import AreaTableOne from "../../components/tables/BasicTables/AreaTableOne";
 import { AreaStats } from "../../services/areasService";
 import { areasService, Sucursal } from "../../services/areasService";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface AreaTablesProps {
   titleTable?: string;
@@ -15,6 +16,7 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
   const [estatusFilter, setEstatusFilter] = useState("");
   const [sucursalFilter, setSucursalFilter] = useState("");
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+  const { t } = useLanguage();
 
   const [stats, setStats] = useState<AreaStats>({
     total: 0,
@@ -66,7 +68,7 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{titleTable}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Gestiona y consulta las áreas del sistema</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{t("areas.manageAndConsultAreas")}</p>
         </div>
         
         {/* Botón de añadir área - Versión compacta */}
@@ -79,7 +81,7 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
             </svg>
           </div>
-          <span className="font-medium">Nueva Área</span>
+          <span className="font-medium">{t("areas.newArea")}</span>
         </button>
       </div>
 
@@ -95,7 +97,7 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Total Áreas</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("areas.totalAreas")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.total}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] rounded-full mt-3"></div>
         </div>
@@ -110,7 +112,7 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Activas</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("areas.active")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.activas}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#8ECAB2] to-[#B7F2DA] rounded-full mt-3"></div>
         </div>
@@ -125,7 +127,7 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Inactivas</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("areas.inactive")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.inactivas}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#FF8E8E] to-[#FFB7B7] rounded-full mt-3"></div>
         </div>
@@ -137,12 +139,12 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
           {/* Buscador */}
           <div className="flex-1 min-w-64">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Buscar Área
+              {t("areas.searchArea")}
             </label>
             <div className="relative">
               <input
                 type="text"
-                placeholder="Buscar por código o nombre..."
+                placeholder={t("areas.searchByCodeOrName")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
@@ -154,30 +156,30 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
           {/* Filtro por Estado */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Estado
+              {t("areas.status")}
             </label>
             <select
               value={estatusFilter}
               onChange={(e) => setEstatusFilter(e.target.value)}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
             >
-              <option value="">Todos los estados</option>
-              <option value="ACTIVO">Activo</option>
-              <option value="INACTIVO">Inactivo</option>
+              <option value="">{t("areas.allStatuses")}</option>
+              <option value="ACTIVO">{t("areas.active")}</option>
+              <option value="INACTIVO">{t("areas.inactive")}</option>
             </select>
           </div>
 
           {/* Filtro por Sucursal */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Sucursal
+              {t("areas.branch")}
             </label>
             <select
               value={sucursalFilter}
               onChange={(e) => setSucursalFilter(e.target.value)}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
             >
-              <option value="">Todas las sucursales</option>
+              <option value="">{t("areas.allBranches")}</option>
               {sucursales.map((suc) => (
                 <option key={suc.ck_sucursal} value={suc.ck_sucursal}>
                   {suc.s_nombre_sucursal || suc.s_nombre}
@@ -192,14 +194,14 @@ export default function AreaTables({ titleTable = "Catálogo de áreas" }: AreaT
               onClick={clearFilters}
               className="px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200 font-medium dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 dark:border-gray-600"
             >
-              Limpiar
+{t("common.clear")}
             </button>
           </div>
         </div>
       </div>
 
       <div className="space-y-6">
-        <ComponentCard title="Consulta de Áreas">
+        <ComponentCard title={t("areas.areaQuery")}>
           <AreaTableOne
             searchTerm={searchTerm}
             estatusFilter={estatusFilter}

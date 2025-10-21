@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { getConfiguracion, updateConfiguracion } from "../services/configuracionService";
 import { useLogo } from "../contexts/LogoContext";
 import Alert from "../components/ui/alert/Alert";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function Configuration() {
   const [systemConfig, setSystemConfig] = useState({
@@ -24,6 +25,7 @@ export default function Configuration() {
   const { setLogoLight, setLogoDark } = useLogo();
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const { t } = useLanguage();
 
 
   useEffect(() => {
@@ -221,12 +223,12 @@ export default function Configuration() {
         description="Configuración general del sistema ITZEL"
       />
 
-      <PageBreadcrumb pageTitle="Configuración" />
+      <PageBreadcrumb pageTitle={t("configuration.title")} />
       {showSuccess && (
         <div className="mb-8 mt-2">
           <Alert
             variant="success"
-            title="¡Operación exitosa!"
+            title={t("configuration.successTitle")}
             message={successMessage}
           />
         </div>
@@ -271,11 +273,11 @@ export default function Configuration() {
             </p>
             <div className="flex items-center gap-2 mt-1">
               <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                ACTIVO
+{t("configuration.active")}
               </span>
               {hasUnsavedChanges && (
                 <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
-                  CAMBIOS SIN GUARDAR
+{t("configuration.unsavedChanges")}
                 </span>
               )}
             </div>
@@ -288,24 +290,24 @@ export default function Configuration() {
             <div className="flex items-center gap-2">
               <div className="w-1 h-4 bg-[#8ECAB2] rounded-full"></div>
               <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                Información General
+{t("configuration.generalInfo")}
               </h3>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <Label htmlFor="ck_estatus">Estatus del Sistema</Label>
+                <Label htmlFor="ck_estatus">{t("configuration.systemStatus")}</Label>
                 <div className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-800 dark:text-white bg-green-50 dark:bg-green-900/20">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="font-medium text-green-800 dark:text-green-300">ACTIVO</span>
+                    <span className="font-medium text-green-800 dark:text-green-300">{t("configuration.active")}</span>
                   </div>
                   <p className="mt-1 text-xs text-green-600 dark:text-green-400">
-                    El sistema está actualmente activo y funcionando
+{t("configuration.systemActiveMessage")}
                   </p>
                 </div>
               </div>
               <div>
-                <Label htmlFor="s_nombre_empresa">Nombre de la Empresa *</Label>
+                <Label htmlFor="s_nombre_empresa">{t("configuration.companyName")}</Label>
                 <Input
                   id="s_nombre_empresa"
                   type="text"
@@ -315,7 +317,7 @@ export default function Configuration() {
                 />
               </div>
               <div>
-                <Label htmlFor="s_nombre_sistema">Nombre del Sistema *</Label>
+                <Label htmlFor="s_nombre_sistema">{t("configuration.systemName")}</Label>
                 <Input
                   id="s_nombre_sistema"
                   type="text"
@@ -332,7 +334,7 @@ export default function Configuration() {
             <div className="flex items-center gap-2">
               <div className="w-1 h-4 bg-[#547A6B] rounded-full"></div>
               <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                Logo y Apariencia
+{t("configuration.logoAndAppearance")}
               </h3>
             </div>
             <div className="flex flex-col items-center gap-6 md:flex-row">

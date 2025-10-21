@@ -5,6 +5,7 @@ import ComponentCard from "../../../../components/common/ComponentCard";
 import SucursalesTable from "../../../../components/tables/BasicTables/SucursalesTable";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { sucursalesService, SucursalData, Estado, Municipio } from "../../../../services/sucursalesService";
+import { useLanguage } from "../../../../context/LanguageContext";
 
 interface ConsultaSucursalesProps {
     sucursales: SucursalData[];
@@ -46,6 +47,7 @@ export default function ConsultaSucursales({
         activas: 0,
         porEstado: {}
     });
+    const { t } = useLanguage();
 
     // Calcular estadísticas cuando cambien las sucursales o filtros
     useEffect(() => {
@@ -128,12 +130,12 @@ export default function ConsultaSucursales({
                 title="Sistema de Turnos - Catálogo de Sucursales" 
                 description="Catálogo de sucursales para el sistema de turnos" 
             />
-            <PageBreadcrumb pageTitle="Consulta de Sucursales" />
+            <PageBreadcrumb pageTitle={t("branches.branchQuery")} />
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Catálogo de Sucursales</h1>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Gestiona y consulta las sucursales del sistema</p>
+                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{t("branches.branchCatalog")}</h1>
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">{t("branches.manageAndConsultBranches")}</p>
                 </div>
                 {user?.tipo_usuario === 1 && (
                     <button
@@ -145,7 +147,7 @@ export default function ConsultaSucursales({
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
                             </svg>
                         </div>
-                        <span className="font-medium">Nueva Sucursal</span>
+                        <span className="font-medium">{t("branches.newBranch")}</span>
                     </button>
                 )}
             </div>
@@ -161,7 +163,7 @@ export default function ConsultaSucursales({
                             </svg>
                         </div>
                     </div>
-                    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Total Sucursales</h3>
+                    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("branches.totalBranches")}</h3>
                     <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.total}</p>
                     <div className="w-8 h-1 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] rounded-full mt-3"></div>
                 </div>
@@ -174,7 +176,7 @@ export default function ConsultaSucursales({
                             </svg>
                         </div>
                     </div>
-                    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Activas</h3>
+                    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("branches.active")}</h3>
                     <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.activas}</p>
                     <div className="w-8 h-1 bg-gradient-to-r from-[#8ECAB2] to-[#B7F2DA] rounded-full mt-3"></div>
                 </div>
@@ -186,12 +188,12 @@ export default function ConsultaSucursales({
                     {/* Buscador de Domicilio/Nombre */}
                     <div className="flex-1 min-w-64">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Buscar por Nombre o Domicilio
+{t("branches.searchByNameOrAddress")}
                         </label>
                         <div className="relative">
                             <input
                                 type="text"
-                                placeholder="Buscar por nombre o domicilio..."
+                                placeholder={t("branches.searchByNameOrAddressPlaceholder")}
                                 value={domicilioSearch}
                                 onChange={(e) => onDomicilioChange(e.target.value)}
                                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
@@ -203,7 +205,7 @@ export default function ConsultaSucursales({
                     {/* Filtro por Estado */}
                     <div className="min-w-48">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Estado
+{t("branches.state")}
                         </label>
                         <select
                             value={estadoFilter}
@@ -213,7 +215,7 @@ export default function ConsultaSucursales({
                             }}
                             className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
                         >
-                            <option value="">Todos los estados</option>
+                            <option value="">{t("branches.allStates")}</option>
                             {estados.map(estado => 
                                 <option key={estado.ck_estado} value={estado.s_estado}>{estado.s_estado}</option>
                             )}
@@ -223,7 +225,7 @@ export default function ConsultaSucursales({
                     {/* Filtro por Municipio */}
                     <div className="min-w-48">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Municipio
+{t("branches.municipality")}
                         </label>
                         <select
                             value={municipioFilter}
@@ -231,7 +233,7 @@ export default function ConsultaSucursales({
                             disabled={!estadoFilter}
                             className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2] dark:disabled:bg-gray-600"
                         >
-                            <option value="">{estadoFilter ? "Todos los municipios" : "Seleccione un estado"}</option>
+                            <option value="">{estadoFilter ? t("branches.allMunicipalities") : t("branches.selectState")}</option>
                             {municipiosDisponibles.map((municipio: Municipio) => 
                                 <option key={municipio.ck_municipio} value={municipio.s_municipio}>{municipio.s_municipio}</option>
                             )}
@@ -244,7 +246,7 @@ export default function ConsultaSucursales({
                             onClick={clearFilters}
                             className="px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200 font-medium dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 dark:border-gray-600"
                         >
-                            Limpiar
+{t("common.clear")}
                         </button>
                     </div>
                 </div>
@@ -252,7 +254,7 @@ export default function ConsultaSucursales({
 
             {/* Sección de la Tabla de Sucursales */}
             <div className="space-y-6">
-                <ComponentCard title="Lista de Sucursales">
+                <ComponentCard title={t("branches.branchList")}>
                     <SucursalesTable
                         listaSucursales={sucursales}
                         searchTerm={domicilioSearch}

@@ -2,6 +2,7 @@ import React from "react";
 import GridShape from "../../components/common/GridShape";
 import { Link } from "react-router";
 import ThemeTogglerTwo from "../../components/common/ThemeTogglerTwo";
+import LanguageToggleButton from "../../components/common/LanguageToggleButton";
 import { useLogo } from "../../contexts/LogoContext";
 
 export default function AuthLayout({
@@ -61,8 +62,9 @@ export default function AuthLayout({
             </div>
           </div>
         </div>
-        <div className="fixed z-50 hidden bottom-6 right-6 sm:block">
+        <div className="fixed z-50 hidden bottom-6 right-6 sm:flex gap-2">
           <ThemeTogglerTwo />
+          <LanguageToggleButton />
         </div>
       </div>
     </div>

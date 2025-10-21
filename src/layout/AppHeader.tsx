@@ -3,10 +3,12 @@ import Cookies from 'js-cookie';
 import { Link, useNavigate } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
+import LanguageToggleButton from "../components/common/LanguageToggleButton";
 import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
 import { ChevronDown, MapPin, CheckCircle } from "lucide-react";
 import { useLogo } from "../contexts/LogoContext";
+import { useLanguage } from "../context/LanguageContext";
 
 interface Sucursal {
   ck_sucursal: string;
@@ -33,6 +35,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
   const { logoLight, logoDark } = useLogo();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
 
@@ -216,8 +219,8 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
               >
                 <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 <span className="flex-1 text-left font-medium truncate">
-                  {loading ? 'Cargando sucursales...' :
-                    sucursalActiva ? sucursalActiva.s_nombre_sucursal : 'Seleccionar sucursal'}
+                  {loading ? t("header.loadingBranches") :
+                    sucursalActiva ? sucursalActiva.s_nombre_sucursal : t("header.selectBranch")}
                 </span>
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -226,16 +229,16 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-80 overflow-y-auto">
                   <div className="p-3 border-b border-gray-100 dark:border-gray-700">
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Seleccionar sucursal</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">{t("header.selectBranchTitle")}</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      {sucursales.length} sucursales disponibles
+                      {sucursales.length} {t("header.branchesAvailable")}
                     </p>
                   </div>
 
                   {sucursales.length === 0 ? (
                     <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                       <MapPin className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
-                      <p>No hay sucursales disponibles</p>
+                      <p>{t("header.noBranches")}</p>
                     </div>
                   ) : (
                     <div className="p-2">
@@ -314,7 +317,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                     <input
                       ref={inputRef}
                       type="text"
-                      placeholder="Buscar"
+                      placeholder={t("header.search")}
                       value={searchTerm}
                       onChange={e => setSearchTerm(e.target.value)}
                       className="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none transition-all border-[#8ECAB2] bg-white text-gray-700 placeholder-gray-500 font-medium focus:border-[#70A18E] shadow-sm text-base dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-700 dark:focus:border-[#70A18E]"
@@ -360,7 +363,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                       <circle cx="11" cy="11" r="8"></circle>
                       <path d="m21 21-4.35-4.35"></path>
                     </svg>
-                    <span className="hidden xl:inline">Buscar</span>
+                    <span className="hidden xl:inline">{t("header.search")}</span>
                   </button>
                 </div>
                 {/* Resultados de búsqueda */}
@@ -387,7 +390,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                                 </div>
                                 {result.codigo && (
                                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                                    Código: {result.codigo}
+                                    {t("header.code")} {result.codigo}
                                   </div>
                                 )}
                                 {result.correo && (
@@ -418,7 +421,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                         <svg className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        <p className="text-gray-500 dark:text-gray-400">No se encontraron resultados.</p>
+                        <p className="text-gray-500 dark:text-gray-400">{t("header.noResults")}</p>
                       </div>
                     )}
                   </div>
@@ -431,6 +434,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
         <div className={`${isApplicationMenuOpen ? "flex" : "hidden"} items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}>
           <div className="flex items-center gap-2 2xsm:gap-3">
             <ThemeToggleButton />
+            <LanguageToggleButton />
             <NotificationDropdown />
           </div>
           <UserDropdown />

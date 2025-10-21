@@ -38,6 +38,7 @@ import ConsultaTurnos from "./views/operaciones/turnos/consulta/ConsultaTurnos";
 import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTurnos";
 import RecoverPassword from "./pages/AuthPages/RecoverPassword";
 import { LogoProvider } from "./contexts/LogoContext";
+import { LanguageProvider } from "./context/LanguageContext";
 
 
 // Importar componentes de autenticación
@@ -61,9 +62,10 @@ const USER_TYPES = {
 
 export default function App() {
   return (
-    <LogoProvider>
-      <AuthProvider>
-        <BrowserRouter>
+    <LanguageProvider>
+      <LogoProvider>
+        <AuthProvider>
+          <BrowserRouter>
           <ScrollToTop />
           <Routes>
             {/* Rutas públicas */}
@@ -219,7 +221,8 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-      </AuthProvider>
-    </LogoProvider>
+        </AuthProvider>
+      </LogoProvider>
+    </LanguageProvider>
   );
 }

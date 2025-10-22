@@ -25,11 +25,7 @@ export default defineConfig({
   },
   base: '/',
   plugins: [
-    react({
-      babel: {
-        plugins: ['babel-plugin-macros']
-      }
-    }),
+    react(),
    
   ],
   assetsInclude: ["**/*.md", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.svg", "**/*.gif"], // Incluye imágenes

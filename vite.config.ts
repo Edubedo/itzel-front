@@ -1,23 +1,44 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import svgr from "vite-plugin-svgr";
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import path from "path"
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    svgr({
-      svgrOptions: {
-        icon: true,
-        // This will transform your SVG to a React component
-        exportType: "named",
-        namedExport: "ReactComponent",
-      },
-    }),
-  ],
   server: {
+    port: 4000, // Puerto del frontend en desarrollo
     proxy: {
-      '/api': 'http://localhost:3001'
-    }
+      '/api': {
+        target: 'http://localhost:3001', // Backend local en desarrollo
+        changeOrigin: true,
+        secure: false
+      },
+    },
+  },
+  preview: {
+    port: 4173, // Puerto para preview
+    proxy: {
+      '/api': {
+        target: 'https://itzel-back-production.up.railway.app',  // Backend de producción
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
+  base: '/',
+  plugins: [
+    react({
+      babel: {
+        plugins: ['babel-plugin-macros']
+      }
+    }),
+   
+  ],
+  assetsInclude: ["**/*.md", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.svg", "**/*.gif"], // Incluye imágenes
+  resolve: {
+    alias: {
+      '@': path.join(__dirname, 'src'),
+    },
+  },
+  build: {
+    outDir: 'dist',
   }
-});
+})

@@ -123,7 +123,7 @@ export default function App() {
                 </ProtectedRoute>
               } />
               <Route path="/catalogos/clientes/formulario/" element={
-                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO, USER_TYPES.ASESOR]}>
+                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO]}>
                   <FormularioClientes />
                 </ProtectedRoute>
               } />
@@ -142,7 +142,7 @@ export default function App() {
                 </ProtectedRoute>
               } />
               <Route path="/catalogos/usuarios/formulario/" element={
-                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR,USER_TYPES.ASESOR]}>
+                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
                   <FormularioUsuarios />
                 </ProtectedRoute>
               } />

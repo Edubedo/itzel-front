@@ -804,7 +804,6 @@ export default function Starter() {
                       key={servicio.ck_servicio}
                       onClick={() => handleServicioClick(servicio)}
                       disabled={loadingState !== 'idle'}
-                      disabled={loadingState !== 'idle'}
                       className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:translate-y-0"
                       style={{
                         background: 'linear-gradient(135deg, #CFF4DE 0%, #B7F2DA 100%)',

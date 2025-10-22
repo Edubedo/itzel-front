@@ -1,10 +1,11 @@
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
+import svgr from "vite-plugin-svgr"
 import path from "path"
 
 export default defineConfig({
   server: {
-    port: 4000, // Puerto del frontend en desarrollo
+    port: 5173, // Puerto del frontend en desarrollo
     proxy: {
       '/api': {
         target: 'http://localhost:3001', // Backend local en desarrollo
@@ -26,7 +27,11 @@ export default defineConfig({
   base: '/',
   plugins: [
     react(),
-   
+    svgr({
+      svgrOptions: {
+        exportType: "default",
+      },
+    }),
   ],
   assetsInclude: ["**/*.md", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.svg", "**/*.gif"], // Incluye imágenes
   resolve: {

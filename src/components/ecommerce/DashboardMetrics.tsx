@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { ArrowUpIcon, BoxIconLine, GroupIcon } from "../../icons";
 import Badge from "../../components/ui/badge/Badge";
 import { turnosService } from "../../services/turnosService";
+import { useLanguage } from "../../context/LanguageContext";
 import { clientesService } from "../../services/clientesService";
 
 export default function DashboardMetrics() {
   const [clientesHoy, setClientesHoy] = useState<number>(0);
   const [turnosHoy, setTurnosHoy] = useState<number>(0);
+  const { t } = useLanguage();
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -47,7 +49,7 @@ export default function DashboardMetrics() {
         <div className="flex items-end justify-between mt-5">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Clientes del Día
+              {t("dashboard.clientsToday")}
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
               {clientesHoy}
@@ -67,7 +69,7 @@ export default function DashboardMetrics() {
         <div className="flex items-end justify-between mt-5">
           <div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Turnos Emitidos Hoy
+              {t("dashboard.shiftsIssuedToday")}
             </span>
             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
               {turnosHoy}

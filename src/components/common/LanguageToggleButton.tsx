@@ -1,6 +1,6 @@
 import React from "react";
 import { useLanguage } from "../../context/LanguageContext";
-import { Globe } from "lucide-react";
+import { Languages } from "lucide-react";
 
 const LanguageToggleButton: React.FC = () => {
   const { language, toggleLanguage, t } = useLanguage();
@@ -12,7 +12,7 @@ const LanguageToggleButton: React.FC = () => {
       title={t("language.change")}
       aria-label={t("language.change")}
     >
-      <Globe className="w-5 h-5" />
+      <Languages className="w-5 h-5" />
       <span className="sr-only">
         {language === "es" ? t("language.english") : t("language.spanish")}
       </span>

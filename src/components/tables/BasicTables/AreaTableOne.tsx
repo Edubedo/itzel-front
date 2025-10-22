@@ -9,6 +9,7 @@ import {
 import Badge from "../../ui/badge/Badge";
 import Alert from "../../ui/alert/Alert";
 import { areasService, Area, AreasResponse, AreaStats } from "../../../services/areasService";
+import { useLanguage } from "../../../context/LanguageContext";
 
 interface AreaTableProps {
   searchTerm: string;
@@ -31,6 +32,7 @@ export default function AreaTableOne({
   const [error, setError] = useState<string | null>(null);
   const [statsLoaded, setStatsLoaded] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const { t } = useLanguage();
 
   // Warning Alert states
   const [showWarning, setShowWarning] = useState(false);
@@ -357,22 +359,22 @@ export default function AreaTableOne({
           <TableHeader className="border-b border-gray-100 dark:border-gray-700">
             <TableRow>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Código
+                {t("areas.code")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Nombre del Área
+                {t("areas.areaName")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Descripción
+                {t("areas.description")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Sucursal
+                {t("areas.branch")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Estado
+                {t("areas.status")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Acciones
+                {t("areas.actions")}
               </TableCell>
             </TableRow>
           </TableHeader>
@@ -382,11 +384,11 @@ export default function AreaTableOne({
                 <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                   <div className="flex flex-col items-center">
                     <span className="text-2xl mb-2">🏢</span>
-                    <span>No se encontraron áreas</span>
+                    <span>{t("areas.noAreasFound")}</span>
                     <span className="text-sm mt-1">
                       {searchTerm || estatusFilter || sucursalFilter
-                        ? 'Intente ajustar los filtros de búsqueda'
-                        : 'No hay áreas registradas en el sistema'
+                        ? t("areas.tryAdjustingFilters")
+                        : t("areas.noAreasRegistered")
                       }
                     </span>
                   </div>
@@ -422,7 +424,7 @@ export default function AreaTableOne({
                       <button
                         onClick={() => handleEdit(area.ck_area)}
                         className="p-2 text-[#70A18E] hover:text-[#547A6B] hover:bg-[#B7F2DA]/20 rounded-md transition-colors dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] dark:hover:bg-[#8ECAB2]/10"
-                        title="Editar área"
+                        title={t("areas.editArea")}
                         disabled={loading}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -439,7 +441,7 @@ export default function AreaTableOne({
                           ? "text-orange-600 hover:text-orange-800 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900/20" 
                           : "text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700"
                         } rounded-md transition-colors`}
-                        title={area.ck_estatus.trim().toUpperCase() === "ACTIVO" ? "Inactivar área" : "Activar área"}
+                        title={area.ck_estatus.trim().toUpperCase() === "ACTIVO" ? t("areas.deactivateArea") : t("areas.activateArea")}
                         disabled={loading}
                       >
                         {area.ck_estatus.trim().toUpperCase() === "ACTIVO" ? (
@@ -466,7 +468,7 @@ export default function AreaTableOne({
         {totalPages > 1 && areas.length > 0 && (
           <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200 dark:border-gray-700">
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              Mostrando {startIndex + 1}-{endIndex} de {totalItems} áreas
+{t("areas.showing")} {startIndex + 1}-{endIndex} {t("areas.of")} {totalItems} {t("areas.areas")}
             </span>
             <div className="flex space-x-2">
               <button
@@ -474,7 +476,7 @@ export default function AreaTableOne({
                 disabled={currentPage === 1 || loading}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                Anterior
+{t("common.previous")}
               </button>
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 let page;
@@ -506,7 +508,7 @@ export default function AreaTableOne({
                 disabled={currentPage === totalPages || loading}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                Siguiente
+{t("common.next")}
               </button>
             </div>
           </div>

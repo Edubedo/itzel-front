@@ -4,6 +4,7 @@ import { ApexOptions } from "apexcharts";
 import { MoreDotIcon } from "../../icons";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
+import { useLanguage } from "../../context/LanguageContext";
 
 
 
@@ -23,6 +24,7 @@ async function fetchPopularAreas() {
 export default function PopularAreasPieChart() {
   const [isOpen, setIsOpen] = useState(false);
   const [areas, setAreas] = useState<{ area: string; visitas: number }[]>([]);
+  const { t } = useLanguage();
 
   useEffect(() => {
     async function loadData() {
@@ -69,10 +71,10 @@ export default function PopularAreasPieChart() {
         <div className="flex justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-              Áreas Más Frecuentadas
+              {t("dashboard.mostFrequentedAreas")}
             </h3>
             <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-              Basado en visitas recientes de clientes
+              {t("dashboard.basedOnRecentClientVisits")}
             </p>
           </div>
           <div className="relative inline-block">
@@ -88,7 +90,7 @@ export default function PopularAreasPieChart() {
                 onItemClick={() => setIsOpen(false)}
                 className="text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5"
               >
-                Ver más
+{t("common.viewMore")}
               </DropdownItem>
             </Dropdown>
           </div>
@@ -98,7 +100,7 @@ export default function PopularAreasPieChart() {
   {series.length > 0 ? (
     <Chart options={options} series={series} type="pie" width="100%" height={320} />
   ) : (
-    <p className="text-gray-500">Cargando gráfico...</p>
+    <p className="text-gray-500">{t("dashboard.loadingChart")}</p>
   )}
 </div>
 

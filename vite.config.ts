@@ -1,27 +1,45 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import svgr from "vite-plugin-svgr";
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import svgr from "vite-plugin-svgr"
+import path from "path"
 
-// https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    port: 5173, // Puerto del frontend en desarrollo
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001', // Backend local en desarrollo
+        changeOrigin: true,
+        secure: false
+      },
+    },
+  },
+  preview: {
+    port: 4173, // Puerto para preview
+    proxy: {
+      '/api': {
+        target: 'https://itzel-back-production.up.railway.app',  // Backend de producción
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
+  base: '/',
   plugins: [
     react(),
     svgr({
       svgrOptions: {
-        icon: true,
-        exportType: "named",
-        namedExport: "ReactComponent",
+        exportType: "default",
       },
     }),
   ],
-  server: {
-    proxy: {
-      "/api": "http://localhost:3001",
+  assetsInclude: ["**/*.md", "**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.svg", "**/*.gif"], // Incluye imágenes
+  resolve: {
+    alias: {
+      '@': path.join(__dirname, 'src'),
     },
   },
   build: {
-    outDir: "dist", // Carpeta de salida (por defecto Vite ya la usa)
-    emptyOutDir: true, // Limpia la carpeta antes del build
-  },
-  base: "./", // ✅ Esto asegura que las rutas funcionen correctamente en Vercel
-});
+    outDir: 'dist',
+  }
+})

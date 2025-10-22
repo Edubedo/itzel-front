@@ -5,6 +5,7 @@ import PageMeta from "../../components/common/PageMeta";
 import ClientesTableOne from "../../components/tables/BasicTables/ClientesTableOne";
 import { ClienteStats } from "../../services/clientesService";
 import { clientesService, TipoContrato } from "../../services/clientesService";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface ClienteTablesProps {
   titleTable?: string;
@@ -22,6 +23,7 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
     clientesInactivos: 0,
     clientesPremium: 0
   });
+  const { t } = useLanguage();
 
   // Función para navegar al formulario de añadir cliente
   const handleAddCliente = () => {
@@ -67,7 +69,7 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{titleTable}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Gestiona y consulta los clientes del sistema</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{t("clients.manageAndConsultClients")}</p>
         </div>
         
         {/* Botón de añadir cliente - Versión compacta */}
@@ -80,7 +82,7 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
             </svg>
           </div>
-          <span className="font-medium">Nuevo Cliente</span>
+          <span className="font-medium">{t("clients.newClient")}</span>
         </button>
       </div>
 
@@ -96,7 +98,7 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Total Clientes</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("clients.totalClients")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.totalClientes}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full mt-3"></div>
         </div>
@@ -111,7 +113,7 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Activos</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("clients.active")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.clientesActivos}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#8ECAB2] to-[#B7F2DA] rounded-full mt-3"></div>
         </div>
@@ -126,7 +128,7 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Inactivos</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("clients.inactive")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.clientesInactivos}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-[#FF8E8E] to-[#FFB7B7] rounded-full mt-3"></div>
         </div>
@@ -141,7 +143,7 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
               </svg>
             </div>
           </div>
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Premium</h3>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("clients.premium")}</h3>
           <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{stats.clientesPremium}</p>
           <div className="w-8 h-1 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full mt-3"></div>
         </div>
@@ -153,12 +155,12 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
           {/* Buscador */}
           <div className="flex-1 min-w-64">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Buscar Cliente
+              {t("clients.searchClient")}
             </label>
             <div className="relative">
               <input
                 type="text"
-                placeholder="Buscar por código, nombre, apellido..."
+                placeholder={t("clients.searchByCodeNameSurname")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
@@ -170,30 +172,30 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
           {/* Filtro por Estado */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Estado
+              {t("clients.status")}
             </label>
             <select
               value={estatusFilter}
               onChange={(e) => setEstatusFilter(e.target.value)}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
             >
-              <option value="">Todos los estados</option>
-              <option value="ACTIVO">Activo</option>
-              <option value="INACTIVO">Inactivo</option>
+              <option value="">{t("clients.allStatuses")}</option>
+              <option value="ACTIVO">{t("clients.active")}</option>
+              <option value="INACTIVO">{t("clients.inactive")}</option>
             </select>
           </div>
 
           {/* Filtro por Tipo de Contrato */}
           <div className="min-w-48">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Tipo de Contrato
+              {t("clients.contractType")}
             </label>
             <select
               value={tipoContratoFilter}
               onChange={(e) => setTipoContratoFilter(e.target.value)}
               className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#70A18E]/20 focus:border-[#70A18E] transition-all duration-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-[#8ECAB2]/20 dark:focus:border-[#8ECAB2]"
             >
-              <option value="">Todos los tipos</option>
+              <option value="">{t("clients.allTypes")}</option>
               {tiposContrato.map((tipo) => (
                 <option key={tipo.s_tipo_contrato} value={tipo.s_tipo_contrato}>
                   {tipo.s_tipo_contrato}
@@ -208,14 +210,14 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
               onClick={clearFilters}
               className="px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200 font-medium dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 dark:border-gray-600"
             >
-              Limpiar
+{t("common.clear")}
             </button>
           </div>
         </div>
       </div>
 
       <div className="space-y-6">
-        <ComponentCard title="Consulta de Clientes">
+        <ComponentCard title={t("clients.clientQuery")}>
           <ClientesTableOne
             searchTerm={searchTerm}
             estatusFilter={estatusFilter}

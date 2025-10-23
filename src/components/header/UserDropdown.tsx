@@ -3,18 +3,27 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 import Configuration from "../../pages/Configuration";
-
-// Mapeo de tipos de usuario para mostrar roles
-const USER_TYPE_LABELS = {
-  1: 'Administrador',
-  2: 'Ejecutivo',
-  3: 'Asesor'
-};
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
+
+  // Función para obtener el tipo de usuario traducido
+  const getUserTypeLabel = (tipoUsuario: number) => {
+    switch (tipoUsuario) {
+      case 1:
+        return t("userDropdown.administrator");
+      case 2:
+        return t("userDropdown.executive");
+      case 3:
+        return t("userDropdown.advisor");
+      default:
+        return t("userDropdown.user");
+    }
+  };
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -46,7 +55,7 @@ export default function UserDropdown() {
         <div className="mr-1 text-left">
           <span className="block font-medium text-theme-sm">{user.s_nombre}</span>
           <span className="block text-xs text-gray-500 dark:text-gray-400">
-            {USER_TYPE_LABELS[user.tipo_usuario as keyof typeof USER_TYPE_LABELS] || 'Usuario'}
+            {getUserTypeLabel(user.tipo_usuario)}
           </span>
         </div>
         <svg
@@ -82,7 +91,7 @@ export default function UserDropdown() {
             {user.s_correo_electronico}
           </span>
           <span className="mt-0.5 block text-theme-xs text-brand-600 font-medium">
-            {USER_TYPE_LABELS[user.tipo_usuario as keyof typeof USER_TYPE_LABELS] || 'Usuario'}
+            {getUserTypeLabel(user.tipo_usuario)}
           </span>
           <span className="mt-1 block text-theme-xs text-gray-400">
             ID: {user.s_usuario}
@@ -116,7 +125,7 @@ export default function UserDropdown() {
                     fill=""
                   />
                 </svg>
-                Configuración
+                {t("userDropdown.configuration")}
               </DropdownItem>
             </li>
           )}
@@ -143,7 +152,7 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              Mis Turnos
+              {t("userDropdown.myTurns")}
             </DropdownItem>
           </li>
         </ul>
@@ -166,7 +175,7 @@ export default function UserDropdown() {
               fill=""
             />
           </svg>
-          Cerrar Sesión
+          {t("userDropdown.logout")}
         </button>
       </Dropdown>
     </div>

@@ -84,7 +84,7 @@ export default function Configuration() {
 
     // Validar tamaño del archivo (2MB máximo)
     if (file.size > 2 * 1024 * 1024) {
-      alert("El archivo es demasiado grande. Máximo 2MB.");
+      alert(t("configuration.fileTooLarge"));
       event.target.value = '';
       return;
     }
@@ -92,7 +92,7 @@ export default function Configuration() {
     // Validar tipo de archivo
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'];
     if (!validTypes.includes(file.type)) {
-      alert("Formato de archivo no válido. Use JPG, PNG o SVG.");
+      alert(t("configuration.invalidFormat"));
       event.target.value = '';
       return;
     }
@@ -115,12 +115,12 @@ export default function Configuration() {
 
         setHasUnsavedChanges(true);
       } else {
-        alert("Error al procesar la imagen. Intente con otra.");
+        alert(t("configuration.imageError"));
         event.target.value = '';
       }
     };
     reader.onerror = () => {
-      alert("Error al leer el archivo");
+      alert(t("configuration.fileReadError"));
       event.target.value = '';
     };
     reader.readAsDataURL(file);
@@ -150,7 +150,7 @@ export default function Configuration() {
 
       setHasUnsavedChanges(false);
       setShowSuccess(true);
-      setSuccessMessage("¡Configuración actualizada correctamente!");
+      setSuccessMessage(t("configuration.updateSuccess"));
       window.scrollTo({ top: 0, behavior: "smooth" });
       setTimeout(() => setShowSuccess(false), 2500);
 
@@ -187,14 +187,14 @@ export default function Configuration() {
 
     } catch (err: any) {
       console.error("Error al guardar:", err);
-      alert(`Error al guardar configuración: ${err.message}`);
+      alert(`${t("configuration.saveError")} ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
   const handleReset = () => {
-    if (confirm('¿Restablecer toda la configuración a valores por defecto? Los cambios no guardados se perderán.')) {
+    if (confirm(t("configuration.resetConfirm"))) {
       // Mantener el UUID actual, solo resetear los demás campos
       setSystemConfig(prev => ({
         ...prev,
@@ -211,7 +211,7 @@ export default function Configuration() {
   };
 
   const handleCancel = () => {
-    if (hasUnsavedChanges && confirm('Tienes cambios sin guardar. ¿Seguro que quieres cancelar?')) {
+    if (hasUnsavedChanges && confirm(t("configuration.cancelConfirm"))) {
       loadConfiguration(); // Recargar desde la BD
     }
   };
@@ -368,7 +368,7 @@ export default function Configuration() {
               </div>
               <div className="flex-1 space-y-4">
                 <div>
-                  <Label htmlFor="s_logo_light">Subir Logo Light</Label>
+                  <Label htmlFor="s_logo_light">{t("configuration.uploadLightLogo")}</Label>
                   <input
                     id="s_logo_light"
                     type="file"
@@ -377,11 +377,11 @@ export default function Configuration() {
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                   />
                   <p className="mt-1 text-xs text-gray-500">
-                    Formatos: JPG, PNG, SVG. Máx. 2MB.
+                    {t("configuration.fileFormats")}
                   </p>
                 </div>
                 <div>
-                  <Label htmlFor="s_logo_dark">Subir Logo Dark</Label>
+                  <Label htmlFor="s_logo_dark">{t("configuration.uploadDarkLogo")}</Label>
                   <input
                     id="s_logo_dark"
                     type="file"
@@ -390,7 +390,7 @@ export default function Configuration() {
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                   />
                   <p className="mt-1 text-xs text-gray-500">
-                    Formatos: JPG, PNG, SVG. Máx. 2MB.
+                    {t("configuration.fileFormats")}
                   </p>
                 </div>
               </div>
@@ -402,7 +402,7 @@ export default function Configuration() {
       {/* Botones de Acción */}
       <div className="flex flex-col gap-3 pt-6 border-t border-gray-200 dark:border-gray-600 sm:flex-row sm:justify-between">
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          <p>Última actualización: {lastUpdate}</p>
+          <p>{t("configuration.lastUpdate")} {lastUpdate}</p>
         </div>
         <div className="flex gap-3">
           {hasUnsavedChanges && (
@@ -411,7 +411,7 @@ export default function Configuration() {
               onClick={handleCancel}
               disabled={loading}
             >
-              Cancelar
+              {t("configuration.cancel")}
             </Button>
           )}
           <Button
@@ -419,14 +419,14 @@ export default function Configuration() {
             onClick={handleReset}
             disabled={loading}
           >
-            Restablecer Todo
+            {t("configuration.resetAll")}
           </Button>
           <Button
             onClick={handleSave}
             disabled={loading || !hasUnsavedChanges}
             className="bg-gradient-to-r from-[#8ECAB2] to-[#547A6B] hover:from-[#70A18E] hover:to-[#3A554B] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Guardando..." : "Guardar Configuración"}
+            {loading ? t("configuration.saving") : t("configuration.saveConfiguration")}
           </Button>
         </div>
       </div>

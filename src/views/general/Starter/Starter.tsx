@@ -3,6 +3,7 @@ import PageMeta from '../../../components/common/PageMeta';
 import Header from '../../../components/header/Header';
 import { useNavigate } from 'react-router';
 import QRCode from 'qrcode';
+import ContractValidationModal from '../../../components/modals/ContractValidationModal';
 
 interface Sucursal {
   ck_sucursal: string;
@@ -55,6 +56,8 @@ export default function Starter() {
 
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
+  const [showContractModal, setShowContractModal] = useState(false);
+  const [validatedClient, setValidatedClient] = useState<any>(null);
 
   // Controlar navegación
   const navigate = useNavigate();
@@ -191,11 +194,27 @@ export default function Starter() {
       return;
     }
 
-    setEsCliente(isClient);
+    if (isClient) {
+      // Si es cliente, abrir modal de validación de contrato
+      setShowContractModal(true);
+    } else {
+      // Si no es cliente, continuar directamente
+      setEsCliente(false);
+      setCurrentStep('serviceSelection');
+      setTimer(INACTIVITY_TIME);
+      setShowConfirmation(false);
+      setServicioSeleccionado(null);
+    }
+  };
+
+  const handleContractValidationSuccess = (clientData: any) => {
+    setValidatedClient(clientData);
+    setEsCliente(true);
     setCurrentStep('serviceSelection');
     setTimer(INACTIVITY_TIME);
     setShowConfirmation(false);
     setServicioSeleccionado(null);
+    setShowContractModal(false);
   };
 
   const seleccionarArea = (area: Area) => {
@@ -1157,6 +1176,13 @@ export default function Starter() {
             {currentStep === 'clientType' && renderClientTypeSelection()}
             {currentStep === 'serviceSelection' && renderServiceSelection()}
             {currentStep === 'ticket' && renderTicket()}
+
+            {/* Contract Validation Modal */}
+            <ContractValidationModal
+              isOpen={showContractModal}
+              onClose={() => setShowContractModal(false)}
+              onSuccess={handleContractValidationSuccess}
+            />
 
           </div>
         </div>

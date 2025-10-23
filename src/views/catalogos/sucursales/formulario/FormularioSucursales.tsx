@@ -272,15 +272,29 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
         };
 
         try {
+            console.log('=== ENVIANDO DATOS AL PADRE ===');
+            console.log('Datos a enviar:', datosParaEnviar);
             // Llamar al callback del padre que se encarga de guardar
             await onSave(datosParaEnviar);
+            console.log('Guardado exitoso en el formulario');
             setShowSuccess(true);
             // Esperar un momento para que el usuario vea el mensaje de éxito
             // El padre cerrará el formulario automáticamente
         } catch (error: any) {
+            console.error('Error en el formulario:', error);
+            console.error('Error completo:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status,
+                statusText: error.response?.statusText
+            });
+            console.error('Error response data:', error.response?.data);
+            console.error('Error response status:', error.response?.status);
+            console.error('Error response statusText:', error.response?.statusText);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
             setErrorMessage("Error al guardar la sucursal: " + (error.response?.data?.message || error.message));
             setShowError(true);
-            console.error("Error completo:", error);
         } finally {
             setSaving(false);
         }

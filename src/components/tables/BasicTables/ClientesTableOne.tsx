@@ -8,6 +8,7 @@ import {
 } from "../../ui/table";
 import Badge from "../../ui/badge/Badge";
 import { clientesService, Cliente, ClientesResponse, ClienteStats } from "../../../services/clientesService";
+import { useLanguage } from "../../../context/LanguageContext";
 
 interface ClienteTableOneProps {
   searchTerm: string;
@@ -44,6 +45,7 @@ export default function ClienteTableOne({
     estatus: string;
   } | null>(null);
 
+  const { t } = useLanguage();
   const itemsPerPage = 5;
 
   // Reset página cuando cambian los filtros
@@ -238,6 +240,37 @@ export default function ClienteTableOne({
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+      {/* Header con botón de actualizar */}
+      <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+          {t("clients.clientList")}
+        </h3>
+        <button
+          onClick={() => {
+            setRefreshTrigger(prev => prev + 1);
+            setStatsLoaded(false);
+          }}
+          disabled={loading}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200 border border-blue-200 hover:border-blue-300 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20 dark:border-blue-800 dark:hover:border-blue-700"
+          title={t("common.refresh")}
+        >
+          <svg 
+            className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+            />
+          </svg>
+          {loading ? t("common.loading") : t("common.refresh")}
+        </button>
+      </div>
+
       {/* Toast notification */}
       {toast.show && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
@@ -347,31 +380,31 @@ export default function ClienteTableOne({
           <TableHeader className="border-b border-gray-100 dark:border-gray-700">
             <TableRow>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Código Cliente
+                {t("clients.clientCode")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Nombre
+                {t("clients.name")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Apellido Paterno
+                {t("clients.lastName")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Apellido Materno
+                {t("clients.motherLastName")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Tipo Contrato
+                {t("clients.contractType")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Domicilio
+                {t("clients.address")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Cliente Premium
+                {t("clients.premiumClient")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Estado
+                {t("clients.status")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Acciones
+                {t("clients.actions")}
               </TableCell>
             </TableRow>
           </TableHeader>
@@ -383,11 +416,11 @@ export default function ClienteTableOne({
                 <td colSpan={9} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                   <div className="flex flex-col items-center">
                     <span className="text-2xl mb-2">👥</span>
-                    <span>No se encontraron clientes</span>
+                    <span>{t("clients.noClientsFound")}</span>
                     <span className="text-sm mt-1">
                       {searchTerm || estatusFilter || tipoContratoFilter
-                        ? 'Intente ajustar los filtros de búsqueda'
-                        : 'No hay clientes registrados en el sistema'
+                        ? t("clients.tryAdjustingFilters")
+                        : t("clients.noClientsRegistered")
                       }
                     </span>
                   </div>
@@ -421,7 +454,7 @@ export default function ClienteTableOne({
                       size="sm"
                       color={cliente.l_cliente_premium ? "success" : "primary"}
                     >
-                      {cliente.l_cliente_premium ? "PREMIUM" : "ESTÁNDAR"}
+                      {cliente.l_cliente_premium ? t("clients.premium") : t("clients.standard")}
                     </Badge>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-start">
@@ -437,7 +470,7 @@ export default function ClienteTableOne({
                       <button
                         onClick={() => handleEdit(cliente.ck_cliente)}
                         className="p-2 text-[#70A18E] hover:text-[#547A6B] hover:bg-[#B7F2DA]/20 rounded-md transition-colors dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] dark:hover:bg-[#8ECAB2]/10"
-                        title="Editar cliente"
+                        title={t("clients.editClient")}
                         disabled={loading}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -454,7 +487,7 @@ export default function ClienteTableOne({
                           ? "text-orange-600 hover:text-orange-800 hover:bg-orange-50 dark:text-orange-400 dark:hover:text-orange-300 dark:hover:bg-orange-900/20"
                           : "text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700"
                           } rounded-md transition-colors`}
-                        title={cliente.ck_estatus.trim().toUpperCase() === "ACTIVO" ? "Inactivar cliente" : "Activar cliente"}
+                        title={cliente.ck_estatus.trim().toUpperCase() === "ACTIVO" ? t("clients.deactivateClient") : t("clients.activateClient")}
                         disabled={loading}
                       >
                         {cliente.ck_estatus.trim().toUpperCase() === "ACTIVO" ? (
@@ -481,7 +514,7 @@ export default function ClienteTableOne({
         {totalPages > 1 && clientes.length > 0 && (
           <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200 dark:border-gray-700">
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              Mostrando {startIndex + 1}-{endIndex} de {totalItems} clientes
+              {t("clients.showing")} {startIndex + 1}-{endIndex} {t("clients.of")} {totalItems} {t("clients.clients")}
             </span>
             <div className="flex space-x-2">
               <button
@@ -489,7 +522,7 @@ export default function ClienteTableOne({
                 disabled={currentPage === 1 || loading}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                Anterior
+                {t("clients.previous")}
               </button>
 
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -524,7 +557,7 @@ export default function ClienteTableOne({
                 disabled={currentPage === totalPages || loading}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                Siguiente
+                {t("clients.next")}
               </button>
             </div>
           </div>

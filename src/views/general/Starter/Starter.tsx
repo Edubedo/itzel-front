@@ -4,6 +4,7 @@ import Header from '../../../components/header/Header';
 import { useNavigate } from 'react-router';
 import QRCode from 'qrcode';
 import ContractValidationModal from '../../../components/modals/ContractValidationModal';
+import { useLanguage } from '../../../context/LanguageContext';
 
 interface Sucursal {
   ck_sucursal: string;
@@ -37,6 +38,7 @@ interface Turno {
 }
 
 export default function Starter() {
+  const { t } = useLanguage();
   const [currentStep, setCurrentStep] = useState<'clientType' | 'serviceSelection' | 'ticket'>('clientType');
   const [esCliente, setEsCliente] = useState<boolean | null>(null);
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState<Sucursal | null>(null);
@@ -468,12 +470,12 @@ export default function Starter() {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] blur-xl opacity-50 animate-pulse"></div>
                 <h2 className="relative text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#70A18E] tracking-tight">
-                  TIPO DE CLIENTE
+                  {t("starter.clientType")}
                 </h2>
               </div>
             </div>
             <p className="text-gray-700 text-sm md:text-base font-medium max-w-2xl mx-auto">
-              Seleccione su perfil para acceder a nuestros servicios personalizados
+              {t("starter.selectProfile")}
             </p>
           </div>
 
@@ -512,15 +514,15 @@ export default function Starter() {
                 {/* Text */}
                 <div className="space-y-2">
                   <h3 className="text-xl md:text-2xl font-black text-[#0A1310] group-hover:text-[#3A554B] transition-colors">
-                    NO SOY CLIENTE
+                    {t("starter.notClient")}
                   </h3>
                   <p className="text-xs md:text-sm text-[#3A554B]/80 font-medium">
-                    Acceso a servicios públicos y atención general
+                    {t("starter.notClientDesc")}
                   </p>
 
                   {/* Arrow indicator */}
                   <div className="pt-2 flex items-center justify-center gap-2 text-[#3A554B] group-hover:gap-4 transition-all">
-                    <span className="text-xs md:text-sm font-bold">SELECCIONAR</span>
+                    <span className="text-xs md:text-sm font-bold">{t("starter.select")}</span>
                     <svg className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
@@ -551,7 +553,7 @@ export default function Starter() {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <polygon points="12,2 22,9 12,22 2,9" stroke="#3A554B" strokeWidth="2" fill="#B7F2DA" />
                   </svg>
-                  GRANDES USUARIOS
+                  {t("starter.largeUsers")}
                 </div>
               </div>
 
@@ -575,15 +577,15 @@ export default function Starter() {
                 {/* Text */}
                 <div className="space-y-2">
                   <h3 className="text-xl md:text-2xl font-black text-white group-hover:text-[#CFF4DE] transition-colors">
-                    SOY CLIENTE CFE
+                    {t("starter.cfeClient")}
                   </h3>
                   <p className="text-xs md:text-sm text-[#B7F2DA] font-medium">
-                    Atención preferencial y servicios exclusivos
+                    {t("starter.cfeClientDesc")}
                   </p>
 
                   {/* Arrow indicator */}
                   <div className="pt-2 flex items-center justify-center gap-2 text-white group-hover:gap-4 transition-all">
-                    <span className="text-xs md:text-sm font-bold">SELECCIONAR</span>
+                    <span className="text-xs md:text-sm font-bold">{t("starter.select")}</span>
                     <svg className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
@@ -612,9 +614,9 @@ export default function Starter() {
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm md:text-base font-bold text-gray-900 mb-1">¡Atención!</h4>
+                      <h4 className="text-sm md:text-base font-bold text-gray-900 mb-1">{t("starter.attention")}</h4>
                       <p className="text-xs md:text-sm text-gray-700">
-                        Por favor seleccione una <strong>sucursal</strong> en el menú superior antes de continuar.
+                        {t("starter.selectBranchFirst")}
                       </p>
                     </div>
                   </div>
@@ -1119,12 +1121,12 @@ export default function Starter() {
       )}
       {showCancelModal && renderCancelModal()}
 
-      <div className="h-screen flex flex-col overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, #F4F4F4 0%, #DFDFDF 50%, #CAC9C9 100%)'
-        }}>
+         <div className="h-screen flex flex-col overflow-hidden"
+           style={{
+             background: 'linear-gradient(135deg, #F4F4F4 0%, #DFDFDF 50%, #CAC9C9 100%)'
+           }}>
 
-        <Header showBranchSelector={true} title="Solicitud de Turnos" />
+           <Header showBranchSelector={true} title={t("starter.title")} showLanguageToggle={true} />
 
         {/* MODAL DE CONFIRMACIÓN - SOLO MOSTRAR CUANDO showConfirmation SEA true Y currentStep SEA serviceSelection */}
         {showConfirmation && currentStep === 'serviceSelection' && renderConfirmationModal()}
@@ -1154,10 +1156,10 @@ export default function Starter() {
                     {/* Text side - Compacto */}
                     <div className="text-center">
                       <h1 className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] to-[#70A18E] tracking-tight">
-                        BIENVENIDO A ITZEL
+                        {t("starter.welcome")}
                       </h1>
                       <p className="text-xs md:text-sm text-gray-700 font-medium">
-                        Sistema Inteligente de Turnos • CFE
+                        {t("starter.subtitle")}
                       </p>
                     </div>
 

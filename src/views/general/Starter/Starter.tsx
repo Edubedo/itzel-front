@@ -1126,7 +1126,7 @@ export default function Starter() {
              background: 'linear-gradient(135deg, #F4F4F4 0%, #DFDFDF 50%, #CAC9C9 100%)'
            }}>
 
-           <Header showBranchSelector={true} title={t("starter.title")} showLanguageToggle={true} />
+           <Header showBranchSelector={false} title={t("starter.title")} showLanguageToggle={true} />
 
         {/* MODAL DE CONFIRMACIÓN - SOLO MOSTRAR CUANDO showConfirmation SEA true Y currentStep SEA serviceSelection */}
         {showConfirmation && currentStep === 'serviceSelection' && renderConfirmationModal()}

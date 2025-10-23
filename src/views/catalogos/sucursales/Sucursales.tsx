@@ -35,7 +35,7 @@ const Sucursales: React.FC = () => {
     }
   }, [searchParams, sucursales]);
 
-  const loadSucursales = async () => {
+    const loadSucursales = async () => {
     try {
       setLoading(true);
       const response = await sucursalesService.getSucursales();
@@ -51,14 +51,23 @@ const Sucursales: React.FC = () => {
 
   const handleSave = async (formData: SucursalFormData) => {
     try {
+      console.log('=== INICIANDO GUARDADO DE SUCURSAL ===');
+      console.log('FormData recibido:', formData);
+      console.log('Editando sucursal:', editingBranch);
+      
       if (editingBranch) {
+        console.log('Actualizando sucursal existente con ID:', editingBranch.ck_sucursal);
         // Actualizar sucursal existente
-        await sucursalesService.updateSucursal(editingBranch.ck_sucursal!, formData);
+        const response = await sucursalesService.updateSucursal(editingBranch.ck_sucursal!, formData);
+        console.log('Respuesta de actualización:', response);
       } else {
+        console.log('Creando nueva sucursal');
         // Crear nueva sucursal
-        await sucursalesService.createSucursal(formData);
+        const response = await sucursalesService.createSucursal(formData);
+        console.log('Respuesta de creación:', response);
       }
 
+      console.log('Guardado exitoso, recargando lista...');
       // Recargar la lista
       await loadSucursales();
 
@@ -67,8 +76,19 @@ const Sucursales: React.FC = () => {
         setIsFormVisible(false);
         setEditingBranch(null);
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al guardar sucursal:', error);
+      console.error('Error completo:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        statusText: error.response?.statusText
+      });
+      console.error('Error response data:', error.response?.data);
+      console.error('Error response status:', error.response?.status);
+      console.error('Error response statusText:', error.response?.statusText);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
       // Re-lanzar el error para que el formulario lo maneje
       throw error;
     }

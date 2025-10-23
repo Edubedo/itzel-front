@@ -159,6 +159,7 @@ const translations = {
     "areas.showing": "Mostrando",
     "areas.of": "de",
     "areas.areas": "áreas",
+    "areas.areaList": "Lista de Áreas",
     
     // Services
     "services.manageAndConsultServices": "Gestiona y consulta los servicios del sistema",
@@ -491,6 +492,7 @@ const translations = {
     "areas.showing": "Showing",
     "areas.of": "of",
     "areas.areas": "areas",
+    "areas.areaList": "Area List",
     
     // Services
     "services.manageAndConsultServices": "Manage and consult system services",

@@ -4,6 +4,7 @@ import { useSidebar } from "../context/SidebarContext";
 import { useLogo } from "../contexts/LogoContext";
 import { useLanguage } from "../context/LanguageContext";
 
+
 // Assume these icons are imported from an icon library
 import {
   BoxCubeIcon,
@@ -30,14 +31,15 @@ type NavItem = {
 const createNavSections = (t: (key: string) => string) => ({
   catalogosSecciones: [
     {
+      id: "catalogues",
       name: t("nav.catalogues"),
       icon: <GridIcon />,
       subItems: [
-        { name: t("nav.areas"), path: "/catalogos/areas/consulta", pro: false },
-        { name: t("nav.services"), path: "/catalogos/servicios/consulta", pro: false },
-        { name: t("nav.branches"), path: "/catalogos/sucursales", pro: false },
-        { name: t("nav.users"), path: "/catalogos/usuarios/consulta", pro: false },
-        { name: t("nav.clients"), path: "/catalogos/clientes/consulta", pro: false }
+        { id: "areas", name: t("nav.areas"), path: "/catalogos/areas/consulta" },
+        { id: "services", name: t("nav.services"), path: "/catalogos/servicios/consulta" },
+        { id: "branches", name: t("nav.branches"), path: "/catalogos/sucursales" },
+        { id: "users", name: t("nav.users"), path: "/catalogos/usuarios/consulta" },
+        { id: "clients", name: t("nav.clients"), path: "/catalogos/clientes/consulta" }
       ]
     }
   ],
@@ -46,8 +48,8 @@ const createNavSections = (t: (key: string) => string) => ({
       icon: <PieChartIcon />,
       name: t("nav.operations"),
       subItems: [
-        { name: t("nav.shifts"), path: "/operaciones/turnos/consulta", pro: false },
-        { name: t("nav.reports"), path: "/operaciones/reportes/consulta", pro: false },
+        { name: t("nav.shifts"), path: "/operaciones/turnos/consulta" },
+        { name: t("nav.reports"), path: "/operaciones/reportes/consulta" },
       ],
     },
   ]
@@ -61,6 +63,7 @@ const AppSidebar: React.FC = () => {
   
   // Crear las secciones de navegación con traducciones
   const { catalogosSecciones, othersItems } = createNavSections(t);
+  
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";

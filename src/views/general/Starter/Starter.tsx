@@ -49,9 +49,9 @@ export default function Starter() {
   const [turnoCreado, setTurnoCreado] = useState<Turno | null>(null);
   const [notificacion, setNotificacion] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
-  const [loadingState, setLoadingState] = useState<'idle' | 'creating' | 'canceling'>('idle');  
+  const [loadingState, setLoadingState] = useState<'idle' | 'creating' | 'canceling'>('idle');
   const [countdown, setCountdown] = useState(20);
-    const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
   const INACTIVITY_TIME = 60;
   const [timer, setTimer] = useState(INACTIVITY_TIME);
@@ -60,11 +60,12 @@ export default function Starter() {
   const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
   const [showContractModal, setShowContractModal] = useState(false);
   const [validatedClient, setValidatedClient] = useState<any>(null);
+  const [showGrandesUsuariosModal, setShowGrandesUsuariosModal] = useState(false);
 
   // Controlar navegación
   const navigate = useNavigate();
 
-   useEffect(() => {
+  useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
       event.preventDefault();
       navigate("/"); // redirige a la página principal
@@ -196,17 +197,11 @@ export default function Starter() {
       return;
     }
 
-    if (isClient) {
-      // Si es cliente, abrir modal de validación de contrato
-      setShowContractModal(true);
-    } else {
-      // Si no es cliente, continuar directamente
-      setEsCliente(false);
-      setCurrentStep('serviceSelection');
-      setTimer(INACTIVITY_TIME);
-      setShowConfirmation(false);
-      setServicioSeleccionado(null);
-    }
+    setEsCliente(isClient);
+    setCurrentStep('serviceSelection');
+    setTimer(INACTIVITY_TIME);
+    setShowConfirmation(false);
+    setServicioSeleccionado(null);
   };
 
   const handleContractValidationSuccess = (clientData: any) => {
@@ -324,7 +319,7 @@ export default function Starter() {
     try {
       // URL que apunta al endpoint de descarga del PDF
       const downloadUrl = `http://localhost:3001/api/operaciones/turnos/ticket/${turnoCreado.ck_turno}/pdf`;
-      
+
       // Generar el código QR
       const qrDataURL = await QRCode.toDataURL(downloadUrl, {
         width: 150,
@@ -334,7 +329,7 @@ export default function Starter() {
           light: '#FFFFFF' // Color de fondo
         }
       });
-      
+
       setQrCodeUrl(qrDataURL);
     } catch (error) {
       console.error('Error al generar el QR:', error);
@@ -358,7 +353,7 @@ export default function Starter() {
           method: 'DELETE',
         }
       );
-      
+
       const data = await response.json();
 
       if (response.ok) {
@@ -366,7 +361,7 @@ export default function Starter() {
         setNotificacion(data.message || 'Turno cancelado exitosamente');
         setTimeout(() => {
           setNotificacion(null);
-          regresarAlInicio(); 
+          regresarAlInicio();
         }, 1500);
       } else {
         setLoadingState('idle');
@@ -374,18 +369,18 @@ export default function Starter() {
       }
 
     } catch (error) {
-      
+
       console.error('Error al cancelar el turno:', error);
-      
+
       let errorMessage = 'No se pudo cancelar el turno.';
       if (error instanceof Error) {
         // Si es un error estándar, usamos su mensaje
         errorMessage = `Error: ${error.message}`;
       }
-      
-      alert(errorMessage); 
+
+      alert(errorMessage);
       setLoadingState('idle');
-    } 
+    }
   };
   const regresarAlInicio = () => {
     setCurrentStep('clientType');
@@ -403,7 +398,7 @@ export default function Starter() {
   const renderCancelModal = () => (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto border border-white/20">
-        
+
         {/* Header (Rojo para 'cancelar') */}
         <div className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] p-6 rounded-t-2xl text-center">
           <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -716,6 +711,30 @@ export default function Starter() {
                 </h2>
               </div>
             </div>
+
+            {/* Botón Grandes usuarios - Solo visible para clientes */}
+            {esCliente && (
+              <div className="absolute top-0 right-0">
+                <button
+                  onClick={() => setShowGrandesUsuariosModal(true)}
+                  className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#70A18E]/50"
+                  style={{
+                    background: 'linear-gradient(135deg, #70A18E 0%, #547A6B 100%)',
+                    boxShadow: '0 8px 30px -10px rgba(112, 161, 142, 0.4)'
+                  }}
+                >
+                  {/* Animated shine effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+                  <div className="relative flex items-center gap-2 px-4 py-2">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-white font-bold text-sm">Grandes usuarios</span>
+                  </div>
+                </button>
+              </div>
+            )}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm md:text-base">
               <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -824,7 +843,6 @@ export default function Starter() {
                     <button
                       key={servicio.ck_servicio}
                       onClick={() => handleServicioClick(servicio)}
-                      disabled={loadingState !== 'idle'}
                       disabled={loadingState !== 'idle'}
                       className="group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:translate-y-0"
                       style={{
@@ -1034,9 +1052,9 @@ export default function Starter() {
             </p>
             {qrCodeUrl && (
               <div className="flex justify-center">
-                <img 
-                  src={qrCodeUrl} 
-                  alt="Código QR para descargar ticket" 
+                <img
+                  src={qrCodeUrl}
+                  alt="Código QR para descargar ticket"
                   className="w-32 h-32 border border-gray-300 rounded-lg"
                 />
               </div>
@@ -1054,14 +1072,14 @@ export default function Starter() {
           </button>
 
           <button
-          // onclick={imprimirTicket} // Tu código original
-          onClick={handleCancelarTurno} // <-- AÑADE ESTA LÍNEA
-          className="w-full bg-[#e66f6f] hover:bg-[#ef2525] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            // onclick={imprimirTicket} // Tu código original
+            onClick={handleCancelarTurno} // <-- AÑADE ESTA LÍNEA
+            className="w-full bg-[#e66f6f] hover:bg-[#ef2525] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
             Cancelar turno
           </button>
 
-          
+
           <button
             onClick={regresarAlInicio}
             className="w-full bg-[#5D7166] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#4A5B52] transition-colors"
@@ -1080,20 +1098,20 @@ export default function Starter() {
 
 
   if (loadingState !== 'idle') {
-      // Determina el texto basado en el estado
-      const loadingText = loadingState === 'creating' 
-        ? 'Generando su turno...' 
-        : 'Cancelando su turno...';
+    // Determina el texto basado en el estado
+    const loadingText = loadingState === 'creating'
+      ? 'Generando su turno...'
+      : 'Cancelando su turno...';
 
-      return (
-        <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#F4F4F4] to-[#CAC9C9]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3A554B] mx-auto mb-4"></div>
-            {/* Usa la variable de texto dinámico */}
-            <p className="text-[#3A554B] font-semibold">{loadingText}</p>
+    return (
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#F4F4F4] to-[#CAC9C9]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3A554B] mx-auto mb-4"></div>
+          {/* Usa la variable de texto dinámico */}
+          <p className="text-[#3A554B] font-semibold">{loadingText}</p>
         </div>
       </div>
-      );
+    );
   }
 
 
@@ -1104,10 +1122,10 @@ export default function Starter() {
         description="Sistema de gestión de turnos ITZEL - Página inicial de selección de tipo de cliente"
       />
 
-            {notificacion && (
+      {notificacion && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           {/* Contenedor para limitar el ancho */}
-          <div className="w-full max-w-md"> 
+          <div className="w-full max-w-md">
             <div className="bg-gradient-to-r from-[#e66f6f] to-[#ef2525] text-white font-bold text-center p-4 rounded-xl shadow-2xl border border-white/30">
               <div className="flex items-center justify-center gap-3">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1121,12 +1139,12 @@ export default function Starter() {
       )}
       {showCancelModal && renderCancelModal()}
 
-         <div className="h-screen flex flex-col overflow-hidden"
-           style={{
-             background: 'linear-gradient(135deg, #F4F4F4 0%, #DFDFDF 50%, #CAC9C9 100%)'
-           }}>
+      <div className="h-screen flex flex-col overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, #F4F4F4 0%, #DFDFDF 50%, #CAC9C9 100%)'
+        }}>
 
-           <Header showBranchSelector={false} title={t("starter.title")} showLanguageToggle={true} />
+        <Header showBranchSelector={false} title={t("starter.title")} showLanguageToggle={true} />
 
         {/* MODAL DE CONFIRMACIÓN - SOLO MOSTRAR CUANDO showConfirmation SEA true Y currentStep SEA serviceSelection */}
         {showConfirmation && currentStep === 'serviceSelection' && renderConfirmationModal()}
@@ -1183,6 +1201,13 @@ export default function Starter() {
             <ContractValidationModal
               isOpen={showContractModal}
               onClose={() => setShowContractModal(false)}
+              onSuccess={handleContractValidationSuccess}
+            />
+
+            {/* Grandes Usuarios Modal */}
+            <ContractValidationModal
+              isOpen={showGrandesUsuariosModal}
+              onClose={() => setShowGrandesUsuariosModal(false)}
               onSuccess={handleContractValidationSuccess}
             />
 

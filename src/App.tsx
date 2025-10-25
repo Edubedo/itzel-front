@@ -91,6 +91,7 @@ export default function App() {
                   <ConsultaAreas />
                 </ProtectedRoute>
               } />
+              
               <Route path="/catalogos/areas/formulario/" element={
                 <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
                   <FormularioAreas />

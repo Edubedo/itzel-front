@@ -315,48 +315,53 @@ function ConsultaTurnos() {
             </h2>
           </div>
           
-          <div className="p-6">
-            {turnoActual ? (
-              <div className="text-center">
-                <div className="text-6xl font-bold text-[#3A554B] dark:text-gray-200 mb-4">
-                  {turnoActual.i_numero_turno}
-                </div>
-                
-                <div className="space-y-3 text-left bg-[#D3EEE3] dark:bg-gray-800 rounded-lg p-4">
-                  <div className="flex justify-between">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">{t("shifts.area")}:</span>
-                    <span className="font-bold">{turnoActual.s_area}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">{t("shifts.service")}:</span>
-                    <span>{turnoActual.s_servicio}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">{t("shifts.client")}:</span>
-                    <span>{turnoActual.nombre_cliente}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">{t("shifts.attendedBy")}:</span>
-                    <span>{turnoActual.nombre_asesor || 'Sistema'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">{t("shifts.start")}:</span>
-                    <span>{turnoActual.d_fecha_atendido ? new Date(turnoActual.d_fecha_atendido).toLocaleTimeString('es-MX') : 'N/A'}</span>
-                  </div>
-                </div>
-                
-                <div className="flex justify-center mt-6">
-                  <CheckCircle className="w-12 h-12 text-[#3A554B] dark:text-gray-200" />
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-                <ClipboardList className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium">{t("shifts.noShiftInAttention")}</p>
-                <p className="text-sm">{t("shifts.selectNextShiftMessage")}</p>
-              </div>
-            )}
-          </div>
+         <div className="p-6">
+  {turnoActual ? (
+    <div className="text-center">
+      <div className="text-6xl font-bold text-[#3A554B] dark:text-gray-200 mb-4">
+        {turnoActual.i_numero_turno}
+      </div>
+      
+      <div className="space-y-3 text-left bg-[#D3EEE3] dark:bg-gray-800 rounded-lg p-4">
+        <div className="flex justify-between">
+          <span className="font-medium text-gray-600 dark:text-gray-300">{t("shifts.area")}:</span>
+          <span className="font-bold text-gray-800 dark:text-gray-100">{turnoActual.s_area}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium text-gray-600 dark:text-gray-300">{t("shifts.service")}:</span>
+          <span className="text-gray-800 dark:text-gray-100">{turnoActual.s_servicio}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium text-gray-600 dark:text-gray-300">{t("shifts.client")}:</span>
+          <span className="text-gray-800 dark:text-gray-100">{turnoActual.nombre_cliente}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium text-gray-600 dark:text-gray-300">{t("shifts.attendedBy")}:</span>
+          <span className="text-gray-800 dark:text-gray-100">{turnoActual.nombre_asesor || 'Sistema'}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium text-gray-600 dark:text-gray-300">{t("shifts.start")}:</span>
+          <span className="text-gray-800 dark:text-gray-100">
+            {turnoActual.d_fecha_atendido
+              ? new Date(turnoActual.d_fecha_atendido).toLocaleTimeString('es-MX')
+              : 'N/A'}
+          </span>
+        </div>
+      </div>
+      
+      <div className="flex justify-center mt-6">
+        <CheckCircle className="w-12 h-12 text-[#3A554B] dark:text-gray-200" />
+      </div>
+    </div>
+  ) : (
+    <div className="text-center py-12 text-gray-500 dark:text-gray-200">
+      <ClipboardList className="w-16 h-16 mx-auto mb-4 opacity-50" />
+      <p className="text-lg font-medium">{t("shifts.noShiftInAttention")}</p>
+      <p className="text-sm">{t("shifts.selectNextShiftMessage")}</p>
+    </div>
+  )}
+</div>
+
         </div>
 
         {/* Próximos Turnos */}

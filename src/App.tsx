@@ -91,6 +91,7 @@ export default function App() {
                   <ConsultaAreas />
                 </ProtectedRoute>
               } />
+              
               <Route path="/catalogos/areas/formulario/" element={
                 <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR]}>
                   <FormularioAreas />
@@ -150,8 +151,8 @@ export default function App() {
               {/* OPERACIONES - Accesibles por todos los usuarios autenticados */}
 
               {/* CITAS */}
-              <Route path="/operaciones/citas/consulta/" element={<ConsultaCitas />} />
-              <Route path="/operaciones/citas/formulario/" element={<FormularioCitas />} />
+              {/*<Route path="/operaciones/citas/consulta/" element={<ConsultaCitas />} />
+              <Route path="/operaciones/citas/formulario/" element={<FormularioCitas />} />*/}
 
               {/* REPORTES - Solo Administradores y Ejecutivos */}
               <Route path="/operaciones/reportes/consulta/" element={

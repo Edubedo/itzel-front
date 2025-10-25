@@ -372,7 +372,7 @@ export default function ClienteTableOne({
             />
           </div>
         </div>
-      )}
+      )}  
 
       <div className="max-w-full overflow-x-auto">
         <Table>
@@ -469,7 +469,7 @@ export default function ClienteTableOne({
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(cliente.ck_cliente)}
-                        className="p-2 text-[#70A18E] hover:text-[#547A6B] hover:bg-[#B7F2DA]/20 rounded-md transition-colors dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] dark:hover:bg-[#8ECAB2]/10"
+                        className="p-2 text-red hover:text-[#547A6B] hover:bg-[#B7F2DA]/20 rounded-md transition-colors dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] dark:hover:bg-[#8ECAB2]/10"
                         title={t("clients.editClient")}
                         disabled={loading}
                       >

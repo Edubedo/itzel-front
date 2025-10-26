@@ -38,10 +38,11 @@ const createNavSections = (t: (key: string) => string, dataUser) => {
       name: t("nav.catalogues"),
       icon: <GridIcon />,
       subItems: [
-        (typeUser == 1 || typeUser == 3) ? {  id: "areas", name: t("nav.areas"), path: "/catalogos/areas/consulta" } : null,
-        (typeUser == 1 || typeUser == 3) ?{ id: "services", name: t("nav.services"), path: "/catalogos/servicios/consulta" } : null,
-        (typeUser == 1 || typeUser == 3) ?{ id: "branches", name: t("nav.branches"), path: "/catalogos/sucursales" } : null,
+        (typeUser == 1 ) ? {  id: "areas", name: t("nav.areas"), path: "/catalogos/areas/consulta" } : null,
+        (typeUser == 1 ) ?{ id: "services", name: t("nav.services"), path: "/catalogos/servicios/consulta" } : null,
+        (typeUser == 1 ) ?{ id: "branches", name: t("nav.branches"), path: "/catalogos/sucursales" } : null,
         (typeUser == 1 || typeUser == 3) ?{ id: "users", name: t("nav.users"), path: "/catalogos/usuarios/consulta" } : null,
+        
         { id: "clients", name: t("nav.clients"), path: "/catalogos/clientes/consulta" }
       ].filter(Boolean)
     }

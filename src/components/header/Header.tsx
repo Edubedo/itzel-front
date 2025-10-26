@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router';
 import { ChevronDown, MapPin } from 'lucide-react';
 import { useLogo } from "../../contexts/LogoContext";
+import LanguageToggleButton from '../common/LanguageToggleButton';
 
 interface Sucursal {
   ck_sucursal: string;
@@ -15,9 +16,10 @@ interface Sucursal {
 interface HeaderProps {
   showBranchSelector?: boolean;
   title?: string;
+  showLanguageToggle?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => {
+const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title, showLanguageToggle = false }) => {
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [sucursalActiva, setSucursalActiva] = useState<Sucursal | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -248,6 +250,20 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title }) => 
 
       {/* Enlaces de navegación */}
       <div className="relative flex items-center space-x-2 md:space-x-4 z-[110]">
+        {/* Botón de cambio de idioma */}
+        {showLanguageToggle && (
+          <div className="flex items-center">
+            <div className="relative group">
+              {/* Efecto de resplandor */}
+              <div className="absolute inset-0 bg-[#B7F2DA] rounded-lg blur-sm opacity-60 group-hover:opacity-80 transition-opacity"></div>
+              {/* Botón con estilo mejorado */}
+              <div className="relative bg-white/20 backdrop-blur-sm hover:bg-white/30 border border-[#B7F2DA]/40 hover:border-[#B7F2DA]/60 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+                <LanguageToggleButton />
+              </div>
+            </div>
+          </div>
+        )}
+        
         <a
           href="/signin"
           className="group relative overflow-hidden text-white font-bold text-sm py-2 px-3 md:px-5 rounded-xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#B7F2DA]/50"

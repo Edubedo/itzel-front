@@ -215,6 +215,28 @@ export const clientesService = {
       console.error('Error en getClientesDelDia:', error);
       return { success: false, data: { total: 0 } };
     }
+  },
+
+  async validateContractNumber(contractNumber: string): Promise<{ success: boolean; data?: any; message?: string }> {
+    try {
+      const response = await fetch('/api/catalogos/clientes/validate-contract', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ c_codigo_contrato: contractNumber }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error en validateContractNumber:', error);
+      throw new Error('Error al validar número de contrato');
+    }
   }
 
 

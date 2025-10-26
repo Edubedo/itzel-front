@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
 import { useLogo } from "../contexts/LogoContext";
 import { useLanguage } from "../context/LanguageContext";
-
 // Assume these icons are imported from an icon library
 import {
   BoxCubeIcon,
@@ -18,6 +17,7 @@ import {
   TableIcon,
   UserCircleIcon,
 } from "../icons";
+import { useAuth } from "../contexts/AuthContext";
 
 type NavItem = {
   name: string;
@@ -27,18 +27,23 @@ type NavItem = {
 };
 
 // Función para crear las secciones de navegación con traducciones
-const createNavSections = (t: (key: string) => string) => ({
-  catalogosSecciones: [
+const createNavSections = (t: (key: string) => string, dataUser) => {
+   console.log("dataUser.tipo_usuario: ", dataUser.user.tipo_usuario)
+
+  let typeUser = dataUser.user.tipo_usuario;
+  return ( 
+  {catalogosSecciones: [
     {
+      id: "catalogues",
       name: t("nav.catalogues"),
       icon: <GridIcon />,
       subItems: [
-        { name: t("nav.areas"), path: "/catalogos/areas/consulta", pro: false },
-        { name: t("nav.services"), path: "/catalogos/servicios/consulta", pro: false },
-        { name: t("nav.branches"), path: "/catalogos/sucursales", pro: false },
-        { name: t("nav.users"), path: "/catalogos/usuarios/consulta", pro: false },
-        { name: t("nav.clients"), path: "/catalogos/clientes/consulta", pro: false }
-      ]
+        (typeUser == 1 || typeUser == 3) ? {  id: "areas", name: t("nav.areas"), path: "/catalogos/areas/consulta" } : null,
+        (typeUser == 1 || typeUser == 3) ?{ id: "services", name: t("nav.services"), path: "/catalogos/servicios/consulta" } : null,
+        (typeUser == 1 || typeUser == 3) ?{ id: "branches", name: t("nav.branches"), path: "/catalogos/sucursales" } : null,
+        (typeUser == 1 || typeUser == 3) ?{ id: "users", name: t("nav.users"), path: "/catalogos/usuarios/consulta" } : null,
+        { id: "clients", name: t("nav.clients"), path: "/catalogos/clientes/consulta" }
+      ].filter(Boolean)
     }
   ],
   othersItems: [
@@ -46,21 +51,24 @@ const createNavSections = (t: (key: string) => string) => ({
       icon: <PieChartIcon />,
       name: t("nav.operations"),
       subItems: [
-        { name: t("nav.shifts"), path: "/operaciones/turnos/consulta", pro: false },
-        { name: t("nav.reports"), path: "/operaciones/reportes/consulta", pro: false },
+        { name: t("nav.shifts"), path: "/operaciones/turnos/consulta" },
+        { name: t("nav.reports"), path: "/operaciones/reportes/consulta" },
       ],
     },
-  ]
-});
+  ]}
+  )
+}
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const { logoLight, logoDark } = useLogo();
   const { t } = useLanguage();
   const location = useLocation();
+  const { isAuthenticated, user, isLoading } = useAuth();
   
   // Crear las secciones de navegación con traducciones
-  const { catalogosSecciones, othersItems } = createNavSections(t);
+  const { catalogosSecciones, othersItems } = createNavSections(t, {user, isAuthenticated});
+
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";

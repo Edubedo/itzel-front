@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import Cookies from 'js-cookie';
 import { Link, useNavigate } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
@@ -34,23 +34,73 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const { logoLight, logoDark } = useLogo();
   const { t } = useLanguage();
   const navigate = useNavigate();
 
 
-  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!searchTerm.trim()) return;
+  // Función de búsqueda sensible con debounce
+  const performSearch = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setShowResults(false);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/busqueda-general?query=${encodeURIComponent(searchTerm)}`);
+      const response = await fetch(`http://localhost:3001/api/busqueda-general?query=${encodeURIComponent(query)}`);
       const data = await response.json();
       setSearchResults(data.resultados || []);
       setShowResults(true);
     } catch (error) {
+      console.error('Error en búsqueda:', error);
       setSearchResults([]);
       setShowResults(true);
+    } finally {
+      setIsSearching(false);
     }
+  }, []);
+
+  // Función para manejar el cambio en el input con debounce
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchTerm(value);
+    
+    // Limpiar timeout anterior
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+
+    // Si el campo está vacío, limpiar resultados inmediatamente
+    if (!value.trim()) {
+      setSearchResults([]);
+      setShowResults(false);
+      setIsSearching(false);
+      return;
+    }
+
+    // Crear nuevo timeout para búsqueda
+    const newTimeout = setTimeout(() => {
+      performSearch(value);
+    }, 300); // 300ms de debounce
+
+    setSearchTimeout(newTimeout);
+  }, [searchTimeout, performSearch]);
+
+  // Función para búsqueda manual (formulario)
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) return;
+    
+    // Limpiar timeout si existe
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    
+    await performSearch(searchTerm);
   };
 
   const handleResultClick = (result: any) => {
@@ -86,6 +136,15 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Limpiar timeout al desmontar el componente
+  useEffect(() => {
+    return () => {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+    };
+  }, [searchTimeout]);
 
   const seleccionarSucursal = (sucursal: Sucursal) => {
     setSucursalActiva(sucursal);
@@ -319,9 +378,13 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                       type="text"
                       placeholder={t("header.search")}
                       value={searchTerm}
-                      onChange={e => setSearchTerm(e.target.value)}
+                      onChange={e => handleSearchChange(e.target.value)}
                       className="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none transition-all border-[#8ECAB2] bg-white text-gray-700 placeholder-gray-500 font-medium focus:border-[#70A18E] shadow-sm text-base dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-700 dark:focus:border-[#70A18E]"
-                      onFocus={() => setShowResults(false)}
+                      onFocus={() => {
+                        if (searchResults.length > 0) {
+                          setShowResults(true);
+                        }
+                      }}
                     />
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -356,32 +419,44 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                   <button
                     type="submit"
                     className="px-4 py-2 rounded-lg border border-[#8ECAB2] bg-white hover:bg-[#8ECAB2]/10 text-[#3A554B] font-medium transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-900 dark:text-[#B7F2DA] dark:border-gray-700 dark:hover:bg-gray-800 dark:hover:border-[#70A18E] flex items-center gap-2"
-                    disabled={!searchTerm.trim()}
+                    disabled={!searchTerm.trim() || isSearching}
                     aria-label="Buscar"
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                    <span className="hidden xl:inline">{t("header.search")}</span>
+                    {isSearching ? (
+                      <div className="w-4 h-4 border-2 border-[#8ECAB2] border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                      </svg>
+                    )}
+                    <span className="hidden xl:inline">{isSearching ? "Buscando..." : t("header.search")}</span>
                   </button>
                 </div>
                 {/* Resultados de búsqueda */}
                 {showResults && (
                   <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
-                    {searchResults.length > 0 ? (
+                    {isSearching ? (
+                      <div className="p-6 text-center">
+                        <div className="w-8 h-8 border-2 border-[#8ECAB2] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                        <p className="text-gray-500 dark:text-gray-400">Buscando resultados...</p>
+                      </div>
+                    ) : searchResults.length > 0 ? (
                       <div className="p-2">
+                        <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide border-b border-gray-100 dark:border-gray-700">
+                          {searchResults.length} resultado{searchResults.length !== 1 ? 's' : ''} encontrado{searchResults.length !== 1 ? 's' : ''}
+                        </div>
                         {searchResults.map((result, idx) => (
                           <button
                             key={idx}
-                            className="block w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-150"
+                            className="block w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-150 group"
                             onClick={() => handleResultClick(result)}
                             type="button"
                           >
                             <div className="flex items-start justify-between gap-3">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span className="font-semibold text-gray-900 dark:text-white">
+                                  <span className="font-semibold text-gray-900 dark:text-white group-hover:text-[#70A18E] transition-colors">
                                     {result.nombre}
                                   </span>
                                   <span className="text-xs px-2 py-0.5 rounded-full bg-[#8ECAB2]/20 text-[#3A554B] dark:bg-[#70A18E]/20 dark:text-[#B7F2DA] font-medium capitalize">
@@ -390,7 +465,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                                 </div>
                                 {result.codigo && (
                                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                                    {t("header.code")} {result.codigo}
+                                    <span className="font-medium">Código:</span> {result.codigo}
                                   </div>
                                 )}
                                 {result.correo && (
@@ -405,7 +480,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                                 )}
                               </div>
                               <svg
-                                className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1"
+                                className="w-5 h-5 text-gray-400 group-hover:text-[#70A18E] flex-shrink-0 mt-1 transition-colors"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -421,7 +496,8 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
                         <svg className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        <p className="text-gray-500 dark:text-gray-400">{t("header.noResults")}</p>
+                        <p className="text-gray-500 dark:text-gray-400 mb-1">No se encontraron resultados</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">Intenta con otros términos de búsqueda</p>
                       </div>
                     )}
                   </div>

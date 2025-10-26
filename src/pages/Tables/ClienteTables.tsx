@@ -26,9 +26,9 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
   const { t } = useLanguage();
 
   // Función para navegar al formulario de añadir cliente
-  const handleAddCliente = () => {
-    window.location.href = "/catalogos/clientes/formulario/";
-  };
+  // const handleAddCliente = () => {
+  //   window.location.href = "/catalogos/clientes/formulario/";
+  // };
 
   // Manejar actualización de estadísticas
   const handleStatsUpdate = useCallback((newStats: ClienteStats) => {
@@ -73,7 +73,7 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
         </div>
         
         {/* Botón de añadir cliente - Versión compacta */}
-        <button
+        {/* <button
           onClick={handleAddCliente}
           className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#5E8F7A] hover:to-[#7AB89A] text-white px-5 py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-sm hover:shadow-md group w-full sm:w-auto dark:from-[#547A6B] dark:to-[#6A9A8B] dark:hover:from-[#456857] dark:hover:to-[#5A8A7B]"
         >
@@ -83,7 +83,7 @@ export default function ClienteTables({ titleTable = "Catálogo de clientes" }: 
             </svg>
           </div>
           <span className="font-medium">{t("clients.newClient")}</span>
-        </button>
+        </button> */}
       </div>
 
       {/* Estadísticas Resumidas - Diseño Moderno y Minimalista */}

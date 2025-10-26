@@ -3,6 +3,8 @@ import PageMeta from '../../../components/common/PageMeta';
 import Header from '../../../components/header/Header';
 import { useNavigate } from 'react-router';
 import QRCode from 'qrcode';
+import ContractValidationModal from '../../../components/modals/ContractValidationModal';
+import { useLanguage } from '../../../context/LanguageContext';
 
 interface Sucursal {
   ck_sucursal: string;
@@ -36,6 +38,7 @@ interface Turno {
 }
 
 export default function Starter() {
+  const { t } = useLanguage();
   const [currentStep, setCurrentStep] = useState<'clientType' | 'serviceSelection' | 'ticket'>('clientType');
   const [esCliente, setEsCliente] = useState<boolean | null>(null);
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState<Sucursal | null>(null);
@@ -46,20 +49,23 @@ export default function Starter() {
   const [turnoCreado, setTurnoCreado] = useState<Turno | null>(null);
   const [notificacion, setNotificacion] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
-  const [loadingState, setLoadingState] = useState<'idle' | 'creating' | 'canceling'>('idle');  
+  const [loadingState, setLoadingState] = useState<'idle' | 'creating' | 'canceling'>('idle');
   const [countdown, setCountdown] = useState(20);
-    const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
   const INACTIVITY_TIME = 60;
   const [timer, setTimer] = useState(INACTIVITY_TIME);
 
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
+  const [showContractModal, setShowContractModal] = useState(false);
+  const [validatedClient, setValidatedClient] = useState<any>(null);
+  const [showGrandesUsuariosModal, setShowGrandesUsuariosModal] = useState(false);
 
   // Controlar navegación
   const navigate = useNavigate();
 
-   useEffect(() => {
+  useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
       event.preventDefault();
       navigate("/"); // redirige a la página principal
@@ -198,6 +204,16 @@ export default function Starter() {
     setServicioSeleccionado(null);
   };
 
+  const handleContractValidationSuccess = (clientData: any) => {
+    setValidatedClient(clientData);
+    setEsCliente(true);
+    setCurrentStep('serviceSelection');
+    setTimer(INACTIVITY_TIME);
+    setShowConfirmation(false);
+    setServicioSeleccionado(null);
+    setShowContractModal(false);
+  };
+
   const seleccionarArea = (area: Area) => {
     if (areaSeleccionada?.ck_area === area.ck_area) return;
     setAreaSeleccionada(area);
@@ -303,7 +319,7 @@ export default function Starter() {
     try {
       // URL que apunta al endpoint de descarga del PDF
       const downloadUrl = `http://localhost:3001/api/operaciones/turnos/ticket/${turnoCreado.ck_turno}/pdf`;
-      
+
       // Generar el código QR
       const qrDataURL = await QRCode.toDataURL(downloadUrl, {
         width: 150,
@@ -313,7 +329,7 @@ export default function Starter() {
           light: '#FFFFFF' // Color de fondo
         }
       });
-      
+
       setQrCodeUrl(qrDataURL);
     } catch (error) {
       console.error('Error al generar el QR:', error);
@@ -337,7 +353,7 @@ export default function Starter() {
           method: 'DELETE',
         }
       );
-      
+
       const data = await response.json();
 
       if (response.ok) {
@@ -345,7 +361,7 @@ export default function Starter() {
         setNotificacion(data.message || 'Turno cancelado exitosamente');
         setTimeout(() => {
           setNotificacion(null);
-          regresarAlInicio(); 
+          regresarAlInicio();
         }, 1500);
       } else {
         setLoadingState('idle');
@@ -353,18 +369,18 @@ export default function Starter() {
       }
 
     } catch (error) {
-      
+
       console.error('Error al cancelar el turno:', error);
-      
+
       let errorMessage = 'No se pudo cancelar el turno.';
       if (error instanceof Error) {
         // Si es un error estándar, usamos su mensaje
         errorMessage = `Error: ${error.message}`;
       }
-      
-      alert(errorMessage); 
+
+      alert(errorMessage);
       setLoadingState('idle');
-    } 
+    }
   };
   const regresarAlInicio = () => {
     setCurrentStep('clientType');
@@ -382,7 +398,7 @@ export default function Starter() {
   const renderCancelModal = () => (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto border border-white/20">
-        
+
         {/* Header (Rojo para 'cancelar') */}
         <div className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] p-6 rounded-t-2xl text-center">
           <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -449,12 +465,12 @@ export default function Starter() {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] blur-xl opacity-50 animate-pulse"></div>
                 <h2 className="relative text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#70A18E] tracking-tight">
-                  TIPO DE CLIENTE
+                  {t("starter.clientType")}
                 </h2>
               </div>
             </div>
             <p className="text-gray-700 text-sm md:text-base font-medium max-w-2xl mx-auto">
-              Seleccione su perfil para acceder a nuestros servicios personalizados
+              {t("starter.selectProfile")}
             </p>
           </div>
 
@@ -493,15 +509,15 @@ export default function Starter() {
                 {/* Text */}
                 <div className="space-y-2">
                   <h3 className="text-xl md:text-2xl font-black text-[#0A1310] group-hover:text-[#3A554B] transition-colors">
-                    NO SOY CLIENTE
+                    {t("starter.notClient")}
                   </h3>
                   <p className="text-xs md:text-sm text-[#3A554B]/80 font-medium">
-                    Acceso a servicios públicos y atención general
+                    {t("starter.notClientDesc")}
                   </p>
 
                   {/* Arrow indicator */}
                   <div className="pt-2 flex items-center justify-center gap-2 text-[#3A554B] group-hover:gap-4 transition-all">
-                    <span className="text-xs md:text-sm font-bold">SELECCIONAR</span>
+                    <span className="text-xs md:text-sm font-bold">{t("starter.select")}</span>
                     <svg className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
@@ -532,7 +548,7 @@ export default function Starter() {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <polygon points="12,2 22,9 12,22 2,9" stroke="#3A554B" strokeWidth="2" fill="#B7F2DA" />
                   </svg>
-                  GRANDES USUARIOS
+                  {t("starter.largeUsers")}
                 </div>
               </div>
 
@@ -556,15 +572,15 @@ export default function Starter() {
                 {/* Text */}
                 <div className="space-y-2">
                   <h3 className="text-xl md:text-2xl font-black text-white group-hover:text-[#CFF4DE] transition-colors">
-                    SOY CLIENTE CFE
+                    {t("starter.cfeClient")}
                   </h3>
                   <p className="text-xs md:text-sm text-[#B7F2DA] font-medium">
-                    Atención preferencial y servicios exclusivos
+                    {t("starter.cfeClientDesc")}
                   </p>
 
                   {/* Arrow indicator */}
                   <div className="pt-2 flex items-center justify-center gap-2 text-white group-hover:gap-4 transition-all">
-                    <span className="text-xs md:text-sm font-bold">SELECCIONAR</span>
+                    <span className="text-xs md:text-sm font-bold">{t("starter.select")}</span>
                     <svg className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
@@ -593,9 +609,9 @@ export default function Starter() {
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm md:text-base font-bold text-gray-900 mb-1">¡Atención!</h4>
+                      <h4 className="text-sm md:text-base font-bold text-gray-900 mb-1">{t("starter.attention")}</h4>
                       <p className="text-xs md:text-sm text-gray-700">
-                        Por favor seleccione una <strong>sucursal</strong> en el menú superior antes de continuar.
+                        {t("starter.selectBranchFirst")}
                       </p>
                     </div>
                   </div>
@@ -695,6 +711,30 @@ export default function Starter() {
                 </h2>
               </div>
             </div>
+
+            {/* Botón Grandes usuarios - Solo visible para clientes */}
+            {esCliente && (
+              <div className="absolute top-0 right-0">
+                <button
+                  onClick={() => setShowGrandesUsuariosModal(true)}
+                  className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#70A18E]/50"
+                  style={{
+                    background: 'linear-gradient(135deg, #70A18E 0%, #547A6B 100%)',
+                    boxShadow: '0 8px 30px -10px rgba(112, 161, 142, 0.4)'
+                  }}
+                >
+                  {/* Animated shine effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+                  <div className="relative flex items-center gap-2 px-4 py-2">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-white font-bold text-sm">Grandes usuarios</span>
+                  </div>
+                </button>
+              </div>
+            )}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm md:text-base">
               <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -1012,9 +1052,9 @@ export default function Starter() {
             </p>
             {qrCodeUrl && (
               <div className="flex justify-center">
-                <img 
-                  src={qrCodeUrl} 
-                  alt="Código QR para descargar ticket" 
+                <img
+                  src={qrCodeUrl}
+                  alt="Código QR para descargar ticket"
                   className="w-32 h-32 border border-gray-300 rounded-lg"
                 />
               </div>
@@ -1032,14 +1072,14 @@ export default function Starter() {
           </button>
 
           <button
-          // onclick={imprimirTicket} // Tu código original
-          onClick={handleCancelarTurno} // <-- AÑADE ESTA LÍNEA
-          className="w-full bg-[#e66f6f] hover:bg-[#ef2525] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            // onclick={imprimirTicket} // Tu código original
+            onClick={handleCancelarTurno} // <-- AÑADE ESTA LÍNEA
+            className="w-full bg-[#e66f6f] hover:bg-[#ef2525] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
             Cancelar turno
           </button>
 
-          
+
           <button
             onClick={regresarAlInicio}
             className="w-full bg-[#5D7166] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#4A5B52] transition-colors"
@@ -1058,20 +1098,20 @@ export default function Starter() {
 
 
   if (loadingState !== 'idle') {
-      // Determina el texto basado en el estado
-      const loadingText = loadingState === 'creating' 
-        ? 'Generando su turno...' 
-        : 'Cancelando su turno...';
+    // Determina el texto basado en el estado
+    const loadingText = loadingState === 'creating'
+      ? 'Generando su turno...'
+      : 'Cancelando su turno...';
 
-      return (
-        <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#F4F4F4] to-[#CAC9C9]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3A554B] mx-auto mb-4"></div>
-            {/* Usa la variable de texto dinámico */}
-            <p className="text-[#3A554B] font-semibold">{loadingText}</p>
+    return (
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#F4F4F4] to-[#CAC9C9]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#3A554B] mx-auto mb-4"></div>
+          {/* Usa la variable de texto dinámico */}
+          <p className="text-[#3A554B] font-semibold">{loadingText}</p>
         </div>
       </div>
-      );
+    );
   }
 
 
@@ -1082,10 +1122,10 @@ export default function Starter() {
         description="Sistema de gestión de turnos ITZEL - Página inicial de selección de tipo de cliente"
       />
 
-            {notificacion && (
+      {notificacion && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           {/* Contenedor para limitar el ancho */}
-          <div className="w-full max-w-md"> 
+          <div className="w-full max-w-md">
             <div className="bg-gradient-to-r from-[#e66f6f] to-[#ef2525] text-white font-bold text-center p-4 rounded-xl shadow-2xl border border-white/30">
               <div className="flex items-center justify-center gap-3">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1104,7 +1144,7 @@ export default function Starter() {
           background: 'linear-gradient(135deg, #F4F4F4 0%, #DFDFDF 50%, #CAC9C9 100%)'
         }}>
 
-        <Header showBranchSelector={true} title="Solicitud de Turnos" />
+        <Header showBranchSelector={false} title={t("starter.title")} showLanguageToggle={true} />
 
         {/* MODAL DE CONFIRMACIÓN - SOLO MOSTRAR CUANDO showConfirmation SEA true Y currentStep SEA serviceSelection */}
         {showConfirmation && currentStep === 'serviceSelection' && renderConfirmationModal()}
@@ -1134,10 +1174,10 @@ export default function Starter() {
                     {/* Text side - Compacto */}
                     <div className="text-center">
                       <h1 className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] to-[#70A18E] tracking-tight">
-                        BIENVENIDO A ITZEL
+                        {t("starter.welcome")}
                       </h1>
                       <p className="text-xs md:text-sm text-gray-700 font-medium">
-                        Sistema Inteligente de Turnos • CFE
+                        {t("starter.subtitle")}
                       </p>
                     </div>
 
@@ -1156,6 +1196,20 @@ export default function Starter() {
             {currentStep === 'clientType' && renderClientTypeSelection()}
             {currentStep === 'serviceSelection' && renderServiceSelection()}
             {currentStep === 'ticket' && renderTicket()}
+
+            {/* Contract Validation Modal */}
+            <ContractValidationModal
+              isOpen={showContractModal}
+              onClose={() => setShowContractModal(false)}
+              onSuccess={handleContractValidationSuccess}
+            />
+
+            {/* Grandes Usuarios Modal */}
+            <ContractValidationModal
+              isOpen={showGrandesUsuariosModal}
+              onClose={() => setShowGrandesUsuariosModal(false)}
+              onSuccess={handleContractValidationSuccess}
+            />
 
           </div>
         </div>

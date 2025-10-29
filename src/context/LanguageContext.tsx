@@ -273,10 +273,10 @@ const translations = {
     
     // Starter page translations
     "starter.title": "Solicitud de Turnos",
-    "starter.welcome": "BIENVENIDO A ITZEL",
+    "starter.welcome": "EL SISTEMA ITZEL LES DA LA BIENVENIDA",
     "starter.subtitle": "Sistema Inteligente de Turnos • CFE",
     "starter.clientType": "TIPO DE CLIENTE",
-    "starter.selectProfile": "Seleccione su perfil para acceder a nuestros servicios personalizados",
+    "starter.selectProfile": "Seleccione su perfil para acceder a nuestros servicios",
     "starter.notClient": "NO SOY CLIENTE",
     "starter.notClientDesc": "Acceso a servicios públicos y atención general",
     "starter.cfeClient": "SOY CLIENTE CFE",
@@ -428,7 +428,7 @@ const translations = {
     "starter.welcome": "WELCOME TO ITZEL",
     "starter.subtitle": "Intelligent Turn System • CFE",
     "starter.clientType": "CLIENT TYPE",
-    "starter.selectProfile": "Select your profile to access our personalized services",
+    "starter.selectProfile": "Select your profile to access our services",
     "starter.notClient": "I AM NOT A CLIENT",
     "starter.notClientDesc": "Access to public services and general attention",
     "starter.cfeClient": "I AM A CFE CLIENT",

@@ -8,6 +8,7 @@ import PopularAreasPieChart from "../../components/ecommerce/PopularAreasPieChar
 import BranchesDemographicCard from "../../components/ecommerce/BranchesDemographicCard.tsx";
 //  nuevo import opcional para el dashboard de asesor
 import DashboardAsesor from "../../components/ecommerce/DashboardAsesor";
+import DashboardEjecutivo from "../../components/ecommerce/DashboardEjecutivo.tsx";
 
 export default function Home() {
   const { user } = useAuth();
@@ -18,8 +19,12 @@ export default function Home() {
     return <DashboardAsesor />;
   }
 
+  // Si es eejcutivo (2), muestra su propio dashboard
+  if (tipo === 2) {
+    return <DashboardEjecutivo/>;
+  }
 
-   // Si es administrador (1) o ejecutivo (2), muestra el dashboard actual
+   // Si es administrador (1), muestra el dashboard actual
   return (
     <div className="p-6 space-y-6">
       {/* Sección de métricas rápidas */}

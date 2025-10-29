@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { ClipboardList, CheckCircle, Play, Square, RotateCcw, Filter } from "lucide-react";
+import { ClipboardList, CheckCircle, Play, X, Square, RotateCcw, Filter } from "lucide-react";
 import { useSucursalActiva } from '../../../../components/header/Header';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../context/LanguageContext';
@@ -41,7 +41,7 @@ function ConsultaTurnos() {
     turnos_pendientes: 0,
     turnos_en_proceso: 0,
     turnos_atendidos: 0,
-    tiempo_promedio_atencion: 0
+    turnos_cancelados: 0
   });
 
   useEffect(() => {
@@ -217,7 +217,7 @@ function ConsultaTurnos() {
         </div>
 
         {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mt-4">
           {/* Total */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 relative overflow-hidden group hover:shadow-md transition-all duration-300 dark:bg-gray-800 dark:border-gray-700">
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-500/10 to-blue-700/10 rounded-bl-full"></div>
@@ -269,6 +269,20 @@ function ConsultaTurnos() {
             <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{estadisticas.turnos_atendidos}</p>
             <div className="w-8 h-1 bg-gradient-to-r from-gray-400 to-gray-500 rounded-full mt-3"></div>
           </div>
+
+          {/* Cancelados */}
+          <div className="bg-white rounded-xl shadow-sm border border-red-100 p-6 relative overflow-hidden group hover:shadow-md transition-all duration-300 dark:bg-gray-800 dark:border-gray-700">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-red-600/10 to-red-400/10 rounded-bl-full"></div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-400 to-red-500 rounded-lg flex items-center justify-center shadow-sm">
+                <X className="w-6 h-6 text-white"/>
+              </div>
+            </div>
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{t("shifts.canceled")}</h3>
+            <p className="text-3xl font-bold text-gray-800 mt-2 dark:text-white">{estadisticas.turnos_cancelados}</p>
+            <div className="w-8 h-1 bg-gradient-to-r from-red-400 to-red-500 rounded-full mt-3"></div>
+          </div> 
+
         </div>
       </div>
 

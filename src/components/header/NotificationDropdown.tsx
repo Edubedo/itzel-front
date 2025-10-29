@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -19,6 +19,11 @@ interface NotificationDropdownProps {
   sucursalSeleccionada: { ck_sucursal: string; nombre: string } | null;
 }
 
+interface Toast {
+  id: string;
+  mensaje: string;
+}
+
 const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   agregarToast,
   sucursalSeleccionada,
@@ -27,7 +32,9 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   const [abierto, setAbierto] = useState(false);
   const [sucursalActiva, setSucursalActiva] = useState<{ ck_sucursal: string; nombre: string } | null>(null);
 
+  const [toasts, setToasts] = useState<Toast[]>([]); 
   const navigate = useNavigate();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Inicializar sucursal activa
   useEffect(() => {
@@ -44,6 +51,29 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       }
     }
   }, [sucursalSeleccionada]);
+
+  // Cerrar dropdown al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setAbierto(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Función para agregar toast temporal
+  const agregarToastTemporal = (mensaje: string) => {
+    const id = Date.now().toString();
+    setToasts((prev) => [...prev, { id, mensaje }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 6000);
+  };
 
   // Cargar notificaciones al cambiar sucursal
   useEffect(() => {
@@ -76,13 +106,27 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         return;
       }
 
+      const notificacionesGuardadas: Notificacion[] = JSON.parse(
+        localStorage.getItem("notificacionesDropdown") || "[]"
+      );
+
       const leidasLocal: string[] = JSON.parse(localStorage.getItem("notificacionesLeidas") || "[]");
 
-      const dataConLeidas = data.notificaciones.map((n: Notificacion) => ({
-        ...n,
-        leida: leidasLocal.includes(n.id),
-        fechaLlegada: new Date(),
-      }));
+      const dataConLeidas = data.notificaciones.map((n: Notificacion) => {
+        const encontrada = notificacionesGuardadas.find((ng) => ng.id === n.id);
+        return {
+          ...n,
+          leida: leidasLocal.includes(n.id),
+          fechaLlegada: encontrada?.fechaLlegada ? new Date(encontrada.fechaLlegada) : new Date(),
+        };
+      });
+
+      // Mostrar toast de nuevos turnos
+      const prevIds = notificacionesGuardadas.map((n) => n.id);
+      const nuevasNotificaciones = dataConLeidas.filter((n) => !prevIds.includes(n.id));
+      nuevasNotificaciones.forEach((n) => {
+        agregarToastTemporal(`Nuevo turno: ${n.numero_turno} - ${n.s_servicio}`);
+      });
 
       setNotificaciones(dataConLeidas);
       localStorage.setItem("notificacionesDropdown", JSON.stringify(dataConLeidas));
@@ -115,81 +159,100 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   const recordatorios = noLeidas.filter((n) => n.mensaje.includes("Recuerda atender"));
 
   return (
-    <div className="relative">
-      {/* Botón de campana */}
-      <button
-        onClick={() => setAbierto(!abierto)}
-        className="relative flex items-center justify-center w-10 h-10 rounded-full border border-[#8ECAB2] hover:bg-[#E6F4EE] transition-colors duration-200
-        dark:border-gray-600 dark:hover:bg-gray-700"
-      >
-        <Bell className="h-5 w-5 text-[#5D7166] dark:text-white" />
-        {noLeidas.length > 0 && (
-          <span className="absolute top-1.5 right-1.5 inline-flex items-center justify-center 
-            w-4 h-4 text-[10px] font-bold leading-none text-white bg-[#70A18E] rounded-full shadow-md">
-            {noLeidas.length > 9 ? "9+" : noLeidas.length}
-          </span>
-        )}
-      </button>
+    <>
+      <div className="relative" ref={dropdownRef}>
+        {/* Botón de campana */}
+        <button
+          onClick={() => setAbierto(!abierto)}
+          className="relative flex items-center justify-center w-10 h-10 rounded-full border border-[#8ECAB2] hover:bg-[#E6F4EE] transition-colors duration-200
+          dark:border-gray-600 dark:hover:bg-gray-700"
+        >
+          <Bell className="h-5 w-5 text-[#5D7166] dark:text-white" />
+          {noLeidas.length > 0 && (
+            <span className="absolute top-1.5 right-1.5 inline-flex items-center justify-center 
+              w-4 h-4 text-[10px] font-bold leading-none text-white bg-[#70A18E] rounded-full shadow-md">
+              {noLeidas.length > 9 ? "9+" : noLeidas.length}
+            </span>
+          )}
+        </button>
 
-      {/* Dropdown */}
-      {abierto && (
-        <div className="absolute right-0 mt-3 w-96 bg-white shadow-lg rounded-2xl z-50 max-h-[420px] overflow-y-auto border border-[#8ECAB2]
-        dark:bg-[#1E1E1E] dark:border-gray-700">
-          <div className="px-4 py-3 border-b border-[#8ECAB2] bg-[#F2FBF7] rounded-t-2xl
-          dark:bg-[#2A2A2A] dark:border-gray-700">
-            <h4 className="font-semibold text-[#5D7166] text-lg dark:text-white">Notificaciones</h4>
-          </div>
+        {/* Dropdown */}
+        {abierto && (
+          <div className="absolute right-0 mt-3 w-96 bg-white shadow-lg rounded-2xl z-50 max-h-[420px] overflow-y-auto border border-[#8ECAB2]
+          dark:bg-[#1E1E1E] dark:border-gray-700">
+            <div className="px-4 py-3 border-b border-[#8ECAB2] bg-[#F2FBF7] rounded-t-2xl
+            dark:bg-[#2A2A2A] dark:border-gray-700">
+              <h4 className="font-semibold text-[#5D7166] text-lg dark:text-white">Notificaciones</h4>
+            </div>
 
-          <div className="p-4 space-y-3">
-            {nuevas.length > 0 && (
-              <>
-                <p className="text-sm font-semibold text-[#70A18E] uppercase tracking-wide dark:text-[#8ECAB2]">
-                  Nuevos Turnos
+            <div className="p-4 space-y-3">
+              {nuevas.length > 0 && (
+                <>
+                  <p className="text-sm font-semibold text-[#70A18E] uppercase tracking-wide dark:text-[#8ECAB2]">
+                    Nuevos Turnos
+                  </p>
+                  {nuevas.map((n) => (
+                    <div
+                      key={n.id}
+                      className={`p-3 rounded-xl cursor-pointer border transition-all duration-200 ${
+                        n.leida
+                          ? "bg-[#F2FBF7] border-[#8ECAB2] text-[#5D7166] dark:bg-[#2A2A2A] dark:border-gray-700 dark:text-gray-300"
+                          : "bg-[#E6F4EE] border-[#70A18E] text-[#2E4A3E] hover:bg-[#D4EEE4] hover:border-[#5D7166] dark:bg-[#344E41] dark:border-[#8ECAB2] dark:text-white dark:hover:bg-[#3B5B4C]"
+                      }`}
+                      onClick={() => handleClickNotificacion(n)}
+                    >
+                      <p className="text-sm font-medium">
+                        Turno <span className="font-bold">{n.numero_turno}</span> - {n.s_servicio} ({n.s_area})
+                      </p>
+                      <span className="text-xs text-[#5D7166] dark:text-gray-400">
+                        {n.fechaLlegada?.toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </>
+              )}
+
+              {nuevas.length === 0 && recordatorios.length === 0 && (
+                <p className="text-sm text-[#5D7166] text-center italic dark:text-gray-400">
+                  No hay notificaciones nuevas
                 </p>
-                {nuevas.map((n) => (
-                  <div
-                    key={n.id}
-                    className={`p-3 rounded-xl cursor-pointer border transition-all duration-200 ${
-                      n.leida
-                        ? "bg-[#F2FBF7] border-[#8ECAB2] text-[#5D7166] dark:bg-[#2A2A2A] dark:border-gray-700 dark:text-gray-300"
-                        : "bg-[#E6F4EE] border-[#70A18E] text-[#2E4A3E] hover:bg-[#D4EEE4] hover:border-[#5D7166] dark:bg-[#344E41] dark:border-[#8ECAB2] dark:text-white dark:hover:bg-[#3B5B4C]"
-                    }`}
-                    onClick={() => handleClickNotificacion(n)}
-                  >
-                    <p className="text-sm font-medium">
-                      Turno <span className="font-bold">{n.numero_turno}</span> - {n.s_servicio} ({n.s_area})
-                    </p>
-                    <span className="text-xs text-[#5D7166] dark:text-gray-400">
-                      {n.fechaLlegada?.toLocaleString()}
-                    </span>
-                  </div>
-                ))}
-              </>
-            )}
+              )}
+            </div>
 
-            {nuevas.length === 0 && recordatorios.length === 0 && (
-              <p className="text-sm text-[#5D7166] text-center italic dark:text-gray-400">
-                No hay notificaciones nuevas
-              </p>
-            )}
+            <div className="px-4 py-3 border-t border-[#8ECAB2] bg-[#F2FBF7] rounded-b-2xl text-center
+            dark:border-gray-700 dark:bg-[#2A2A2A]">
+              <button
+                onClick={() => {
+                  setAbierto(false);
+                  navigate("/notificaciones");
+                }}
+                className="text-sm font-semibold text-[#70A18E] hover:text-[#5D7166] transition-colors duration-200
+                dark:text-[#8ECAB2] dark:hover:text-white"
+              >
+                Ver todas las notificaciones
+              </button>
+            </div>
           </div>
+        )}
+      </div>
 
-          <div className="px-4 py-3 border-t border-[#8ECAB2] bg-[#F2FBF7] rounded-b-2xl text-center
-          dark:border-gray-700 dark:bg-[#2A2A2A]">
-            <button
-              onClick={() => {
-                setAbierto(false);
-                navigate("/notificaciones");
-              }}
-              className="text-sm font-semibold text-[#70A18E] hover:text-[#5D7166] transition-colors duration-200
-              dark:text-[#8ECAB2] dark:hover:text-white"
-            >
-              Ver todas las notificaciones
-            </button>
+      {/*Toasts*/}
+      <div className="fixed bottom-4 right-4 flex flex-col space-y-2 z-50">
+        {toasts.map((t, index) => (
+          <div
+            key={t.id}
+            className="px-4 py-3 rounded-xl shadow-lg text-sm font-medium transition-all duration-300"
+            style={{
+              backgroundColor: "#70A18E",
+              color: "white",
+              transform: `translateY(-${index * 60}px)`,
+            }}
+          >
+            {t.mensaje}
           </div>
-        </div>
-      )}
-    </div>
+        ))}
+      </div>
+    </>
   );
 };
 

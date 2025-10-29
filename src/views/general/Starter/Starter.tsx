@@ -60,7 +60,6 @@ export default function Starter() {
   const [servicioSeleccionado, setServicioSeleccionado] = useState<Servicio | null>(null);
   const [showContractModal, setShowContractModal] = useState(false);
   const [validatedClient, setValidatedClient] = useState<any>(null);
-  const [showGrandesUsuariosModal, setShowGrandesUsuariosModal] = useState(false);
 
   // Controlar navegación
   const navigate = useNavigate();
@@ -197,11 +196,17 @@ export default function Starter() {
       return;
     }
 
-    setEsCliente(isClient);
-    setCurrentStep('serviceSelection');
-    setTimer(INACTIVITY_TIME);
-    setShowConfirmation(false);
-    setServicioSeleccionado(null);
+    if (isClient) {
+      // Si es cliente, abrir modal de validación de contrato
+      setShowContractModal(true);
+    } else {
+      // Si no es cliente, continuar directamente
+      setEsCliente(false);
+      setCurrentStep('serviceSelection');
+      setTimer(INACTIVITY_TIME);
+      setShowConfirmation(false);
+      setServicioSeleccionado(null);
+    }
   };
 
   const handleContractValidationSuccess = (clientData: any) => {
@@ -711,30 +716,6 @@ export default function Starter() {
                 </h2>
               </div>
             </div>
-
-            {/* Botón Grandes usuarios - Solo visible para clientes */}
-            {esCliente && (
-              <div className="absolute top-0 right-0">
-                <button
-                  onClick={() => setShowGrandesUsuariosModal(true)}
-                  className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#70A18E]/50"
-                  style={{
-                    background: 'linear-gradient(135deg, #70A18E 0%, #547A6B 100%)',
-                    boxShadow: '0 8px 30px -10px rgba(112, 161, 142, 0.4)'
-                  }}
-                >
-                  {/* Animated shine effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-
-                  <div className="relative flex items-center gap-2 px-4 py-2">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-white font-bold text-sm">Grandes usuarios</span>
-                  </div>
-                </button>
-              </div>
-            )}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm md:text-base">
               <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -1201,13 +1182,6 @@ export default function Starter() {
             <ContractValidationModal
               isOpen={showContractModal}
               onClose={() => setShowContractModal(false)}
-              onSuccess={handleContractValidationSuccess}
-            />
-
-            {/* Grandes Usuarios Modal */}
-            <ContractValidationModal
-              isOpen={showGrandesUsuariosModal}
-              onClose={() => setShowGrandesUsuariosModal(false)}
               onSuccess={handleContractValidationSuccess}
             />
 

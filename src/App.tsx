@@ -32,8 +32,6 @@ import Dashboard from "./views/general/Dashboard/Dashboard";
 import Starter from "./views/general/Starter/Starter";
 import ConsultaCitas from "./views/operaciones/citas/consulta/ConsultaCitas";
 import FormularioCitas from "./views/operaciones/citas/formulario/FormularioCitas";
-import ConsultaReportes from "./views/operaciones/reportes/consulta/ConsultaReportes";
-import FormularioReportes from "./views/operaciones/reportes/formulario/FormularioReportes";
 import ConsultaTurnos from "./views/operaciones/turnos/consulta/ConsultaTurnos";
 import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTurnos";
 import RecoverPassword from "./pages/AuthPages/RecoverPassword";
@@ -153,18 +151,6 @@ export default function App() {
               {/* CITAS */}
               {/*<Route path="/operaciones/citas/consulta/" element={<ConsultaCitas />} />
               <Route path="/operaciones/citas/formulario/" element={<FormularioCitas />} />*/}
-
-              {/* REPORTES - Solo Administradores y Ejecutivos */}
-              <Route path="/operaciones/reportes/consulta/" element={
-                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO,USER_TYPES.ASESOR]}>
-                  <ConsultaReportes />
-                </ProtectedRoute>
-              } />
-              <Route path="/operaciones/reportes/formulario/" element={
-                <ProtectedRoute requiredRoles={[USER_TYPES.ADMINISTRADOR, USER_TYPES.EJECUTIVO,USER_TYPES.ASESOR]}>
-                  <FormularioReportes />
-                </ProtectedRoute>
-              } />
 
               {/* TURNOS - Accesibles por todos los usuarios autenticados */}
               <Route path="/operaciones/turnos/consulta/" element={<ConsultaTurnos />} />

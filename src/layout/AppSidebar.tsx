@@ -53,7 +53,6 @@ const createNavSections = (t: (key: string) => string, dataUser) => {
       name: t("nav.operations"),
       subItems: [
         { name: t("nav.shifts"), path: "/operaciones/turnos/consulta" },
-        { name: t("nav.reports"), path: "/operaciones/reportes/consulta" },
       ],
     },
   ]}

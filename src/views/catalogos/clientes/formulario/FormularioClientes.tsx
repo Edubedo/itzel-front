@@ -27,6 +27,7 @@ function FormularioClientes() {
   const [errors, setErrors] = useState<Partial<Omit<Cliente, 'ck_cliente'>>>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [notFound, setNotFound] = useState(false);
 
   // Cargar datos si es edición
   useEffect(() => {
@@ -52,11 +53,13 @@ function FormularioClientes() {
                 ck_estatus: response.data.ck_estatus || 'ACTIVO',
                 c_codigo_contrato: response.data.c_codigo_contrato || ''
               });
+            } else {
+              setNotFound(true);
             }
           }
         }
       } catch (error) {
-        alert('Error al cargar datos del cliente');
+        setNotFound(true);
       } finally {
         setInitialLoading(false);
       }
@@ -81,6 +84,8 @@ function FormularioClientes() {
     const newErrors: Partial<Omit<Cliente, 'ck_cliente'>> = {};
     if (!formData.c_codigo_cliente.trim()) {
       newErrors.c_codigo_cliente = 'El código del cliente es obligatorio';
+    } else if (!/^[A-Z0-9]{6}$/.test(formData.c_codigo_cliente.trim())) {
+      newErrors.c_codigo_cliente = 'El código debe ser alfanumérico y tener exactamente 6 caracteres';
     }
     if (!formData.s_nombre.trim()) {
       newErrors.s_nombre = 'El nombre es obligatorio';
@@ -158,6 +163,20 @@ function FormularioClientes() {
     );
   }
 
+  if (notFound) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <span className="text-xl text-red-500 font-bold mb-4">😅 Eso no existe</span>
+        <button
+          className="mt-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          onClick={() => window.location.href = '/catalogos/clientes/consulta/'}
+        >
+          Volver al listado
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div>
       <PageMeta
@@ -183,7 +202,11 @@ function FormularioClientes() {
                 <Input
                   type="text"
                   value={formData.c_codigo_cliente}
-                  onChange={e => handleInputChange('c_codigo_cliente', e.target.value.toUpperCase())}
+                  onChange={e => {
+                    const upper = e.target.value.toUpperCase();
+                    const sanitized = upper.replace(/[^A-Z0-9]/g, '').slice(0, 6);
+                    handleInputChange('c_codigo_cliente', sanitized);
+                  }}
                   placeholder="Ej: CL001"
                   className={errors.c_codigo_cliente ? 'border-red-500' : ''}
                 />

@@ -11,7 +11,7 @@ interface Sucursal {
   s_nombre_sucursal: string;
   s_domicilio: string;
 }
-
+// ... (interfaces Area, Servicio, Turno - sin cambios)
 interface Area {
   ck_area: string;
   s_area: string;
@@ -37,6 +37,7 @@ interface Turno {
   t_tiempo_espera: string;
 }
 
+
 export default function Starter() {
   const { t } = useLanguage();
   const [currentStep, setCurrentStep] = useState<'clientType' | 'serviceSelection' | 'ticket'>('clientType');
@@ -61,9 +62,13 @@ export default function Starter() {
   const [showContractModal, setShowContractModal] = useState(false);
   const [validatedClient, setValidatedClient] = useState<any>(null);
 
+  // Estado para controlar el modal de privacidad. Se inicia en true.
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+
   // Controlar navegación
   const navigate = useNavigate();
 
+  // ... (todos los useEffect - sin cambios)
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
       event.preventDefault();
@@ -158,6 +163,8 @@ export default function Starter() {
     }
   }, [turnoCreado, currentStep]);
 
+
+  // ... (todas las funciones de carga y manejo de lógica - sin cambios)
   const cargarAreas = async () => {
     if (!sucursalSeleccionada) return;
 
@@ -248,8 +255,8 @@ export default function Starter() {
     if (!sucursalSeleccionada || !areaSeleccionada) return;
 
     setLoadingState('creating');
-    setLoadingState('creating');
 
+    
     try {
       const response = await fetch('http://localhost:3001/api/operaciones/turnos/crear', {
         method: 'POST',
@@ -270,7 +277,7 @@ export default function Starter() {
       if (data.success) {
         setTurnoCreado(data.turno);
         setCurrentStep('ticket');
-        setCountdown(2000);
+        setCountdown(30);
       } else {
         alert('Error al crear el turno: ' + data.message);
       }
@@ -278,7 +285,7 @@ export default function Starter() {
       console.error('Error al crear turno:', error);
       alert('Error al crear el turno');
     } finally {
-      setLoadingState('idle');
+
       setLoadingState('idle');
     }
   };
@@ -387,6 +394,7 @@ export default function Starter() {
       setLoadingState('idle');
     }
   };
+
   const regresarAlInicio = () => {
     setCurrentStep('clientType');
     setEsCliente(null);
@@ -397,9 +405,11 @@ export default function Starter() {
     setTimer(INACTIVITY_TIME);
     setShowConfirmation(false);
     setServicioSeleccionado(null);
+    setShowPrivacyModal(false); // Muestra el modal al regresar al inicio
   };
 
 
+  // ... (renderCancelModal, - sin cambios)
   const renderCancelModal = () => (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-auto border border-white/20">
@@ -442,7 +452,7 @@ export default function Starter() {
             <button
               onClick={() => {
                 setShowCancelModal(false); // Cierra el modal
-                handleCancelarTurno();      // Llama a la lógica
+                handleCancelarTurno();     // Llama a la lógica
               }}
               className="flex-1 bg-gradient-to-r from-[#e66f6f] to-[#ef2525] hover:from-[#ef2525] hover:to-[#e66f6f] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200"
             >
@@ -598,11 +608,25 @@ export default function Starter() {
               <div className="absolute bottom-0 left-0 w-20 h-20 bg-[#B7F2DA]/20 rounded-tr-full -ml-10 -mb-10"></div>
             </button>
 
+          </div> {/* <<< FIN DEL GRID DE BOTONES */}
+
+
+          {/* +++ INICIO: BOTÓN DE AVISO DE PRIVACIDAD +++ */}
+          <div className="text-center mt-6">
+            <button
+              // Al hacer clic, mostramos el modal de privacidad
+              onClick={() => setShowPrivacyModal(true)}
+              className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-2 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 text-sm"
+            >
+              Aviso de Privacidad
+            </button>
           </div>
+          {/* +++ FIN: BOTÓN DE AVISO DE PRIVACIDAD +++ */}
+
 
           {/* Warning message with modern style - Compacto */}
           {!sucursalSeleccionada && (
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-2xl mx-auto mt-6"> {/* Añadido mt-6 para separarlo del nuevo botón */}
               <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 p-[2px] animate-pulse">
                 <div className="bg-white rounded-xl p-4">
                   <div className="flex items-start gap-3">
@@ -635,6 +659,7 @@ export default function Starter() {
       </div>
     </div>
   );
+
 
   // Función para obtener el icono del servicio
   const getServiceIcon = (servicio: string) => {
@@ -774,8 +799,8 @@ export default function Starter() {
                   key={area.ck_area}
                   onClick={() => seleccionarArea(area)}
                   className={`group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 ${areaSeleccionada?.ck_area === area.ck_area
-                    ? 'bg-gradient-to-br from-[#70A18E] to-[#547A6B] text-white shadow-2xl'
-                    : 'bg-gradient-to-br from-[#B7F2DA] to-[#8ECAB2] text-[#0A1310] hover:shadow-xl'
+                      ? 'bg-gradient-to-br from-[#70A18E] to-[#547A6B] text-white shadow-2xl'
+                      : 'bg-gradient-to-br from-[#B7F2DA] to-[#8ECAB2] text-[#0A1310] hover:shadow-xl'
                     }`}
                 >
                   {/* Animated shine effect */}
@@ -1053,8 +1078,7 @@ export default function Starter() {
           </button>
 
           <button
-            // onclick={imprimirTicket} // Tu código original
-            onClick={handleCancelarTurno} // <-- AÑADE ESTA LÍNEA
+            onClick={handleCancelarTurno}
             className="w-full bg-[#e66f6f] hover:bg-[#ef2525] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
             Cancelar turno
@@ -1072,6 +1096,66 @@ export default function Starter() {
         {/* Countdown */}
         <div className="text-center mt-4 text-sm text-gray-600">
           Regresando automáticamente en {countdown} segundos...
+        </div>
+      </div>
+    </div>
+  );
+
+  // Función para renderizar el modal de aviso de privacidad
+// Función para renderizar el modal de aviso de privacidad
+  const renderPrivacyModal = () => (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center z-[100] p-4 pt-20">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-auto border border-white/20">
+
+        {/* Header */}
+        <div className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] p-6 rounded-t-2xl text-center">
+          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            {/* Icono de privacidad (escudo) */}
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {/* --- LÍNEA CORREGIDA --- */}
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2.163l-8 3.92V11.2c0 5.4 3.4 10.3 8 11.6 4.6-1.3 8-6.2 8-11.6V6.083l-8-3.92z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-white mb-2">Aviso de Privacidad</h3>
+          <p className="text-white/80 text-sm">
+            Su información es importante para nosotros.
+          </p>
+        </div>
+
+        {/* Contenido del Aviso */}
+        <div className="p-6">
+          <div className="bg-gray-50 rounded-xl p-4 mb-6">
+            {/* TEXTO DEL AVISO DE PRIVACIDAD */}
+            <h4 className="font-bold text-gray-800 mb-2">Responsable de los datos</h4>
+            <p className="text-sm text-gray-600 mb-4">
+              Comisión Federal de Electricidad (CFE), es responsable del tratamiento de sus datos personales.
+            </p>
+            <h4 className="font-bold text-gray-800 mb-2">Finalidad</h4>
+            <p className="text-sm text-gray-600 mb-4">
+              Los datos personales que recabamos de usted, los utilizaremos para las siguientes finalidades que son necesarias para el servicio que solicita:
+              <ul className="list-disc list-inside ml-4 mt-2">
+                <li>Gestionar y registrar su turno de atención.</li>
+                <li>Validar su identidad como cliente (si aplica).</li>
+                <li>Brindarle el servicio o trámite solicitado.</li>
+                <li>Generar estadísticas internas para la mejora del servicio.</li>
+              </ul>
+            </p>
+            <p className="text-sm text-gray-600">
+              Al continuar, usted acepta el tratamiento de sus datos personales conforme a nuestro aviso de privacidad integral.
+            </p>
+            {/* FIN DEL TEXTO */}
+          </div>
+
+          {/* Botón de Aceptar */}
+          <button
+            onClick={() => setShowPrivacyModal(false)}
+            className="relative w-full bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 group overflow-hidden" // Agrega 'relative' y 'group' y 'overflow-hidden'
+          >
+            {/* Añade este div para el efecto de brillo verde */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#B7F2DA]/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+            <span className="relative z-10">Entendido y Aceptar</span> {/* Envuelve el texto con un span y z-10 */}
+          </button>
         </div>
       </div>
     </div>
@@ -1103,9 +1187,13 @@ export default function Starter() {
         description="Sistema de gestión de turnos ITZEL - Página inicial de selección de tipo de cliente"
       />
 
+      {/* --- CONTENEDOR DE MODALES --- */}
+      {/* Todos los modales se agrupan aquí para que se rendericen 
+           por encima del contenido de la página y el blur funcione. */}
+
       {notificacion && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          {/* Contenedor para limitar el ancho */}
+          
           <div className="w-full max-w-md">
             <div className="bg-gradient-to-r from-[#e66f6f] to-[#ef2525] text-white font-bold text-center p-4 rounded-xl shadow-2xl border border-white/30">
               <div className="flex items-center justify-center gap-3">
@@ -1118,7 +1206,18 @@ export default function Starter() {
           </div>
         </div>
       )}
+
+      {/* Modal de Cancelar (ya estaba aquí) */}
       {showCancelModal && renderCancelModal()}
+
+      {/* Modal de Privacidad (AHORA SE RENDERIZA AQUÍ) */}
+      {showPrivacyModal && renderPrivacyModal()}
+      
+      {/* Modal de Confirmación (movido aquí para consistencia) */}
+      {showConfirmation && currentStep === 'serviceSelection' && renderConfirmationModal()}
+      
+      {/* --- FIN CONTENEDOR DE MODALES --- */}
+
 
       <div className="h-screen flex flex-col overflow-hidden"
         style={{
@@ -1127,8 +1226,8 @@ export default function Starter() {
 
         <Header showBranchSelector={false} title={t("starter.title")} showLanguageToggle={true} />
 
-        {/* MODAL DE CONFIRMACIÓN - SOLO MOSTRAR CUANDO showConfirmation SEA true Y currentStep SEA serviceSelection */}
-        {showConfirmation && currentStep === 'serviceSelection' && renderConfirmationModal()}
+        {/* El modal de confirmación se movió al contenedor de modales de arriba */}
+        {/* {showConfirmation && currentStep === 'serviceSelection' && renderConfirmationModal()} */}
 
         {/* Main Content - Optimizado para caber en pantalla */}
         <div className="flex-1 flex items-center justify-center px-4 py-2 overflow-auto relative z-0">

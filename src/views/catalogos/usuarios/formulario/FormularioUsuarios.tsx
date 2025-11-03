@@ -39,11 +39,15 @@ function FormularioUsuarios() {
   useEffect(() => {
     if (showSuccess) {
       window.scrollTo({ top: 0, behavior: "smooth" });
-      setTimeout(() => {
-        window.location.href = "/catalogos/usuarios/consulta/";
-      }, 1000);
+      // Si es edición o no requiere verificación, redirigir inmediatamente
+      if (isEditing) {
+        setTimeout(() => {
+          window.location.href = "/catalogos/usuarios/consulta/";
+        }, 1000);
+      }
+      // Si es nuevo usuario, esperar más tiempo para mostrar mensaje de verificación
     }
-  }, [showSuccess]);
+  }, [showSuccess, isEditing]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -218,7 +222,19 @@ function FormularioUsuarios() {
 
       if (response.success) {
         setShowSuccess(true);
-        setSuccessMessage(isEditing ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente');
+        if (isEditing) {
+          setSuccessMessage('Usuario actualizado correctamente');
+        } else {
+          // Para nuevos usuarios con verificación de email
+          setSuccessMessage(
+            'Usuario creado correctamente. Se ha enviado un correo electrónico de verificación. ' +
+            'Por favor, revisa tu bandeja de entrada y haz clic en el enlace de verificación para activar tu cuenta.'
+          );
+          
+          setTimeout(() => {
+            window.location.href = "/catalogos/usuarios/consulta/";
+          }, 3000);
+        }
       }
     } catch (error: any) {
       console.error('Error al guardar el usuario:', error);

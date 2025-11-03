@@ -28,7 +28,7 @@ type NavItem = {
 
 // Función para crear las secciones de navegación con traducciones
 const createNavSections = (t: (key: string) => string, dataUser) => {
-   console.log("dataUser.tipo_usuario: ", dataUser.user.tipo_usuario)
+  console.log("dataUser.tipo_usuario: ", dataUser.user.tipo_usuario)
 
   let typeUser = dataUser.user.tipo_usuario;
   return ( 

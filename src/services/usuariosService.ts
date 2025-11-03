@@ -17,7 +17,7 @@ api.interceptors.request.use(
       .split('; ')
       .find(row => row.startsWith('authToken='))
       ?.split('=')[1];
-    
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -118,7 +118,7 @@ export const usuariosService = {
   async createUsuario(userData: UsuarioFormData): Promise<{ success: boolean; message: string }> {
     try {
       const formData = new FormData();
-      
+
       // Agregar todos los campos al FormData
       Object.entries(userData).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -145,7 +145,7 @@ export const usuariosService = {
   async updateUsuario(id: string, userData: UsuarioFormData): Promise<{ success: boolean; message: string }> {
     try {
       const formData = new FormData();
-      
+
       // Agregar todos los campos al FormData
       Object.entries(userData).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -192,5 +192,17 @@ export const usuariosService = {
   getImageUrl(filename: string): string {
     if (!filename) return '';
     return `${API_BASE_URL.replace('/api', '')}/usuarios/${filename}`;
+  },
+
+  // Verificar correo electrónico con token
+  async verifyEmail(token: string): Promise<{ success: boolean; message: string; alreadyVerified?: boolean }> {
+    try {
+      const response = await api.get('/catalogos/usuarios/verify-email', {
+        params: { token }
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error al verificar correo electrónico');
+    }
   }
 }; 

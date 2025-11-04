@@ -51,7 +51,7 @@ function ConsultaTurnos() {
   useEffect(() => {
     if (sucursalActiva && user) {
       cargarAreas();
-      setAreaSeleccionada(''); // Resetear selección al cambiar sucursal
+      setAreaSeleccionada(''); 
     }
   }, [sucursalActiva, user]);
 
@@ -80,18 +80,17 @@ function ConsultaTurnos() {
       });
       const data = await response.json();
       if (data.success) {
-        const areasConDatos = data.areas || [];
-        // Agregar opción de "Todas" solo para administradores
+        const areasConDatos: Area[] = data.areas || [];
+
         if (user.tipo_usuario === 1) {
+          const totalPendientes = areasConDatos.reduce((sum: number, area: Area) => sum + (area.turnos_pendientes || 0), 0);
           setAreas([
-            { ck_area: '', s_area: t("shifts.allAreas"), s_descripcion_area: t("shifts.viewAllShifts"), c_codigo_area: 'ALL' },
-            ...data.areas
-            { 
-              ck_area: '', 
-              s_area: 'Todas las áreas', 
-              s_descripcion_area: 'Ver todos los turnos', 
+            {
+              ck_area: '',
+              s_area: t("shifts.allAreas") || 'Todas las áreas',
+              s_descripcion_area: t("shifts.viewAllShifts") || 'Ver todos los turnos',
               c_codigo_area: 'ALL',
-              turnos_pendientes: areasConDatos.reduce((sum: number, area: Area) => sum + (area.turnos_pendientes || 0), 0)
+              turnos_pendientes: totalPendientes
             },
             ...areasConDatos
           ]);
@@ -187,10 +186,9 @@ function ConsultaTurnos() {
       if (data.success) {
         await cargarTurnos();
         await cargarEstadisticas();
-      } else alert(t("shifts.errorAttendingShift") + ': ' + data.message);
         await cargarAreas(); // Recargar áreas para actualizar contadores
       } else {
-        alert('Error al atender turno: ' + data.message);
+        alert(t("shifts.errorAttendingShift") + ': ' + data.message);
       }
     } catch (error) {
       console.error('Error al atender turno:', error);
@@ -216,10 +214,9 @@ function ConsultaTurnos() {
       if (data.success) {
         await cargarTurnos();
         await cargarEstadisticas();
-      } else alert(t("shifts.errorFinishingShift") + ': ' + data.message);
         await cargarAreas(); // Recargar áreas para actualizar contadores
       } else {
-        alert('Error al finalizar turno: ' + data.message);
+        alert(t("shifts.errorFinishingShift") + ': ' + data.message);
       }
     } catch (error) {
       console.error('Error al finalizar turno:', error);
@@ -272,7 +269,7 @@ function ConsultaTurnos() {
                 className="bg-transparent border-none outline-none text-sm font-medium text-gray-800 dark:text-gray-200"
               >
                 {areas.map((area) => (
-                  <option key={area.ck_area} value={area.ck_area}>
+                  <option key={area.ck_area || 'all'} value={area.ck_area}>
                     {area.s_area}
                     {area.turnos_pendientes !== undefined && area.turnos_pendientes > 0 && ` (${area.turnos_pendientes} pendientes)`}
                   </option>

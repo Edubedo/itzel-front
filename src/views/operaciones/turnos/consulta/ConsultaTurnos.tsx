@@ -112,8 +112,15 @@ function ConsultaTurnos() {
     try {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ sucursalId: sucursalActiva.ck_sucursal });
-      if (areaSeleccionada) params.append('areaId', areaSeleccionada);
+      // Solo agregar areaId si está seleccionada y no es vacía
+      if (areaSeleccionada && areaSeleccionada.trim() !== '') {
+        params.append('areaId', areaSeleccionada.trim());
+        console.log('🔍 Filtrando por área:', areaSeleccionada);
+      } else {
+        console.log('📋 Mostrando todas las áreas permitidas');
+      }
 
+      console.log('🌐 URL de turnos:', `http://localhost:3001/api/operaciones/turnos/obtenerTurnos?${params}`);
       const response = await fetch(`http://localhost:3001/api/operaciones/turnos/obtenerTurnos?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -121,6 +128,7 @@ function ConsultaTurnos() {
         }
       });
       const data = await response.json();
+      console.log('📊 Turnos recibidos:', data.turnos?.length || 0, 'turnos');
       
       if (data.success) {
         const todosLosTurnos = data.turnos || [];
@@ -253,7 +261,10 @@ function ConsultaTurnos() {
               <Filter className="w-4 h-4 text-gray-500 dark:text-gray-300" />
               <select 
                 value={areaSeleccionada}
-                onChange={(e) => setAreaSeleccionada(e.target.value)}
+                onChange={(e) => {
+                  console.log('🔄 Cambiando área de', areaSeleccionada, 'a', e.target.value);
+                  setAreaSeleccionada(e.target.value);
+                }}
                 className="bg-transparent border-none outline-none text-sm font-medium text-gray-800 dark:text-gray-200"
               >
                 {areas.map((area) => (

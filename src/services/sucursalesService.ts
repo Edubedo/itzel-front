@@ -18,6 +18,32 @@ export interface Municipio {
   ck_estado: string;
 }
 
+export interface EjecutivoAsignado {
+  ck_usuario: string;
+  ck_area?: string;
+  ck_servicio?: string;
+  usuario?: {
+    ck_usuario: string;
+    s_nombre: string;
+    s_apellido_paterno?: string;
+    s_apellido_materno?: string;
+    s_correo_electronico?: string;
+  };
+  areaNombre?: string;
+  servicioNombre?: string;
+}
+
+export interface AsesorAsignado {
+  ck_usuario: string;
+  usuario?: {
+    ck_usuario: string;
+    s_nombre: string;
+    s_apellido_paterno?: string;
+    s_apellido_materno?: string;
+    s_correo_electronico?: string;
+  };
+}
+
 export interface SucursalData {
   ck_sucursal?: string;
   s_nombre_sucursal: string;
@@ -26,8 +52,8 @@ export interface SucursalData {
   s_telefono?: string;
   s_codigo_postal?: string;
   ck_estatus?: string;
-  ejecutivos?: number;
-  asesores?: number;
+  ejecutivos?: number | EjecutivoAsignado[];
+  asesores?: number | AsesorAsignado[];
   municipio?: {
     ck_municipio: string;
     s_municipio: string;

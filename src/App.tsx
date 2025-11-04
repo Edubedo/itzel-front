@@ -35,6 +35,7 @@ import FormularioCitas from "./views/operaciones/citas/formulario/FormularioCita
 import ConsultaTurnos from "./views/operaciones/turnos/consulta/ConsultaTurnos";
 import FormularioTurnos from "./views/operaciones/turnos/formulario/FormularioTurnos";
 import RecoverPassword from "./pages/AuthPages/RecoverPassword";
+import VerificarEmail from "./pages/AuthPages/VerificarEmail";
 import { LogoProvider } from "./contexts/LogoContext";
 import { LanguageProvider } from "./context/LanguageContext";
 
@@ -70,6 +71,7 @@ export default function App() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/" element={<Starter />} />
             <Route path="/reset-password" element={<RecoverPassword />} />
+            <Route path="/verificar-email" element={<VerificarEmail />} />
 
 
             {/* Rutas protegidas con layout */}

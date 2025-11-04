@@ -3,6 +3,7 @@ import { ClipboardList, CheckCircle, Play, X, Square, RotateCcw, Filter } from "
 import { useSucursalActiva } from '../../../../components/header/Header';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../context/LanguageContext';
+import Cookies from 'js-cookie';
 
 interface Turno {
   ck_turno: string;
@@ -16,6 +17,8 @@ interface Turno {
   t_tiempo_espera: string;
   d_fecha_atendido: string;
   nombre_asesor: string;
+  nombre_usuario_atendiendo?: string;
+  ck_usuario_atendiendo?: string;
 }
 
 interface Area {
@@ -23,6 +26,7 @@ interface Area {
   s_area: string;
   s_descripcion_area: string;
   c_codigo_area: string;
+  turnos_pendientes?: number;
 }
 
 function ConsultaTurnos() {
@@ -45,10 +49,11 @@ function ConsultaTurnos() {
   });
 
   useEffect(() => {
-    if (sucursalActiva) {
+    if (sucursalActiva && user) {
       cargarAreas();
+      setAreaSeleccionada(''); // Resetear selección al cambiar sucursal
     }
-  }, [sucursalActiva]);
+  }, [sucursalActiva, user]);
 
   const cargarDatos = useCallback(async () => {
     if (!sucursalActiva) return;
@@ -64,17 +69,38 @@ function ConsultaTurnos() {
   }, [ cargarDatos]);
 
   const cargarAreas = async () => {
-    if (!sucursalActiva) return;
+    if (!sucursalActiva || !user) return;
     try {
-      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/areas/${sucursalActiva.ck_sucursal}`);
+      const token = Cookies.get('authToken');
+      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/areas-usuario/${sucursalActiva.ck_sucursal}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const data = await response.json();
       if (data.success) {
-        setAreas(data.areas);
-        if (user?.tipo_usuario === 1) { 
+        const areasConDatos = data.areas || [];
+        // Agregar opción de "Todas" solo para administradores
+        if (user.tipo_usuario === 1) {
           setAreas([
             { ck_area: '', s_area: t("shifts.allAreas"), s_descripcion_area: t("shifts.viewAllShifts"), c_codigo_area: 'ALL' },
             ...data.areas
+            { 
+              ck_area: '', 
+              s_area: 'Todas las áreas', 
+              s_descripcion_area: 'Ver todos los turnos', 
+              c_codigo_area: 'ALL',
+              turnos_pendientes: areasConDatos.reduce((sum: number, area: Area) => sum + (area.turnos_pendientes || 0), 0)
+            },
+            ...areasConDatos
           ]);
+        } else {
+          setAreas(areasConDatos);
+          // Seleccionar la primera área automáticamente si hay áreas disponibles
+          if (areasConDatos.length > 0 && !areaSeleccionada) {
+            setAreaSeleccionada(areasConDatos[0].ck_area);
+          }
         }
       }
     } catch (error) {
@@ -83,22 +109,44 @@ function ConsultaTurnos() {
   };
 
   const cargarTurnos = async () => {
-    if (!sucursalActiva) return;
+    if (!sucursalActiva || !user) return;
     setLoading(true);
     try {
+      const token = Cookies.get('authToken');
       const params = new URLSearchParams({ sucursalId: sucursalActiva.ck_sucursal });
-      if (areaSeleccionada) params.append('areaId', areaSeleccionada);
+      // Solo agregar areaId si está seleccionada y no es vacía
+      if (areaSeleccionada && areaSeleccionada.trim() !== '') {
+        params.append('areaId', areaSeleccionada.trim());
+        console.log('🔍 Filtrando por área:', areaSeleccionada);
+      } else {
+        console.log('📋 Mostrando todas las áreas permitidas');
+      }
 
-      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/obtenerTurnos?${params}`);
+      console.log('🌐 URL de turnos:', `http://localhost:3001/api/operaciones/turnos/obtenerTurnos?${params}`);
+      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/obtenerTurnos?${params}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       const data = await response.json();
+      console.log('📊 Turnos recibidos:', data.turnos?.length || 0, 'turnos');
       
       if (data.success) {
-        const todosLosTurnos = data.turnos;
+        const todosLosTurnos = data.turnos || [];
         setTurnos(todosLosTurnos);
         
-        const turnoEnProceso = todosLosTurnos.find((t: Turno) => t.ck_estatus === 'PROCES');
+        // Buscar turno en proceso que esté siendo atendido por el usuario actual
+        const turnoEnProceso = todosLosTurnos.find((t: Turno) => 
+          t.ck_estatus === 'PROCES' && t.ck_usuario_atendiendo === user.uk_usuario
+        );
+        
+        // Filtrar solo turnos activos disponibles (no asignados a otros usuarios)
         const turnosActivos = todosLosTurnos
-          .filter((t: Turno) => t.ck_estatus === 'ACTIVO')
+          .filter((t: Turno) => 
+            t.ck_estatus === 'ACTIVO' && 
+            (!t.ck_usuario_atendiendo || t.ck_usuario_atendiendo === user.uk_usuario)
+          )
           .sort((a: Turno, b: Turno) => a.i_numero_turno - b.i_numero_turno);
         
         setTurnoActual(turnoEnProceso || null);
@@ -126,9 +174,13 @@ function ConsultaTurnos() {
     if (!turnoId || !user) return;
     setLoading(true);
     try {
+      const token = Cookies.get('authToken');
       const response = await fetch(`http://localhost:3001/api/operaciones/turnos/atender/${turnoId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ ck_usuario_atendio: user.uk_usuario }),
       });
       const data = await response.json();
@@ -136,6 +188,10 @@ function ConsultaTurnos() {
         await cargarTurnos();
         await cargarEstadisticas();
       } else alert(t("shifts.errorAttendingShift") + ': ' + data.message);
+        await cargarAreas(); // Recargar áreas para actualizar contadores
+      } else {
+        alert('Error al atender turno: ' + data.message);
+      }
     } catch (error) {
       console.error('Error al atender turno:', error);
       alert(t("shifts.errorAttendingShift"));
@@ -145,18 +201,26 @@ function ConsultaTurnos() {
   };
 
   const finalizarTurno = async (turnoId: string) => {
-    if (!turnoId) return;
+    if (!turnoId || !user) return;
     setLoading(true);
     try {
+      const token = Cookies.get('authToken');
       const response = await fetch(`http://localhost:3001/api/operaciones/turnos/finalizar/${turnoId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
       });
       const data = await response.json();
       if (data.success) {
         await cargarTurnos();
         await cargarEstadisticas();
       } else alert(t("shifts.errorFinishingShift") + ': ' + data.message);
+        await cargarAreas(); // Recargar áreas para actualizar contadores
+      } else {
+        alert('Error al finalizar turno: ' + data.message);
+      }
     } catch (error) {
       console.error('Error al finalizar turno:', error);
       alert(t("shifts.errorFinishingShift"));
@@ -193,22 +257,24 @@ function ConsultaTurnos() {
             <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{t("shifts.shiftManagement")}</h1>
             <p className="text-gray-600 dark:text-gray-300">
               {t("shifts.branch")}: {sucursalActiva.s_nombre_sucursal}
-              {user?.tipo_usuario === 1 && ` (${t("userRoles.1")})`}
-              {user?.tipo_usuario === 2 && ` (${t("userRoles.2")})`}
             </p>
           </div>
           
-          {user?.tipo_usuario === 1 && areas.length > 0 && (
+          {areas.length > 0 && (
             <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 px-3 py-2">
               <Filter className="w-4 h-4 text-gray-500 dark:text-gray-300" />
               <select 
                 value={areaSeleccionada}
-                onChange={(e) => setAreaSeleccionada(e.target.value)}
+                onChange={(e) => {
+                  console.log('🔄 Cambiando área de', areaSeleccionada, 'a', e.target.value);
+                  setAreaSeleccionada(e.target.value);
+                }}
                 className="bg-transparent border-none outline-none text-sm font-medium text-gray-800 dark:text-gray-200"
               >
                 {areas.map((area) => (
                   <option key={area.ck_area} value={area.ck_area}>
                     {area.s_area}
+                    {area.turnos_pendientes !== undefined && area.turnos_pendientes > 0 && ` (${area.turnos_pendientes} pendientes)`}
                   </option>
                 ))}
               </select>
@@ -309,7 +375,7 @@ function ConsultaTurnos() {
         )}
         
         <button
-          onClick={() => { cargarTurnos(); cargarEstadisticas(); }}
+          onClick={() => { cargarTurnos(); cargarEstadisticas(); cargarAreas(); }}
           disabled={loading}
           className="flex items-center gap-2 bg-[#1EC2EC] hover:bg-[#119ABD] disabled:bg-gray-400 text-gray-800 dark:text-white font-medium px-4 py-2 rounded-lg transition-colors disabled:cursor-not-allowed"
         >
@@ -351,8 +417,14 @@ function ConsultaTurnos() {
         </div>
         <div className="flex justify-between">
           <span className="font-medium text-gray-600 dark:text-gray-300">{t("shifts.attendedBy")}:</span>
-          <span className="text-gray-800 dark:text-gray-100">{turnoActual.nombre_asesor || 'Sistema'}</span>
+          <span className="text-gray-800 dark:text-gray-100">{turnoActual.nombre_usuario_atendiendo || turnoActual.nombre_asesor || 'Sistema'}</span>
         </div>
+        {turnoActual.s_area && (
+          <div className="flex justify-between">
+            <span className="font-medium text-gray-600 dark:text-gray-300">Área actual:</span>
+            <span className="text-gray-800 dark:text-gray-100 font-bold">{turnoActual.s_area}</span>
+          </div>
+        )}
         <div className="flex justify-between">
           <span className="font-medium text-gray-600 dark:text-gray-300">{t("shifts.start")}:</span>
           <span className="text-gray-800 dark:text-gray-100">

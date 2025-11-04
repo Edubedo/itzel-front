@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface Notificacion {
   id: string;
@@ -15,8 +16,8 @@ interface Notificacion {
 }
 
 interface NotificationDropdownProps {
-  agregarToast: (mensaje: string) => void;
-  sucursalSeleccionada: { ck_sucursal: string; nombre: string } | null;
+  agregarToast?: (mensaje: string) => void;
+  sucursalSeleccionada?: { ck_sucursal: string; nombre: string } | null;
 }
 
 interface Toast {
@@ -35,6 +36,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   const [toasts, setToasts] = useState<Toast[]>([]); 
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
   // Inicializar sucursal activa
   useEffect(() => {
@@ -125,7 +127,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       const prevIds = notificacionesGuardadas.map((n) => n.id);
       const nuevasNotificaciones = dataConLeidas.filter((n) => !prevIds.includes(n.id));
       nuevasNotificaciones.forEach((n) => {
-        agregarToastTemporal(`Nuevo turno: ${n.numero_turno} - ${n.s_servicio}`);
+        agregarToastTemporal(`${t("notifications.newShift")} ${n.numero_turno} - ${n.s_servicio}`);
       });
 
       setNotificaciones(dataConLeidas);
@@ -145,7 +147,9 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         prev.map((item) => (item.id === n.id ? { ...item, leida: true } : item))
       );
 
-      agregarToast(`Notificación leída: ${n.mensaje}`);
+      if (agregarToast) {
+        agregarToast(`${t("notifications.read")} ${n.mensaje}`);
+      }
     }
   };
 
@@ -182,14 +186,14 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           dark:bg-[#1E1E1E] dark:border-gray-700">
             <div className="px-4 py-3 border-b border-[#8ECAB2] bg-[#F2FBF7] rounded-t-2xl
             dark:bg-[#2A2A2A] dark:border-gray-700">
-              <h4 className="font-semibold text-[#5D7166] text-lg dark:text-white">Notificaciones</h4>
+              <h4 className="font-semibold text-[#5D7166] text-lg dark:text-white">{t("notifications.title")}</h4>
             </div>
 
             <div className="p-4 space-y-3">
               {nuevas.length > 0 && (
                 <>
                   <p className="text-sm font-semibold text-[#70A18E] uppercase tracking-wide dark:text-[#8ECAB2]">
-                    Nuevos Turnos
+                    {t("notifications.newShifts")}
                   </p>
                   {nuevas.map((n) => (
                     <div
@@ -202,7 +206,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                       onClick={() => handleClickNotificacion(n)}
                     >
                       <p className="text-sm font-medium">
-                        Turno <span className="font-bold">{n.numero_turno}</span> - {n.s_servicio} ({n.s_area})
+                        {t("notifications.shift")} <span className="font-bold">{n.numero_turno}</span> - {n.s_servicio} ({n.s_area})
                       </p>
                       <span className="text-xs text-[#5D7166] dark:text-gray-400">
                         {n.fechaLlegada?.toLocaleString()}
@@ -214,7 +218,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
               {nuevas.length === 0 && recordatorios.length === 0 && (
                 <p className="text-sm text-[#5D7166] text-center italic dark:text-gray-400">
-                  No hay notificaciones nuevas
+                  {t("notifications.noNewNotifications")}
                 </p>
               )}
             </div>
@@ -229,7 +233,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                 className="text-sm font-semibold text-[#70A18E] hover:text-[#5D7166] transition-colors duration-200
                 dark:text-[#8ECAB2] dark:hover:text-white"
               >
-                Ver todas las notificaciones
+                {t("notifications.viewAll")}
               </button>
             </div>
           </div>

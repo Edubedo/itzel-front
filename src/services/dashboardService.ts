@@ -14,11 +14,33 @@ export interface DashboardResponse<T> {
 
 
 export const dashboardService = {
+
+
+
+    // 📊 2. Turnos emitidos hoy agrupados por área
+  getTurnosPorAreaHoy: async (): Promise<
+    DashboardResponse<{
+      labels: string[];
+      series: { name: string; data: number[] }[];
+    }>
+  > => {
+    try {
+      const res = await axios.get(`${API_URL}/operaciones/turnos/por-area/hoy`);
+      return { success: true, data: res.data.data };
+    } catch (error: any) {
+      console.error("Error en getTurnosPorAreaHoy:", error);
+      return { success: false, data: { labels: [], series: [] }, message: error.message };
+    }
+  },
+
+
+  
   // 📊 1. Estadísticas de turnos del día
   getTurnosDelDia: async (): Promise<DashboardResponse<number>> => {
     try {
       const res = await axios.get(`${API_URL}/operaciones/turnos/estadisticas/hoy`);
-      return { success: true, data: res.data.data.total };
+      const total = Number(res.data.data.total) || 0; // 👈 convierte el string a número
+      return { success: true, data: total };
     } catch (error: any) {
       console.error("Error en getTurnosDelDia:", error);
       return { success: false, data: 0, message: error.message };

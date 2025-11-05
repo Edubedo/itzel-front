@@ -7,6 +7,7 @@ import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { useAuth } from "../../contexts/AuthContext";
 import { useLogo } from "../../contexts/LogoContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 
 export default function SignInForm() {
@@ -19,6 +20,7 @@ export default function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const { logoLight, logoDark } = useLogo();
+  const { t } = useLanguage();
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -45,7 +47,7 @@ export default function SignInForm() {
     e.preventDefault();
 
     if (!formData.s_usuario || !formData.s_contrasena) {
-      setError('Por favor completa todos los campos');
+      setError(t("auth.fillAllFields"));
       return;
     }
 
@@ -61,7 +63,7 @@ export default function SignInForm() {
       } else if (err.code === 'WRONG_PASSWORD') {
         setFieldError({ contrasena: err.message });
       } else {
-        setError(err.message || 'Credenciales Incorrectas');
+        setError(err.message || t("auth.invalidCredentials"));
       }
     } finally {
         setIsLoading(false); 
@@ -76,7 +78,7 @@ export default function SignInForm() {
           className="inline-flex items-center text-sm text-[#70A18E] transition-colors hover:text-[#547A6B] dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA]"
         >
           <ChevronLeftIcon className="size-5" />
-          Volver 
+          {t("auth.back")}
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -96,10 +98,10 @@ export default function SignInForm() {
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-bold text-[#0A1310] text-title-sm dark:text-white sm:text-title-md">
-              Iniciar Sesión
+              {t("auth.signIn")}
             </h1>
             <p className="text-sm text-[#547A6B] dark:text-gray-300">
-              Ingresa tu usuario/email y contraseña para acceder al sistema de turnos
+              {t("auth.loginDescription")}
             </p>
           </div>
 
@@ -113,12 +115,12 @@ export default function SignInForm() {
             <div className="space-y-6">
               <div>
                 <Label>
-                  Usuario o Email <span className="text-red-500">*</span>
+                  {t("auth.usernameOrEmail")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   name="s_usuario"
                   type="text"
-                  placeholder="usuario o correo@ejemplo.com"
+                  placeholder={t("auth.usernameOrEmailPlaceholder")}
                   value={formData.s_usuario}
                   onChange={handleInputChange}
                   disabled={isLoading}
@@ -130,13 +132,13 @@ export default function SignInForm() {
               </div>
               <div>
                 <Label>
-                  Contraseña <span className="text-red-500">*</span>
+                  {t("auth.password")} <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
                     name="s_contrasena"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Ingresa tu contraseña"
+                    placeholder={t("auth.passwordPlaceholder")}
                     value={formData.s_contrasena}
                     onChange={handleInputChange}
                     disabled={isLoading}
@@ -161,14 +163,14 @@ export default function SignInForm() {
                 <div className="flex items-center gap-3">
                   <Checkbox checked={isChecked} onChange={setIsChecked} />
                   <span className="block font-normal text-[#3A554B] dark:text-gray-300 text-theme-sm">
-                    Mantener sesión iniciada
+                    {t("auth.keepSessionActive")}
                   </span>
                 </div>
                 <Link
                   to="/reset-password"
                   className="text-sm text-[#70A18E] hover:text-[#547A6B] dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] transition-colors"
                 >
-                  ¿Olvidaste tu contraseña?
+                  {t("auth.forgotPassword")}
                 </Link>
               </div>
               <div>
@@ -181,7 +183,7 @@ export default function SignInForm() {
                   }}
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                  {isLoading ? t("auth.signingIn") : t("auth.signIn")}
                 </button>
               </div>
             </div>

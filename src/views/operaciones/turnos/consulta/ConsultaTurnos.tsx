@@ -51,7 +51,7 @@ function ConsultaTurnos() {
   useEffect(() => {
     if (sucursalActiva && user) {
       cargarAreas();
-      setAreaSeleccionada(''); // Resetear selección al cambiar sucursal
+      setAreaSeleccionada(''); 
     }
   }, [sucursalActiva, user]);
 
@@ -80,16 +80,17 @@ function ConsultaTurnos() {
       });
       const data = await response.json();
       if (data.success) {
-        const areasConDatos = data.areas || [];
-        // Agregar opción de "Todas" solo para administradores
+        const areasConDatos: Area[] = data.areas || [];
+
         if (user.tipo_usuario === 1) {
+          const totalPendientes = areasConDatos.reduce((sum: number, area: Area) => sum + (area.turnos_pendientes || 0), 0);
           setAreas([
-            { 
-              ck_area: '', 
-              s_area: 'Todas las áreas', 
-              s_descripcion_area: 'Ver todos los turnos', 
+            {
+              ck_area: '',
+              s_area: t("shifts.allAreas") || 'Todas las áreas',
+              s_descripcion_area: t("shifts.viewAllShifts") || 'Ver todos los turnos',
               c_codigo_area: 'ALL',
-              turnos_pendientes: areasConDatos.reduce((sum: number, area: Area) => sum + (area.turnos_pendientes || 0), 0)
+              turnos_pendientes: totalPendientes
             },
             ...areasConDatos
           ]);
@@ -112,7 +113,13 @@ function ConsultaTurnos() {
     try {
       const token = Cookies.get('authToken');
       const params = new URLSearchParams({ sucursalId: sucursalActiva.ck_sucursal });
-      if (areaSeleccionada) params.append('areaId', areaSeleccionada);
+      // Solo agregar areaId si está seleccionada y no es vacía
+      if (areaSeleccionada && areaSeleccionada.trim() !== '') {
+        params.append('areaId', areaSeleccionada.trim());
+        console.log('🔍 Filtrando por área:', areaSeleccionada);
+      } else {
+        console.log('📋 Mostrando todas las áreas permitidas');
+      }
 
       const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/obtenerTurnos?${params}`, {
         headers: {
@@ -121,6 +128,7 @@ function ConsultaTurnos() {
         }
       });
       const data = await response.json();
+      console.log('📊 Turnos recibidos:', data.turnos?.length || 0, 'turnos');
       
       if (data.success) {
         const todosLosTurnos = data.turnos || [];
@@ -179,11 +187,11 @@ function ConsultaTurnos() {
         await cargarEstadisticas();
         await cargarAreas(); // Recargar áreas para actualizar contadores
       } else {
-        alert('Error al atender turno: ' + data.message);
+        alert(t("shifts.errorAttendingShift") + ': ' + data.message);
       }
     } catch (error) {
       console.error('Error al atender turno:', error);
-      alert('Error al atender turno');
+      alert(t("shifts.errorAttendingShift"));
     } finally {
       setLoading(false);
     }
@@ -207,11 +215,11 @@ function ConsultaTurnos() {
         await cargarEstadisticas();
         await cargarAreas(); // Recargar áreas para actualizar contadores
       } else {
-        alert('Error al finalizar turno: ' + data.message);
+        alert(t("shifts.errorFinishingShift") + ': ' + data.message);
       }
     } catch (error) {
       console.error('Error al finalizar turno:', error);
-      alert('Error al finalizar turno');
+      alert(t("shifts.errorFinishingShift"));
     } finally {
       setLoading(false);
     }
@@ -253,11 +261,14 @@ function ConsultaTurnos() {
               <Filter className="w-4 h-4 text-gray-500 dark:text-gray-300" />
               <select 
                 value={areaSeleccionada}
-                onChange={(e) => setAreaSeleccionada(e.target.value)}
+                onChange={(e) => {
+                  console.log('🔄 Cambiando área de', areaSeleccionada, 'a', e.target.value);
+                  setAreaSeleccionada(e.target.value);
+                }}
                 className="bg-transparent border-none outline-none text-sm font-medium text-gray-800 dark:text-gray-200"
               >
                 {areas.map((area) => (
-                  <option key={area.ck_area} value={area.ck_area}>
+                  <option key={area.ck_area || 'all'} value={area.ck_area}>
                     {area.s_area}
                     {area.turnos_pendientes !== undefined && area.turnos_pendientes > 0 && ` (${area.turnos_pendientes} pendientes)`}
                   </option>
@@ -452,8 +463,8 @@ function ConsultaTurnos() {
           <div className="max-h-96 overflow-y-auto">
             {turnosSiguientes.length === 0 ? (
               <div className="p-6 text-center text-gray-500 dark:text-gray-400">
-                <p className="text-lg font-medium">No hay turnos en espera</p>
-                <p className="text-sm">Los nuevos turnos aparecerán aquí</p>
+                <p className="text-lg font-medium">{t("shifts.noWaitingShifts")}</p>
+                <p className="text-sm">{t("shifts.newShiftsWillAppear")}</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-200 dark:divide-gray-600">
@@ -479,7 +490,7 @@ function ConsultaTurnos() {
                       <div className="text-right">
                         <div className="text-sm font-medium text-gray-700 dark:text-gray-300">{turno.c_codigo_area}</div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">{turno.t_tiempo_espera}</div>
-                        {index === 0 && <div className="text-xs font-medium text-[#405950] dark:text-gray-200 mt-1">Siguiente</div>}
+                        {index === 0 && <div className="text-xs font-medium text-[#405950] dark:text-gray-200 mt-1">{t("shifts.next")}</div>}
                       </div>
                     </div>
                     
@@ -490,7 +501,7 @@ function ConsultaTurnos() {
                           disabled={loading || turnoActual !== null}
                           className="w-full bg-[#457B68] hover:bg-[#65AC93] disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:cursor-not-allowed text-sm"
                         >
-                          Atender Ahora
+                          {t("shifts.attendNow")}
                         </button>
                       </div>
                     )}
@@ -504,10 +515,10 @@ function ConsultaTurnos() {
 
       {/* Información adicional */}
       <div className="mt-6 bg-[#D3EEE3] dark:bg-gray-700 rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Información del Sistema</h3>
+        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">{t("shifts.systemInfo")}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700 dark:text-gray-300">
           <div>
-            <strong>Última actualización:</strong><br />
+            <strong>{t("shifts.lastUpdate")}</strong><br />
             {new Date().toLocaleString('es-MX')}
           </div>
         </div>

@@ -6,6 +6,7 @@ import Input from "../form/input/InputField";
 import Button from "../ui/button/Button";
 import { authService } from "../../services/authService";
 import { useLogo } from "../../contexts/LogoContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function ForgottenPassword() {
   const [step, setStep] = useState(1);
@@ -17,6 +18,7 @@ export default function ForgottenPassword() {
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
   const { logoLight, logoDark } = useLogo();
+  const { t } = useLanguage();
 
 
 
@@ -28,7 +30,7 @@ export default function ForgottenPassword() {
       await authService.sendRecoveryCode(email);
       setStep(2);
     } catch (err: any) {
-      setError(err.message || "Error al enviar el código");
+      setError(err.message || t("auth.errorSendingCode"));
     } finally {
       setIsLoading(false);
     }
@@ -41,9 +43,9 @@ export default function ForgottenPassword() {
     try {
       await authService.verifyRecoveryCode(email, code, newPassword);
       setStep(3);
-      setSuccess("¡Contraseña cambiada exitosamente!");
+      setSuccess(t("auth.passwordChangedSuccess"));
     } catch (err: any) {
-      setError(err.message || "Error al cambiar la contraseña");
+      setError(err.message || t("auth.errorChangingPassword"));
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +59,7 @@ export default function ForgottenPassword() {
           className="inline-flex items-center text-sm text-[#70A18E] transition-colors hover:text-[#547A6B] dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA]"
         >
           <ChevronLeftIcon className="size-5" />
-          Volver al inicio
+          {t("auth.backToSignIn")}
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -69,10 +71,10 @@ export default function ForgottenPassword() {
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-bold text-[#0A1310] text-title-sm dark:text-white sm:text-title-md">
-              Recuperar contraseña
+              {t("auth.recoverPassword")}
             </h1>
             <p className="text-sm text-[#547A6B] dark:text-gray-300">
-              Ingresa tu correo para recibir el código de recuperación
+              {t("auth.recoverPasswordDescription")}
             </p>
           </div>
 
@@ -92,12 +94,12 @@ export default function ForgottenPassword() {
               <div className="space-y-6">
                 <div>
                   <Label>
-                    Correo electrónico <span className="text-red-500">*</span>
+                    {t("auth.email")} <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     name="email"
                     type="email"
-                    placeholder="correo@ejemplo.com"
+                    placeholder={t("auth.emailPlaceholder")}
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     disabled={isLoading}
@@ -114,7 +116,7 @@ export default function ForgottenPassword() {
                     }}
                     disabled={isLoading || !email}
                   >
-                    {isLoading ? "Enviando..." : "Enviar código"}
+                    {isLoading ? t("auth.sending") : t("auth.sendCode")}
                   </button>
                 </div>
               </div>
@@ -126,12 +128,12 @@ export default function ForgottenPassword() {
               <div className="space-y-6">
                 <div>
                   <Label>
-                    Código recibido <span className="text-red-500">*</span>
+                    {t("auth.receivedCode")} <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     name="code"
                     type="text"
-                    placeholder="Código"
+                    placeholder={t("auth.codePlaceholder")}
                     value={code}
                     onChange={e => setCode(e.target.value)}
                     disabled={isLoading}
@@ -140,12 +142,12 @@ export default function ForgottenPassword() {
                 </div>
                 <div>
                   <Label>
-                    Nueva contraseña <span className="text-red-500">*</span>
+                    {t("auth.newPassword")} <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     name="newPassword"
                     type="password"
-                    placeholder="Nueva contraseña"
+                    placeholder={t("auth.newPasswordPlaceholder")}
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
                     disabled={isLoading}
@@ -162,7 +164,7 @@ export default function ForgottenPassword() {
                     }}
                     disabled={isLoading || !code || !newPassword}
                   >
-                    {isLoading ? "Verificando..." : "Cambiar contraseña"}
+                    {isLoading ? t("auth.verifying") : t("auth.changePassword")}
                   </button>
                 </div>
               </div>
@@ -177,8 +179,8 @@ export default function ForgottenPassword() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-[#0A1310] dark:text-white mb-2">¡Contraseña cambiada exitosamente!</h3>
-                <p className="text-sm text-[#547A6B] dark:text-gray-300">Ya puedes iniciar sesión con tu nueva contraseña</p>
+                <h3 className="text-lg font-bold text-[#0A1310] dark:text-white mb-2">{t("auth.passwordChangedSuccess")}</h3>
+                <p className="text-sm text-[#547A6B] dark:text-gray-300">{t("auth.passwordChangedMessage")}</p>
               </div>
               <div className="mt-6">
                 <Button
@@ -189,7 +191,7 @@ export default function ForgottenPassword() {
                     boxShadow: '0 4px 15px -5px rgba(112, 161, 142, 0.4)'
                   }}
                 >
-                  Ir a iniciar sesión
+                  {t("auth.goToSignIn")}
                 </Button>
               </div>
             </div>

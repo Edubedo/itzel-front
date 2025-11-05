@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import Button from "../ui/button/Button";
 import { Bell, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface Notificacion {
   id: string;
@@ -19,6 +20,7 @@ export default function VistaNotificaciones() {
   const navigate = useNavigate();
   const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
   const [filtro, setFiltro] = useState<"todas" | "noLeidas" | "leidas">("todas");
+  const { t } = useLanguage();
 
   // Limpieza diaria de notificaciones leídas
   useEffect(() => {
@@ -84,12 +86,12 @@ export default function VistaNotificaciones() {
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Bell className="w-6 h-6 text-[#6B8E7E] dark:text-[#9DC3B4]" /> Notificaciones
+          <Bell className="w-6 h-6 text-[#6B8E7E] dark:text-[#9DC3B4]" /> {t("notifications.title")}
         </h1>
         <button
           onClick={() => navigate(-1)}
           className="text-[#6B8E7E] hover:text-[#56766A] dark:text-[#9DC3B4] dark:hover:text-[#B9E3D5] font-bold text-4xl"
-          title="Cerrar"
+          title={t("notifications.close")}
         >
           ×
         </button>
@@ -99,9 +101,9 @@ export default function VistaNotificaciones() {
       <div className="flex gap-3 border-b border-gray-200 dark:border-gray-700 pb-2 mt-2">
         {(["todas", "noLeidas", "leidas"] as const).map((tipo) => {
           const labels: Record<typeof tipo, string> = {
-            todas: "Todas",
-            noLeidas: "No leídas",
-            leidas: "Leídas",
+            todas: t("notifications.all"),
+            noLeidas: t("notifications.unread"),
+            leidas: t("notifications.readLabel"),
           };
           const activo = filtro === tipo;
           return (
@@ -158,7 +160,7 @@ export default function VistaNotificaciones() {
                       handleMarcarComoLeida(n);
                     }}
                   >
-                    <CheckCircle className="w-4 h-4 mr-2" /> Marcar como leída
+                    <CheckCircle className="w-4 h-4 mr-2" /> {t("notifications.markAsRead")}
                   </Button>
                 )}
               </div>
@@ -166,7 +168,7 @@ export default function VistaNotificaciones() {
           ))
         ) : (
           <p className="text-gray-500 dark:text-gray-400 text-center">
-            No hay notificaciones
+            {t("notifications.noNotifications")}
           </p>
         )}
       </div>

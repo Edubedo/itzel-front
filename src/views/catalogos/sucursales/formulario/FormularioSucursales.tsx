@@ -3,7 +3,7 @@ import PageMeta from "../../../../components/common/PageMeta";
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import ComponentCard from "../../../../components/common/ComponentCard";
 import { usuariosService, Usuario } from "../../../../services/usuariosService";
-import { sucursalesService, SucursalFormData, Estado, Municipio, SucursalData } from "../../../../services/sucursalesService";
+import { sucursalesService, SucursalFormData, Estado, Municipio, SucursalData, EjecutivoAsignado, AsesorAsignado } from "../../../../services/sucursalesService";
 import { areasService, Area } from "../../../../services/areasService";
 import axios from "axios";
 import { FaTimesCircle } from "react-icons/fa";
@@ -68,12 +68,15 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
             try {
                 // Cargar usuarios
                 const respuestaUsuarios = await usuariosService.getAllUsuarios();
+                let ejecutivosList: Usuario[] = [];
+                let asesoresList: Usuario[] = [];
+                
                 if (respuestaUsuarios.success && Array.isArray(respuestaUsuarios.data.usuarios)) {
                     const todosLosUsuarios: Usuario[] = respuestaUsuarios.data.usuarios;
-                    const ejecutivos = todosLosUsuarios.filter(u => u.i_tipo_usuario == 2);
-                    const asesores = todosLosUsuarios.filter(u => u.i_tipo_usuario == 3);
-                    setListaCompletaEjecutivos(ejecutivos);
-                    setListaCompletaAsesores(asesores);
+                    ejecutivosList = todosLosUsuarios.filter(u => u.i_tipo_usuario == 2);
+                    asesoresList = todosLosUsuarios.filter(u => u.i_tipo_usuario == 3);
+                    setListaCompletaEjecutivos(ejecutivosList);
+                    setListaCompletaAsesores(asesoresList);
                 }
 
                 // Cargar estados
@@ -89,23 +92,97 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                 }
 
                 // Si estamos editando, cargar los datos
-                if (branchToEdit) {
-                    setFormData({
-                        s_nombre_sucursal: branchToEdit.s_nombre_sucursal,
-                        s_domicilio: branchToEdit.s_domicilio || "",
-                        s_telefono: branchToEdit.s_telefono || "",
-                        s_codigo_postal: branchToEdit.s_codigo_postal || "",
-                        ck_municipio: branchToEdit.ck_municipio || ""
-                    });
+                if (branchToEdit && branchToEdit.ck_sucursal) {
+                    try {
+                        // Cargar datos completos de la sucursal con ejecutivos y asesores
+                        const respuestaSucursal = await sucursalesService.getSucursalById(branchToEdit.ck_sucursal);
+                        
+                        if (respuestaSucursal.success && respuestaSucursal.sucursal) {
+                            const sucursalCompleta = respuestaSucursal.sucursal;
+                            
+                            setFormData({
+                                s_nombre_sucursal: sucursalCompleta.s_nombre_sucursal,
+                                s_domicilio: sucursalCompleta.s_domicilio || "",
+                                s_telefono: sucursalCompleta.s_telefono || "",
+                                s_codigo_postal: sucursalCompleta.s_codigo_postal || "",
+                                ck_municipio: sucursalCompleta.ck_municipio || ""
+                            });
 
-                    // Si hay municipio, cargar el estado y municipios
-                    if (branchToEdit.municipio) {
-                        setEstadoSeleccionado(branchToEdit.municipio.estado?.s_estado || "");
-                        // Cargar municipios del estado
-                        if (branchToEdit.municipio.estado?.ck_estado) {
-                            const respuestaMunicipios = await sucursalesService.getMunicipiosByEstado(branchToEdit.municipio.estado.ck_estado);
-                            if (respuestaMunicipios.success) {
-                                setMunicipiosDisponibles(respuestaMunicipios.municipios);
+                            // Si hay municipio, cargar el estado y municipios
+                            if (sucursalCompleta.municipio) {
+                                setEstadoSeleccionado(sucursalCompleta.municipio.estado?.s_estado || "");
+                                // Cargar municipios del estado
+                                if (sucursalCompleta.municipio.estado?.ck_estado) {
+                                    const respuestaMunicipios = await sucursalesService.getMunicipiosByEstado(sucursalCompleta.municipio.estado.ck_estado);
+                                    if (respuestaMunicipios.success) {
+                                        setMunicipiosDisponibles(respuestaMunicipios.municipios);
+                                    }
+                                }
+                            }
+
+                            // Cargar ejecutivos existentes - usar las variables locales que ya se cargaron
+                            if (Array.isArray(sucursalCompleta.ejecutivos) && sucursalCompleta.ejecutivos.length > 0) {
+                                const ejecutivosFormateados = sucursalCompleta.ejecutivos.map((ejec: EjecutivoAsignado) => {
+                                    // Buscar en la lista de ejecutivos que acabamos de cargar
+                                    const usuarioCompleto = ejecutivosList.find(u => u.ck_usuario === ejec.ck_usuario);
+                                    return {
+                                        ...(usuarioCompleto || ejec.usuario || {}),
+                                        ck_area: ejec.ck_area || "",
+                                        ck_servicio: ejec.ck_servicio || "",
+                                        areaNombre: ejec.areaNombre || "",
+                                        servicioNombre: ejec.servicioNombre || ""
+                                    } as Usuario & { ck_area?: string; ck_servicio?: string; areaNombre?: string; servicioNombre?: string };
+                                });
+                                setEjecutivosAsignados(ejecutivosFormateados);
+                            }
+
+                            // Cargar asesores existentes - usar las variables locales que ya se cargaron
+                            if (Array.isArray(sucursalCompleta.asesores) && sucursalCompleta.asesores.length > 0) {
+                                const asesoresFormateados = sucursalCompleta.asesores.map((ases: AsesorAsignado) => {
+                                    // Buscar en la lista de asesores que acabamos de cargar
+                                    const usuarioCompleto = asesoresList.find(u => u.ck_usuario === ases.ck_usuario);
+                                    return usuarioCompleto || ases.usuario || {};
+                                }).filter(Boolean) as Usuario[];
+                                setAsesoresAsignados(asesoresFormateados);
+                            }
+                        } else {
+                            // Fallback al método anterior si no hay respuesta completa
+                            setFormData({
+                                s_nombre_sucursal: branchToEdit.s_nombre_sucursal,
+                                s_domicilio: branchToEdit.s_domicilio || "",
+                                s_telefono: branchToEdit.s_telefono || "",
+                                s_codigo_postal: branchToEdit.s_codigo_postal || "",
+                                ck_municipio: branchToEdit.ck_municipio || ""
+                            });
+
+                            if (branchToEdit.municipio) {
+                                setEstadoSeleccionado(branchToEdit.municipio.estado?.s_estado || "");
+                                if (branchToEdit.municipio.estado?.ck_estado) {
+                                    const respuestaMunicipios = await sucursalesService.getMunicipiosByEstado(branchToEdit.municipio.estado.ck_estado);
+                                    if (respuestaMunicipios.success) {
+                                        setMunicipiosDisponibles(respuestaMunicipios.municipios);
+                                    }
+                                }
+                            }
+                        }
+                    } catch (sucursalError) {
+                        console.error("Error al cargar datos de sucursal:", sucursalError);
+                        // Si falla cargar la sucursal completa, usar datos básicos
+                        setFormData({
+                            s_nombre_sucursal: branchToEdit.s_nombre_sucursal,
+                            s_domicilio: branchToEdit.s_domicilio || "",
+                            s_telefono: branchToEdit.s_telefono || "",
+                            s_codigo_postal: branchToEdit.s_codigo_postal || "",
+                            ck_municipio: branchToEdit.ck_municipio || ""
+                        });
+
+                        if (branchToEdit.municipio) {
+                            setEstadoSeleccionado(branchToEdit.municipio.estado?.s_estado || "");
+                            if (branchToEdit.municipio.estado?.ck_estado) {
+                                const respuestaMunicipios = await sucursalesService.getMunicipiosByEstado(branchToEdit.municipio.estado.ck_estado);
+                                if (respuestaMunicipios.success) {
+                                    setMunicipiosDisponibles(respuestaMunicipios.municipios);
+                                }
                             }
                         }
                     }
@@ -113,7 +190,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
 
             } catch (error) {
                 console.error("Error al cargar datos:", error);
-                setErrorMessage("No se pudieron cargar los datos iniciales.");
+                setErrorMessage("No se pudieron cargar los datos iniciales. Por favor, intente nuevamente.");
                 setShowError(true);
             } finally {
                 setLoading(false);
@@ -460,6 +537,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                         </div>
                     </div>
                 </ComponentCard>
+
 
                 <ComponentCard title="Asignar Ejecutivos a Sucursal">
                     <div className="flex items-end gap-4">

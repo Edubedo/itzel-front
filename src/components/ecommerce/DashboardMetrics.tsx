@@ -4,6 +4,8 @@ import Badge from "../../components/ui/badge/Badge";
 import { turnosService } from "../../services/turnosService";
 import { useLanguage } from "../../context/LanguageContext";
 import { clientesService } from "../../services/clientesService";
+import dashboardService from "../../services/dashboardService";
+
 
 export default function DashboardMetrics() {
   const [clientesHoy, setClientesHoy] = useState<number>(0);
@@ -16,14 +18,14 @@ export default function DashboardMetrics() {
     const fetchData = async () => {
       try {
         const resClientes = await clientesService.getClientesDelDia();
-        const resTurnos = await turnosService.getTurnosDelDia();
+        const resTurnos = await dashboardService.getTurnosDelDia();
 
         if (resClientes.success && resClientes.data) {
           setClientesHoy(resClientes.data.total || 0);
         }
 
-        if (resTurnos.success && resTurnos.data) {
-          setTurnosHoy(resTurnos.data.total || 0);
+        if (resTurnos.success ) {
+          setTurnosHoy(resTurnos.data|| 0);
         }
       } catch (error) {
         console.error("Error cargando métricas del dashboard:", error);

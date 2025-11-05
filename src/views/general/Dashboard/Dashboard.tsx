@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Clipboard, Volume2, Clock, ChevronDown, Users, Zap, MapPin } from "lucide-react";
 import { useSucursalActiva } from '../../../components/header/Header';
+import { getApiBaseUrlWithApi } from '../../../../utils/util_baseUrl';
 
 interface Turno {
   ck_turno: string;
@@ -92,7 +93,7 @@ const Dashboard: React.FC = () => {
 
   const cargarSucursales = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/operaciones/turnos/sucursales');
+      const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/sucursales`);
       const data = await response.json();
 
       if (data.success) {
@@ -115,7 +116,7 @@ const Dashboard: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/api/operaciones/turnos/obtenerTurnos?sucursalId=${sucursalActiva.ck_sucursal}`
+        `${getApiBaseUrlWithApi()}/operaciones/turnos/obtenerTurnos?sucursalId=${sucursalActiva.ck_sucursal}`
       );
       const data = await response.json();
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getApiBaseUrlWithApi } from '../../../utils/util_baseUrl';
 
 interface Notificacion {
   id: string;
@@ -90,7 +91,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:3001/api/operaciones/turnos/notificaciones?sucursalId=${sucursalActiva.ck_sucursal}`,
+        `${getApiBaseUrlWithApi()}/operaciones/turnos/notificaciones?sucursalId=${sucursalActiva.ck_sucursal}`,
         {
           cache: "no-store",
           headers: { Authorization: `Bearer ${token}` },

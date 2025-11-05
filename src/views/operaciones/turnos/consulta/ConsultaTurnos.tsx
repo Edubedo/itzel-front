@@ -4,7 +4,7 @@ import { useSucursalActiva } from '../../../../components/header/Header';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../context/LanguageContext';
 import Cookies from 'js-cookie';
-
+  import { getApiBaseUrlWithApi } from '../../../../../utils/util_baseUrl';
 interface Turno {
   ck_turno: string;
   i_numero_turno: number;
@@ -72,7 +72,7 @@ function ConsultaTurnos() {
     if (!sucursalActiva || !user) return;
     try {
       const token = Cookies.get('authToken');
-      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/areas-usuario/${sucursalActiva.ck_sucursal}`, {
+      const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/areas-usuario/${sucursalActiva.ck_sucursal}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -114,7 +114,7 @@ function ConsultaTurnos() {
       const params = new URLSearchParams({ sucursalId: sucursalActiva.ck_sucursal });
       if (areaSeleccionada) params.append('areaId', areaSeleccionada);
 
-      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/obtenerTurnos?${params}`, {
+      const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/obtenerTurnos?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -152,7 +152,7 @@ function ConsultaTurnos() {
   const cargarEstadisticas = async () => {
     if (!sucursalActiva) return;
     try {
-      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/estadisticas?sucursalId=${sucursalActiva.ck_sucursal}`);
+      const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/estadisticas?sucursalId=${sucursalActiva.ck_sucursal}`);
       const data = await response.json();
       if (data.success) setEstadisticas(data.estadisticas);
     } catch (error) {
@@ -165,7 +165,7 @@ function ConsultaTurnos() {
     setLoading(true);
     try {
       const token = Cookies.get('authToken');
-      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/atender/${turnoId}`, {
+      const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/atender/${turnoId}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -194,7 +194,7 @@ function ConsultaTurnos() {
     setLoading(true);
     try {
       const token = Cookies.get('authToken');
-      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/finalizar/${turnoId}`, {
+      const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/finalizar/${turnoId}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',

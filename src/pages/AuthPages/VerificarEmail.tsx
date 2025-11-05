@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { getApiBaseUrlWithApi } from '../../../utils/util_baseUrl';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || getApiBaseUrlWithApi();
 
 interface VerificationStatus {
   loading: boolean;

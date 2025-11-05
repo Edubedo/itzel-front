@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getApiBaseUrlWithApi } from '../../utils/util_baseUrl';
 
 export interface Notificacion {
   id: number;
@@ -11,7 +12,7 @@ export interface Notificacion {
   servicio?: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || getApiBaseUrlWithApi();
 
 // Configurar axios con interceptors
 const api = axios.create({

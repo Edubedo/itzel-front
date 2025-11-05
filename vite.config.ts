@@ -20,7 +20,7 @@ export default defineConfig({
       '/api': {
         target: 'https://itzel-back-production.up.railway.app',  // Backend de producción
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: true,
       },
     },
   },

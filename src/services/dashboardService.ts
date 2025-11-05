@@ -2,9 +2,9 @@
 
 import axios from "axios";
 import { ServicioStatsResponse } from "./serviciosService"; // ✅ usar tipos existentes
+import { getApiBaseUrlWithApi } from '../../utils/util_baseUrl';
 
-
-const API_URL = "http://localhost:3001/api";  // Asegúrate de que coincida con tu backend
+const API_URL = import.meta.env.VITE_API_URL || getApiBaseUrlWithApi();
 
 export interface DashboardResponse<T> {
   success: boolean;

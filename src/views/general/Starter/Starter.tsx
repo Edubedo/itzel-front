@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router';
 import QRCode from 'qrcode';
 import ContractValidationModal from '../../../components/modals/ContractValidationModal';
 import { useLanguage } from '../../../context/LanguageContext';
+import { getApiBaseUrlWithApi } from '../../../../utils/util_baseUrl';
 
 interface Sucursal {
   ck_sucursal: string;
@@ -169,7 +170,7 @@ export default function Starter() {
     if (!sucursalSeleccionada) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/areas/${sucursalSeleccionada.ck_sucursal}?esCliente=${esCliente ? 1 : 0}`);
+      const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/areas/${sucursalSeleccionada.ck_sucursal}?esCliente=${esCliente ? 1 : 0}`);
       const data = await response.json();
 
       if (data.success) {
@@ -185,7 +186,7 @@ export default function Starter() {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/api/operaciones/turnos/servicios/${areaSeleccionada.ck_area}?esCliente=${esCliente ? 1 : 0}`
+        `${getApiBaseUrlWithApi()}/operaciones/turnos/servicios/${areaSeleccionada.ck_area}?esCliente=${esCliente ? 1 : 0}`
       );
       const data = await response.json();
 
@@ -258,7 +259,7 @@ export default function Starter() {
 
     
     try {
-      const response = await fetch('http://localhost:3001/api/operaciones/turnos/crear', {
+      const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/crear`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -295,7 +296,7 @@ export default function Starter() {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/api/operaciones/turnos/ticket/${turnoCreado.ck_turno}/pdf`,
+        `${getApiBaseUrlWithApi()}/operaciones/turnos/ticket/${turnoCreado.ck_turno}/pdf`,
         {
           method: 'GET',
           headers: {
@@ -330,7 +331,7 @@ export default function Starter() {
 
     try {
       // URL que apunta al endpoint de descarga del PDF
-      const downloadUrl = `http://localhost:3001/api/operaciones/turnos/ticket/${turnoCreado.ck_turno}/pdf`;
+      const downloadUrl = `${getApiBaseUrlWithApi()}/operaciones/turnos/ticket/${turnoCreado.ck_turno}/pdf`;
 
       // Generar el código QR
       const qrDataURL = await QRCode.toDataURL(downloadUrl, {
@@ -360,7 +361,7 @@ export default function Starter() {
     try {
       // Llamamos a la API pública
       const response = await fetch(
-        `http://localhost:3001/api/operaciones/turnos/cancelar/${turnoCreado.ck_turno}`,
+        `${getApiBaseUrlWithApi()}/operaciones/turnos/cancelar/${turnoCreado.ck_turno}`,
         {
           method: 'DELETE',
         }

@@ -6,6 +6,7 @@ import ServiciosTableOne from "../../components/tables/BasicTables/ServiciosTabl
 import { useAuth } from "../../contexts/AuthContext";
 import { areasService, Area } from "../../services/areasService";
 import { useLanguage } from "../../context/LanguageContext";
+import { getApiBaseUrlWithApi } from "../../../utils/util_baseUrl";
 
 interface ServiciosTablesProps {
   titleTable?: string;
@@ -39,7 +40,7 @@ export default function ServiciosTables({ titleTable = "Catálogo de servicios" 
   useEffect(() => {
     const getAllServicios = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/catalogos/servicios');
+        const response = await fetch(`${getApiBaseUrlWithApi()}/catalogos/servicios`);
         const data = await response.json();
         const serviciosData = data.getServicios || data || [];
         setServicios(serviciosData);

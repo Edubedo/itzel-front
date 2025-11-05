@@ -8,6 +8,7 @@ import { areasService, Area } from "../../../../services/areasService";
 import axios from "axios";
 import { FaTimesCircle } from "react-icons/fa";
 import Alert from "../../../../components/ui/alert/Alert";
+import { getApiBaseUrlWithApi } from "../../../../../utils/util_baseUrl";
 
 // Definición de las props del componente
 interface FormularioProps {
@@ -155,7 +156,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                 return;
             }
             try {
-                const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+                const baseURL = import.meta.env.VITE_API_URL || getApiBaseUrlWithApi();
                 const resp = await axios.get(`${baseURL}/operaciones/turnos/servicios/${ejecutivoActual.ck_area}`);
                 if (resp.data?.success) {
                     setServiciosDisponiblesEjecutivo(resp.data.servicios.map((s: any) => ({ ck_servicio: s.ck_servicio, s_servicio: s.s_servicio })));

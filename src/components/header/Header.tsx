@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { ChevronDown, MapPin } from 'lucide-react';
 import { useLogo } from "../../contexts/LogoContext";
 import LanguageToggleButton from '../common/LanguageToggleButton';
+import { getApiBaseUrlWithApi } from '../../../utils/util_baseUrl';
 
 interface Sucursal {
   ck_sucursal: string;
@@ -66,8 +67,8 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title, showL
       const token = Cookies.get('authToken');
       // Si hay token usamos endpoint filtrado; si no, usamos público
       const url = token
-        ? 'http://localhost:3001/api/operaciones/turnos/sucursales-usuario'
-        : 'http://localhost:3001/api/operaciones/turnos/sucursales';
+        ? `${getApiBaseUrlWithApi()}/operaciones/turnos/sucursales-usuario`
+        : `${getApiBaseUrlWithApi()}/operaciones/turnos/sucursales`;
       const response = await fetch(url, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });

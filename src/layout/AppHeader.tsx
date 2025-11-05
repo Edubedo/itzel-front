@@ -9,6 +9,7 @@ import UserDropdown from "../components/header/UserDropdown";
 import { ChevronDown, MapPin, CheckCircle } from "lucide-react";
 import { useLogo } from "../contexts/LogoContext";
 import { useLanguage } from "../context/LanguageContext";
+import { getApiBaseUrlWithApi } from "../../utils/util_baseUrl";
 
 interface Sucursal {
   ck_sucursal: string;
@@ -52,7 +53,7 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
 
     setIsSearching(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/busqueda-general?query=${encodeURIComponent(query)}`);
+      const response = await fetch(`${getApiBaseUrlWithApi()}/busqueda-general?query=${encodeURIComponent(query)}`);
       const data = await response.json();
       setSearchResults(data.resultados || []);
       setShowResults(true);
@@ -176,8 +177,8 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
     try {
       const token = Cookies.get('authToken');
       const url = token
-        ? 'http://localhost:3001/api/operaciones/turnos/sucursales-usuario'
-        : 'http://localhost:3001/api/operaciones/turnos/sucursales';
+        ? `${getApiBaseUrlWithApi()}/operaciones/turnos/sucursales-usuario`
+        : `${getApiBaseUrlWithApi()}/operaciones/turnos/sucursales`;
       const response = await fetch(url, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });

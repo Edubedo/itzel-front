@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import PageMeta from '../../../components/common/PageMeta';
 import Header from '../../../components/header/Header';
 import { useNavigate } from 'react-router';
+import { getApiBaseUrlWithApi } from '../../../utils/util_baseUrl';
 
 interface Sucursal {
   ck_sucursal: string;
@@ -163,7 +164,7 @@ export default function Starter() {
     if (!sucursalSeleccionada) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/operaciones/turnos/areas/${sucursalSeleccionada.ck_sucursal}?esCliente=${esCliente ? 1 : 0}`);
+      const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/areas/${sucursalSeleccionada.ck_sucursal}?esCliente=${esCliente ? 1 : 0}`);
       const data = await response.json();
 
       if (data.success) {
@@ -179,7 +180,7 @@ export default function Starter() {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/api/operaciones/turnos/servicios/${areaSeleccionada.ck_area}?esCliente=${esCliente ? 1 : 0}`
+        `${getApiBaseUrlWithApi()}/operaciones/turnos/servicios/${areaSeleccionada.ck_area}?esCliente=${esCliente ? 1 : 0}`
       );
       const data = await response.json();
 
@@ -235,7 +236,7 @@ export default function Starter() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3001/api/operaciones/turnos/crear', {
+      const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/crear`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -271,7 +272,7 @@ export default function Starter() {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/api/operaciones/turnos/ticket/${turnoCreado.ck_turno}/pdf`,
+        `${getApiBaseUrlWithApi()}/operaciones/turnos/ticket/${turnoCreado.ck_turno}/pdf`,
         {
           method: 'GET',
           headers: {

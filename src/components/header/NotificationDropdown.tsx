@@ -1,11 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
 import { getApiBaseUrlWithApi } from '../../../utils/util_baseUrl';
-=======
 import { useLanguage } from "../../context/LanguageContext";
->>>>>>> faf4fe1ba2b473f7c064da7932a799bb842d0510
 
 interface Notificacion {
   id: string;

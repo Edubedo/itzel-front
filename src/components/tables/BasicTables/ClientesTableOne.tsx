@@ -196,9 +196,9 @@ export default function ClienteTableOne({
   };
 
   // Manejar edición
-  const handleEdit = (clienteId: string) => {
-    window.location.href = `/catalogos/clientes/formulario/?id=${clienteId}`;
-  };
+  // const handleEdit = (clienteId: string) => {
+  //   window.location.href = `/catalogos/clientes/formulario/?id=${clienteId}`;
+  // };
 
   // Función para reintentar carga
   const handleRetry = () => {
@@ -467,7 +467,7 @@ export default function ClienteTableOne({
                   </TableCell>
                   <TableCell className="px-4 py-3 text-start">
                     <div className="flex space-x-2">
-                      <button
+                      {/* <button
                         onClick={() => handleEdit(cliente.ck_cliente)}
                         className="p-2 text-red hover:text-[#547A6B] hover:bg-[#B7F2DA]/20 rounded-md transition-colors dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] dark:hover:bg-[#8ECAB2]/10"
                         title={t("clients.editClient")}
@@ -476,7 +476,7 @@ export default function ClienteTableOne({
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
-                      </button>
+                      </button> */}
                       <button
                         onClick={() => handleShowWarning(
                           cliente.ck_cliente,

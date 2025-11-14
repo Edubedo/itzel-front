@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getApiBaseUrlWithApi } from '../../../utils/util_baseUrl';
+import { getApiBaseUrlWithApi } from "../../../utils/util_baseUrl.js";
 import { useLanguage } from "../../context/LanguageContext";
 
 interface Notificacion {
@@ -33,13 +33,11 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
   const [abierto, setAbierto] = useState(false);
   const [sucursalActiva, setSucursalActiva] = useState<{ ck_sucursal: string; nombre: string } | null>(null);
-
-  const [toasts, setToasts] = useState<Toast[]>([]); 
+  const [toasts, setToasts] = useState<Toast[]>([]);
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
 
-  // Inicializar sucursal activa
   useEffect(() => {
     if (sucursalSeleccionada) {
       setSucursalActiva(sucursalSeleccionada);
@@ -55,21 +53,17 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     }
   }, [sucursalSeleccionada]);
 
-  // Cerrar dropdown al hacer clic fuera
+  // Cerrar al hacer click fuera (solo en desktop)
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setAbierto(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Función para agregar toast temporal
   const agregarToastTemporal = (mensaje: string) => {
     const id = Date.now().toString();
     setToasts((prev) => [...prev, { id, mensaje }]);
@@ -78,7 +72,6 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     }, 6000);
   };
 
-  // Cargar notificaciones al cambiar sucursal
   useEffect(() => {
     if (sucursalActiva) {
       cargarNotificaciones();
@@ -89,7 +82,6 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
   const cargarNotificaciones = async () => {
     if (!sucursalActiva) return;
-
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -102,20 +94,27 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       );
 
       const data = await response.json();
-
       if (!Array.isArray(data.notificaciones)) {
         console.error("No hay notificaciones en la respuesta:", data);
         setNotificaciones([]);
         return;
       }
 
+      const hoy = new Date().toDateString();
+      const notificacionesHoy = data.notificaciones.filter((n: Notificacion) => {
+        const fechaNotif = new Date(n.fecha).toDateString();
+        return fechaNotif === hoy;
+      });
+
       const notificacionesGuardadas: Notificacion[] = JSON.parse(
         localStorage.getItem("notificacionesDropdown") || "[]"
       );
 
-      const leidasLocal: string[] = JSON.parse(localStorage.getItem("notificacionesLeidas") || "[]");
+      const leidasLocal: string[] = JSON.parse(
+        localStorage.getItem("notificacionesLeidas") || "[]"
+      );
 
-      const dataConLeidas = data.notificaciones.map((n: Notificacion) => {
+      const dataConLeidas = notificacionesHoy.map((n: Notificacion) => {
         const encontrada = notificacionesGuardadas.find((ng) => ng.id === n.id);
         return {
           ...n,
@@ -124,7 +123,6 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         };
       });
 
-      // Mostrar toast de nuevos turnos
       const prevIds = notificacionesGuardadas.map((n) => n.id);
       const nuevasNotificaciones = dataConLeidas.filter((n) => !prevIds.includes(n.id));
       nuevasNotificaciones.forEach((n) => {
@@ -171,86 +169,110 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           onClick={() => setAbierto(!abierto)}
           className="relative flex items-center justify-center w-10 h-10 rounded-full border border-[#8ECAB2] hover:bg-[#E6F4EE] transition-colors duration-200
           dark:border-gray-600 dark:hover:bg-gray-700"
+          aria-label="Notificaciones"
         >
           <Bell className="h-5 w-5 text-[#5D7166] dark:text-white" />
           {noLeidas.length > 0 && (
             <span className="absolute top-1.5 right-1.5 inline-flex items-center justify-center 
-              w-4 h-4 text-[10px] font-bold leading-none text-white bg-[#70A18E] rounded-full shadow-md">
+              w-4 h-4 text-[10px] font-bold leading-none text-white bg-[#70A18E] rounded-full shadow-sm">
               {noLeidas.length > 9 ? "9+" : noLeidas.length}
             </span>
           )}
         </button>
 
-        {/* Dropdown */}
+        {/* Dropdown responsivo */}
         {abierto && (
-          <div className="absolute right-0 mt-3 w-96 bg-white shadow-lg rounded-2xl z-50 max-h-[420px] overflow-y-auto border border-[#8ECAB2]
-          dark:bg-[#1E1E1E] dark:border-gray-700">
-            <div className="px-4 py-3 border-b border-[#8ECAB2] bg-[#F2FBF7] rounded-t-2xl
-            dark:bg-[#2A2A2A] dark:border-gray-700">
-              <h4 className="font-semibold text-[#5D7166] text-lg dark:text-white">{t("notifications.title")}</h4>
-            </div>
+          <div className="fixed inset-0 z-50 lg:absolute lg:inset-auto lg:right-0 lg:top-12 flex items-center justify-center">
+            <div
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm lg:hidden"
+              onClick={() => setAbierto(false)}
+            />
+            <div
+              className="relative w-[95vw] sm:w-[90vw] md:w-[85vw] lg:w-96 max-w-3xl
+                         bg-white dark:bg-[#1E1E1E]
+                         shadow-lg rounded-2xl border border-[#8ECAB2] dark:border-gray-700
+                         flex flex-col max-h-[90vh] overflow-hidden"
+              role="dialog"
+              aria-modal="true"
+            >
+              {/* Header */}
+              <div className="px-4 py-3 flex items-center justify-between border-b border-[#8ECAB2] bg-[#F2FBF7] dark:bg-[#2A2A2A]">
+                <h4 className="font-semibold text-[#5D7166] dark:text-white text-lg">
+                  {t("notifications.title")}
+                </h4>
+                <button
+                  onClick={() => setAbierto(false)}
+                  className="text-[#5D7166] dark:text-white hover:text-[#70A18E] lg:hidden"
+                >
+                  ✕
+                </button>
+              </div>
 
-            <div className="p-4 space-y-3">
-              {nuevas.length > 0 && (
-                <>
-                  <p className="text-sm font-semibold text-[#70A18E] uppercase tracking-wide dark:text-[#8ECAB2]">
-                    {t("notifications.newShifts")}
+              {/* Cuerpo */}
+              <div className="p-4 space-y-3 overflow-y-auto flex-1">
+                {nuevas.length > 0 && (
+                  <>
+                    <p className="text-sm font-semibold text-[#70A18E] uppercase tracking-wide">
+                      {t("notifications.newShifts")}
+                    </p>
+                    {nuevas.map((n) => (
+                      <div
+                        key={n.id}
+                        onClick={() => handleClickNotificacion(n)}
+                        className={`p-3 rounded-xl cursor-pointer border transition-all duration-150 
+                          ${
+                            n.leida
+                              ? "bg-[#F2FBF7] border-[#8ECAB2] text-[#5D7166] dark:bg-[#2A2A2A] dark:border-gray-700 dark:text-gray-300"
+                              : "bg-[#E6F4EE] border-[#70A18E] text-[#2E4A3E] hover:bg-[#D4EEE4] dark:bg-[#344E41] dark:border-[#8ECAB2] dark:text-white"
+                          }`}
+                      >
+                        <p className="text-sm font-medium">
+                          {t("notifications.shift")}{" "}
+                          <span className="font-bold">{n.numero_turno}</span> - {n.s_servicio}{" "}
+                          <span className="text-xs text-[#5D7166] dark:text-gray-400">({n.s_area})</span>
+                        </p>
+                        <span className="text-xs text-[#5D7166] dark:text-gray-400">
+                          {n.fechaLlegada?.toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </>
+                )}
+
+                {nuevas.length === 0 && recordatorios.length === 0 && (
+                  <p className="text-sm text-center text-[#5D7166] italic dark:text-gray-400">
+                    {t("notifications.noNewNotifications")}
                   </p>
-                  {nuevas.map((n) => (
-                    <div
-                      key={n.id}
-                      className={`p-3 rounded-xl cursor-pointer border transition-all duration-200 ${
-                        n.leida
-                          ? "bg-[#F2FBF7] border-[#8ECAB2] text-[#5D7166] dark:bg-[#2A2A2A] dark:border-gray-700 dark:text-gray-300"
-                          : "bg-[#E6F4EE] border-[#70A18E] text-[#2E4A3E] hover:bg-[#D4EEE4] hover:border-[#5D7166] dark:bg-[#344E41] dark:border-[#8ECAB2] dark:text-white dark:hover:bg-[#3B5B4C]"
-                      }`}
-                      onClick={() => handleClickNotificacion(n)}
-                    >
-                      <p className="text-sm font-medium">
-                        {t("notifications.shift")} <span className="font-bold">{n.numero_turno}</span> - {n.s_servicio} ({n.s_area})
-                      </p>
-                      <span className="text-xs text-[#5D7166] dark:text-gray-400">
-                        {n.fechaLlegada?.toLocaleString()}
-                      </span>
-                    </div>
-                  ))}
-                </>
-              )}
+                )}
+              </div>
 
-              {nuevas.length === 0 && recordatorios.length === 0 && (
-                <p className="text-sm text-[#5D7166] text-center italic dark:text-gray-400">
-                  {t("notifications.noNewNotifications")}
-                </p>
-              )}
-            </div>
-
-            <div className="px-4 py-3 border-t border-[#8ECAB2] bg-[#F2FBF7] rounded-b-2xl text-center
-            dark:border-gray-700 dark:bg-[#2A2A2A]">
-              <button
-                onClick={() => {
-                  setAbierto(false);
-                  navigate("/notificaciones");
-                }}
-                className="text-sm font-semibold text-[#70A18E] hover:text-[#5D7166] transition-colors duration-200
-                dark:text-[#8ECAB2] dark:hover:text-white"
-              >
-                {t("notifications.viewAll")}
-              </button>
+              {/* Footer */}
+              <div className="px-4 py-3 border-t border-[#8ECAB2] bg-[#F2FBF7] dark:border-gray-700 dark:bg-[#2A2A2A] text-center">
+                <button
+                  onClick={() => {
+                    setAbierto(false);
+                    navigate("/notificaciones");
+                  }}
+                  className="text-sm font-semibold text-[#70A18E] hover:text-[#5D7166] transition-colors dark:text-[#8ECAB2] dark:hover:text-white"
+                >
+                  {t("notifications.viewAll")}
+                </button>
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      {/*Toasts*/}
-      <div className="fixed bottom-4 right-4 flex flex-col space-y-2 z-50">
-        {toasts.map((t, index) => (
+      {/* Toasts */}
+      <div className="fixed bottom-4 right-4 flex flex-col space-y-3 z-50">
+        {toasts.map((t, idx) => (
           <div
             key={t.id}
-            className="px-4 py-3 rounded-xl shadow-lg text-sm font-medium transition-all duration-300"
+            className="px-4 py-3 rounded-lg shadow-md text-sm font-medium"
             style={{
               backgroundColor: "#70A18E",
               color: "white",
-              transform: `translateY(-${index * 60}px)`,
+              transform: `translateY(-${idx * 64}px)`,
             }}
           >
             {t.mensaje}

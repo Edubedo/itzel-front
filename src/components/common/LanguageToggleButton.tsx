@@ -1,26 +1,33 @@
 import React from "react";
 import { useLanguage } from "../../context/LanguageContext";
+import { SpanishIcon, EnglishIcon } from "./LanguageIcons";
 
 const LanguageToggleButton: React.FC = () => {
   const { language, toggleLanguage, t } = useLanguage();
-  
-  // Mostrar el código del idioma actual
-  const currentLang = language === "es" ? "ES" : "EN";
+
   const nextLanguage = language === "es" ? "English" : "Español";
 
   return (
     <button
       onClick={toggleLanguage}
-      className="flex items-center justify-center w-10 h-10 border border-gray-200 rounded-lg z-99999 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 bg-white dark:bg-gray-900"
+      className="
+        flex items-center justify-center
+        w-10 h-10 rounded-lg
+        border border-gray-300 dark:border-gray-700
+        bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800
+        transition-all duration-300 group
+      "
       title={`${t("language.change")} (${nextLanguage})`}
       aria-label={`${t("language.change")} - ${nextLanguage}`}
     >
-      <span className="text-sm font-bold text-gray-700 dark:text-gray-200">
-        {currentLang}
-      </span>
-      <span className="sr-only">
-        {language === "es" ? t("language.english") : t("language.spanish")}
-      </span>
+      <div className="transition-transform duration-500 group-hover:scale-110">
+        {language === "es" ? (
+  <SpanishIcon className="w-6 h-6 text-gray-800 dark:text-gray-200" /> 
+      ) : (
+  <EnglishIcon className="w-6 h-6 text-gray-800 dark:text-gray-200" />
+      )}
+
+      </div>
     </button>
   );
 };

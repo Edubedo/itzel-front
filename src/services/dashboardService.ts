@@ -96,7 +96,12 @@ export const dashboardService = {
     }
   },
 
- 
+  getAreasFrecuentadasHoy: async () => {
+  const res = await axios.get(`${API_URL}/operaciones/areas/mas-frecuentadas/hoy`);
+  return res.data;
+},
+
+
 };
 
 export default dashboardService;

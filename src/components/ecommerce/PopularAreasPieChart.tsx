@@ -5,21 +5,7 @@ import { MoreDotIcon } from "../../icons";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { useLanguage } from "../../context/LanguageContext";
-
-
-
-
-// Simula una llamada a backend para obtener áreas más visitadas
-// Puedes reemplazar esto con una llamada real a tu API
-async function fetchPopularAreas() {
-  // Ejemplo estático: { área: cantidad de visitas }
-  return [
-    { area: "Facturacion", visitas: 120 },
-    { area: "Contabilidad", visitas: 90 },
-    { area: "Registros", visitas: 60 },
-    { area: "Cobranza", visitas: 45 },
-  ];
-}
+import dashboardService from "../../services/dashboardService";
 
 export default function PopularAreasPieChart() {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,41 +14,49 @@ export default function PopularAreasPieChart() {
 
   useEffect(() => {
     async function loadData() {
-      const data = await fetchPopularAreas();
-      setAreas(data);
+      try {
+        const res = await dashboardService.getAreasFrecuentadasHoy();
+
+        console.log("DATOS RECIBIDOS RAW:", JSON.stringify(res, null, 2));
+
+
+        // Backend devuelve { success, data }
+        if (res.success) {
+          setAreas(res.data);
+        } else {
+          setAreas([]);
+        }
+      } catch (error) {
+        console.error("Error al obtener áreas más visitadas:", error);
+        setAreas([]);
+      }
     }
 
     loadData();
   }, []);
 
-
-  
   const options: ApexOptions = {
-    chart: {
-      type: "pie",
-    },
+    chart: { type: "pie" },
     labels: areas.map((item) => item.area),
+    legend: { position: "bottom" },
+  plotOptions: {
+    pie: {
+      expandOnClick: true,
+      customScale: 1
+    }
+  },
     responsive: [
       {
         breakpoint: 480,
         options: {
-          chart: {
-            width: 280,
-          },
-          legend: {
-            position: "bottom",
-          },
+          chart: { width: 280 },
+          legend: { position: "bottom" },
         },
       },
     ],
-    legend: {
-      position: "bottom",
-    },
   };
 
-  const series = areas.map((item) => item.visitas);
-
-
+  const series = areas.map((item) => Number(item.visitas));
 
 
   return (
@@ -77,10 +71,12 @@ export default function PopularAreasPieChart() {
               {t("dashboard.basedOnRecentClientVisits")}
             </p>
           </div>
+
           <div className="relative inline-block">
             <button onClick={() => setIsOpen(!isOpen)}>
               <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
             </button>
+
             <Dropdown
               isOpen={isOpen}
               onClose={() => setIsOpen(false)}
@@ -90,20 +86,27 @@ export default function PopularAreasPieChart() {
                 onItemClick={() => setIsOpen(false)}
                 className="text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5"
               >
-{t("common.viewMore")}
+                {t("common.viewMore")}
               </DropdownItem>
             </Dropdown>
           </div>
         </div>
 
         <div className="mt-6 flex justify-center">
-  {series.length > 0 ? (
-    <Chart options={options} series={series} type="pie" width="100%" height={320} />
-  ) : (
-    <p className="text-gray-500">{t("dashboard.loadingChart")}</p>
-  )}
+  <div className="w-full" style={{ height: "350px" }}>
+    {series.length > 0 ? (
+      <Chart
+        options={options}
+        series={series}
+        type="pie"
+        width="100%"
+        height="100%"
+      />
+    ) : (
+      <p className="text-gray-500">{t("dashboard.loadingChart")}</p>
+    )}
+  </div>
 </div>
-
       </div>
     </div>
   );

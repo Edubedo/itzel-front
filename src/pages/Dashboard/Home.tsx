@@ -12,7 +12,7 @@ import DashboardEjecutivo from "../../components/ecommerce/DashboardEjecutivo.ts
 
 export default function Home() {
   const { user } = useAuth();
-  const tipo = user?.tipo_usuario;
+  const tipo = user?.tipo_usuario;  
 
   // 👉 Si es asesor (3), muestra su propio dashboard
   if (tipo === 3) {
@@ -37,14 +37,14 @@ export default function Home() {
     </div>
 
       {/* Sección de gráficas */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
         <StatisticsChart />
         <PopularAreasPieChart />
-        <BranchesDemographicCard />
+        
       </div>
 
       {/* Tabla de pedidos recientes */}
-   
+
     </div>
   );
 }

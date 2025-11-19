@@ -96,11 +96,30 @@ export const dashboardService = {
     }
   },
 
+
   getAreasFrecuentadasHoy: async () => {
   const res = await axios.get(`${API_URL}/operaciones/areas/mas-frecuentadas/hoy`);
   return res.data;
 },
 
+
+
+
+    // 📊 4. Turnos atendidos y cancelados por día
+  getTurnosAtendidosCanceladosPorDia: async (): Promise<
+    DashboardResponse<{
+      labels: string[];
+      series: { name: string; data: number[] }[];
+    }>
+  > => {
+    try {
+      const res = await axios.get(`${API_URL}/operaciones/turnos/atendidos-cancelados-dia`);
+      return { success: true, data: res.data.data };
+    } catch (error: any) {
+      console.error("Error en getTurnosAtendidosCanceladosPorDia:", error);
+      return { success: false, data: { labels: [], series: [] }, message: error.message };
+    }
+  },
 
 };
 

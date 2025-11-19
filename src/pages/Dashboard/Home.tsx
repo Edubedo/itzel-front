@@ -8,7 +8,7 @@ import PopularAreasPieChart from "../../components/ecommerce/PopularAreasPieChar
 import BranchesDemographicCard from "../../components/ecommerce/BranchesDemographicCard.tsx";
 //  nuevo import opcional para el dashboard de asesor
 import DashboardAsesor from "../../components/ecommerce/DashboardAsesor";
-import DashboardEjecutivo from "../../components/ecommerce/DashboardEjecutivo.tsx";
+import DashboardEjecutivo from "../../components/ecommerce/DashboardEjecutivo";
 
 export default function Home() {
   const { user } = useAuth();

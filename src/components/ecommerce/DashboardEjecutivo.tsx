@@ -20,3 +20,4 @@ const DashboardEjecutivo: React.FC = () => {
 };
 
 export default DashboardEjecutivo;
+

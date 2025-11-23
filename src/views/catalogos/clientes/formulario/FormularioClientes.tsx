@@ -138,7 +138,7 @@ function FormularioClientes() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
           setTimeout(() => {
             window.location.href = '/catalogos/clientes/consulta/';
-          }, 3000);
+          }, 5000);
         } else {
           alert(response?.message || 'Error al guardar cliente');
         }

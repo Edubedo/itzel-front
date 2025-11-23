@@ -97,6 +97,14 @@ export const dashboardService = {
   },
 
 
+  getAreasFrecuentadasHoy: async () => {
+  const res = await axios.get(`${API_URL}/operaciones/areas/mas-frecuentadas/hoy`);
+  return res.data;
+},
+
+
+
+
     // 📊 4. Turnos atendidos y cancelados por día
   getTurnosAtendidosCanceladosPorDia: async (): Promise<
     DashboardResponse<{
@@ -113,8 +121,6 @@ export const dashboardService = {
     }
   },
 
-
- 
 };
 
 export default dashboardService;

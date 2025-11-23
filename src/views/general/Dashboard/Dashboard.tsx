@@ -1,9 +1,10 @@
-// dashboard.tsx - Modern Dashboard with Glassmorphism Design
 
 import React, { useState, useEffect } from "react";
-import { Clipboard, Volume2, Clock, ChevronDown, Users, Zap, MapPin } from "lucide-react";
+import { Clipboard, Volume2, Clock, Users, Zap, MapPin } from "lucide-react";
 import { useSucursalActiva } from '../../../components/header/Header';
 import { getApiBaseUrlWithApi } from '../../../../utils/util_baseUrl';
+import Cookies from 'js-cookie';
+import { useLogo } from '../../../contexts/LogoContext';
 
 interface Turno {
   ck_turno: string;
@@ -29,15 +30,14 @@ interface Sucursal {
 
 const Dashboard: React.FC = () => {
   const [time, setTime] = useState(new Date());
-  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [sucursalActiva, setSucursalActiva] = useState<Sucursal | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const [turnoActual, setTurnoActual] = useState<Turno | null>(null);
   const [turnosSiguientes, setTurnosSiguientes] = useState<Turno[]>([]);
 
   // Usar el hook personalizado para obtener la sucursal activa
   const sucursalSeleccionada = useSucursalActiva();
+  const { logoLight } = useLogo();
 
   // Actualizar tiempo cada segundo
   useEffect(() => {
@@ -45,26 +45,9 @@ const Dashboard: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Cerrar dropdown al hacer clic fuera
+  // Cargar sucursal guardada primero (antes de cargar sucursales)
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (isDropdownOpen && !target.closest('.dropdown-container')) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isDropdownOpen]);
-
-  // Cargar sucursales
-  useEffect(() => {
-    cargarSucursales();
-  }, []);
-
-  // Usar la sucursal del header o cargar de localStorage
-  useEffect(() => {
+    // Prioridad: 1) sucursal del header, 2) localStorage
     if (sucursalSeleccionada) {
       setSucursalActiva(sucursalSeleccionada);
     } else {
@@ -72,13 +55,15 @@ const Dashboard: React.FC = () => {
       const sucursalGuardada = localStorage.getItem('sucursal_seleccionada');
       if (sucursalGuardada) {
         try {
-          setSucursalActiva(JSON.parse(sucursalGuardada));
+          const sucursal = JSON.parse(sucursalGuardada);
+          setSucursalActiva(sucursal);
         } catch (error) {
           console.error('Error al cargar sucursal guardada:', error);
         }
       }
     }
   }, [sucursalSeleccionada]);
+
 
   // Cargar turnos cuando cambie la sucursal
   useEffect(() => {
@@ -91,37 +76,31 @@ const Dashboard: React.FC = () => {
     }
   }, [sucursalActiva]);
 
-  const cargarSucursales = async () => {
-    try {
-      const response = await fetch(`${getApiBaseUrlWithApi()}/operaciones/turnos/sucursales`);
-      const data = await response.json();
-
-      if (data.success) {
-        setSucursales(data.sucursales);
-
-        // Si no hay sucursal activa, seleccionar la primera
-        if (!sucursalActiva && data.sucursales.length > 0) {
-          const primeraSucursal = data.sucursales[0];
-          setSucursalActiva(primeraSucursal);
-          localStorage.setItem('sucursal_seleccionada', JSON.stringify(primeraSucursal));
-        }
-      }
-    } catch (error) {
-      console.error('Error al cargar sucursales:', error);
-    }
-  };
 
   const cargarTurnos = async () => {
     if (!sucursalActiva) return;
 
     try {
+      const token = Cookies.get('authToken');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+
+      // Agregar token si está disponible
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(
-        `${getApiBaseUrlWithApi()}/operaciones/turnos/obtenerTurnos?sucursalId=${sucursalActiva.ck_sucursal}`
+        `${getApiBaseUrlWithApi()}/operaciones/turnos/obtenerTurnos?sucursalId=${sucursalActiva.ck_sucursal}&dashboard=true`,
+        {
+          headers
+        }
       );
       const data = await response.json();
 
       if (data.success) {
-        const turnos = data.turnos;
+        const turnos = data.turnos || [];
 
         // Separar turno actual (en proceso) de los siguientes (activos)
         const turnoEnProceso = turnos.find((t: Turno) => t.ck_estatus === 'PROCES');
@@ -130,20 +109,18 @@ const Dashboard: React.FC = () => {
 
         setTurnoActual(turnoEnProceso || null);
         setTurnosSiguientes(turnosActivos);
+      } else {
+        console.error('Error en la respuesta del servidor:', data.message);
+        setTurnoActual(null);
+        setTurnosSiguientes([]);
       }
     } catch (error) {
       console.error('Error al cargar turnos:', error);
+      setTurnoActual(null);
+      setTurnosSiguientes([]);
     }
   };
 
-  const seleccionarSucursal = (sucursal: Sucursal) => {
-    setSucursalActiva(sucursal);
-    localStorage.setItem('sucursal_seleccionada', JSON.stringify(sucursal));
-    setIsDropdownOpen(false);
-
-    // Emitir evento para sincronizar con otros componentes
-    window.dispatchEvent(new CustomEvent('sucursalCambiada', { detail: sucursal }));
-  };
 
   // Formato de hora (12h con AM/PM)
   const formattedTime = time.toLocaleTimeString("es-MX", {
@@ -160,6 +137,30 @@ const Dashboard: React.FC = () => {
     year: "numeric",
   });
 
+  // Función helper para formatear tiempo de espera
+  const formatearTiempoEspera = (tiempoEspera: string | null | undefined): string => {
+    if (!tiempoEspera) return '--:--';
+
+    // Si es un string de tiempo (HH:MM:SS o HH:MM), extraer solo horas y minutos
+    const tiempoMatch = tiempoEspera.match(/(\d{1,2}):(\d{2})(?::\d{2})?/);
+    if (tiempoMatch) {
+      const horas = parseInt(tiempoMatch[1], 10);
+      const minutos = tiempoMatch[2];
+      return `${String(horas).padStart(2, '0')}:${minutos}`;
+    }
+
+    // Si es una fecha válida, formatearla
+    const fecha = new Date(tiempoEspera);
+    if (!isNaN(fecha.getTime())) {
+      return fecha.toLocaleTimeString('es-MX', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    return '--:--';
+  };
+
   return (
     <div className="flex flex-col h-screen overflow-hidden"
       style={{
@@ -172,96 +173,32 @@ const Dashboard: React.FC = () => {
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#3A554B] opacity-50 pointer-events-none"></div>
 
-        {/* Left side - Selector de sucursal - Compacto */}
-        <div className="relative z-10 dropdown-container">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="group flex items-center space-x-1.5 md:space-x-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-2 md:px-3 py-1.5 rounded-lg transition-all duration-300 border border-white/20 hover:border-[#B7F2DA]/40 shadow-lg"
-          >
-            <div className="p-0.5 bg-[#8ECAB2]/20 rounded group-hover:bg-[#8ECAB2]/30 transition-colors">
+        {/* Left side - Indicador de sucursal (solo lectura) */}
+        <div className="relative z-10">
+          <div className="flex items-center space-x-1.5 md:space-x-2 bg-white/10 backdrop-blur-sm text-white px-2 md:px-3 py-1.5 rounded-lg border border-white/20 shadow-lg cursor-default">
+            <div className="p-0.5 bg-[#8ECAB2]/20 rounded">
               <MapPin className="w-3.5 h-3.5 text-[#B7F2DA]" />
             </div>
             <span className="font-semibold text-xs md:text-sm">
-              {sucursalActiva ? sucursalActiva.s_nombre_sucursal : 'Seleccionar sucursal'}
+              {sucursalActiva ? sucursalActiva.s_nombre_sucursal : 'Sucursal no seleccionada'}
             </span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-          </button>
-
-          {/* Dropdown - Modernized */}
-          {isDropdownOpen && (
-            <div className="absolute left-0 mt-2 w-80 backdrop-blur-xl bg-white/95 rounded-2xl overflow-hidden border border-white/20 z-[9999] max-h-80 shadow-2xl">
-              {/* Header del dropdown */}
-              <div className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] p-3 border-b border-white/20">
-                <h3 className="text-white font-bold text-sm flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Sucursales Disponibles
-                </h3>
-              </div>
-
-              {/* Lista de sucursales */}
-              <div className="max-h-64 overflow-y-auto">
-                {sucursales.length === 0 ? (
-                  <div className="p-6 text-gray-500 text-center">
-                    <MapPin className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                    <p className="text-sm">No hay sucursales disponibles</p>
-                  </div>
-                ) : (
-                  sucursales.map((sucursal) => (
-                    <button
-                      key={sucursal.ck_sucursal}
-                      onClick={() => seleccionarSucursal(sucursal)}
-                      className={`w-full text-left px-4 py-3 transition-all duration-200 border-b border-gray-100 last:border-b-0 group ${sucursalActiva?.ck_sucursal === sucursal.ck_sucursal
-                        ? 'bg-gradient-to-r from-[#B7F2DA]/30 to-[#8ECAB2]/20 border-l-4 border-l-[#70A18E]'
-                        : 'hover:bg-gradient-to-r hover:from-gray-50 hover:to-white'
-                        }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="font-semibold text-gray-900 flex items-center gap-2">
-                            {sucursal.s_nombre_sucursal}
-                            {sucursalActiva?.ck_sucursal === sucursal.ck_sucursal && (
-                              <span className="px-2 py-0.5 bg-[#70A18E] text-white text-[10px] rounded-full font-bold">
-                                ACTIVA
-                              </span>
-                            )}
-                          </div>
-                          {sucursal.s_domicilio && (
-                            <div className="text-xs text-gray-600 mt-1">
-                              📍 {sucursal.s_domicilio}
-                            </div>
-                          )}
-                          {(sucursal.s_municipio || sucursal.s_estado) && (
-                            <div className="text-xs text-gray-500 mt-0.5">
-                              {sucursal.s_municipio && sucursal.s_estado
-                                ? `${sucursal.s_municipio}, ${sucursal.s_estado}`
-                                : sucursal.s_municipio || sucursal.s_estado
-                              }
-                            </div>
-                          )}
-                        </div>
-                        {sucursalActiva?.ck_sucursal === sucursal.ck_sucursal && (
-                          <div className="flex-shrink-0 text-[#70A18E]">
-                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
+          </div>
         </div>
 
-        {/* Center - Title - Compacto */}
+        {/* Center - Title con Logo - Compacto */}
         <div className="relative z-10 hidden lg:block">
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <div className="absolute inset-0 bg-[#8ECAB2] blur-lg opacity-40"></div>
-              <div className="relative w-8 h-8 bg-gradient-to-br from-[#70A18E] to-[#8ECAB2] rounded-lg flex items-center justify-center shadow-lg">
-                <Zap className="w-5 h-5 text-white" />
+          <div className="flex items-center gap-3">
+            {/* Logo ITZEL con efecto glassmorphism */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-[#8ECAB2] rounded-full blur-md opacity-40 group-hover:opacity-60 transition-opacity"></div>
+              <div className="relative w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center overflow-hidden shadow-lg border-2 border-[#B7F2DA]/30 group-hover:border-[#B7F2DA]/60 transition-all duration-300 group-hover:scale-110">
+                {logoLight && (
+                  <img
+                    src={logoLight}
+                    alt="ITZEL Logo"
+                    className="w-full h-full object-cover p-1.5"
+                  />
+                )}
               </div>
             </div>
             <div>
@@ -269,7 +206,7 @@ const Dashboard: React.FC = () => {
                 PANEL DE TURNOS
               </h1>
               <p className="text-[10px] text-[#B7F2DA] font-medium">
-                Sistema ITZEL • En Tiempo Real
+                Sistema ITZEL • Lista de Espera
               </p>
             </div>
           </div>
@@ -302,11 +239,6 @@ const Dashboard: React.FC = () => {
                   <h2 className="text-base md:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] to-[#70A18E] uppercase tracking-tight">
                     Turno Actual
                   </h2>
-                  {sucursalActiva && (
-                    <p className="text-xs text-gray-700 font-medium">
-                      📍 {sucursalActiva.s_nombre_sucursal}
-                    </p>
-                  )}
                 </div>
                 <div className="relative">
                   <div className="absolute inset-0 bg-[#70A18E] blur-md opacity-40"></div>
@@ -330,10 +262,21 @@ const Dashboard: React.FC = () => {
             <div className="absolute top-0 right-0 w-40 h-40 bg-[#8ECAB2]/10 rounded-full -mr-20 -mt-20 blur-2xl"></div>
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#B7F2DA]/20 rounded-full -ml-16 -mb-16 blur-xl"></div>
 
+            {/* Logo ITZEL como watermark sutil */}
+            {logoLight && (
+              <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-15 transition-opacity duration-300">
+                <img
+                  src={logoLight}
+                  alt="ITZEL Logo"
+                  className="w-20 h-20 object-contain"
+                />
+              </div>
+            )}
+
             <div className="relative flex flex-col items-center justify-center h-full py-4">
               <div className="inline-block px-4 py-1 bg-white/40 backdrop-blur-sm rounded-full border border-white/30 mb-2">
                 <span className="text-xs font-bold text-[#3A554B] uppercase tracking-wider">
-                  Turno Actual
+                  Turno en Atención
                 </span>
               </div>
 
@@ -418,7 +361,7 @@ const Dashboard: React.FC = () => {
                   <div className="flex items-start gap-2">
                     <span className="text-xs font-bold text-[#70A18E] min-w-[90px]">Hora llegada:</span>
                     <span className="text-xs text-gray-700 font-medium">
-                      {new Date(turnoActual.t_tiempo_espera).toLocaleTimeString('es-MX')}
+                      {formatearTiempoEspera(turnoActual.t_tiempo_espera)}
                     </span>
                   </div>
                   {turnoActual.d_fecha_atendido && (
@@ -427,7 +370,10 @@ const Dashboard: React.FC = () => {
                       <div className="flex items-start gap-2">
                         <span className="text-xs font-bold text-[#70A18E] min-w-[90px]">Inicio atención:</span>
                         <span className="text-xs text-gray-700 font-medium">
-                          {new Date(turnoActual.d_fecha_atendido).toLocaleTimeString('es-MX')}
+                          {new Date(turnoActual.d_fecha_atendido).toLocaleTimeString('es-MX', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
                         </span>
                       </div>
                     </>
@@ -527,10 +473,7 @@ const Dashboard: React.FC = () => {
                       <div className="flex items-center justify-end gap-0.5 text-[10px] text-white/80">
                         <Clock className="w-2.5 h-2.5" />
                         <span>
-                          {new Date(turno.t_tiempo_espera).toLocaleTimeString('es-MX', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
+                          {formatearTiempoEspera(turno.t_tiempo_espera)}
                         </span>
                       </div>
                     </div>
@@ -572,7 +515,7 @@ const Dashboard: React.FC = () => {
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 bg-[#B7F2DA] rounded-full animate-pulse"></div>
             <span className="text-white/90 text-[10px] md:text-xs font-medium">
-              © 2024 ITZEL - Sistema de Gestión de Turnos CFE
+              © 2025 ITZEL - Sistema de Gestión de Turnos CFE
             </span>
             <div className="w-1.5 h-1.5 bg-[#8ECAB2] rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
           </div>

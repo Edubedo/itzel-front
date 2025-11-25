@@ -273,18 +273,24 @@ const AppSidebar: React.FC = () => {
               {/* Light Mode - Logo grande */}
               <img
                 className="dark:hidden"
-                src={logoLight}
+                src={logoLight || "/images/logo/itzelLogoR.png"}
                 alt="Logo"
                 width={140}
                 height={40}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR.png";
+                }}
               />
               {/* Dark Mode - Logo grande */}
               <img
                 className="hidden dark:block"
-                src={logoDark}
+                src={logoDark || "/images/logo/itzelLogoR_dark.png"}
                 alt="Logo"
                 width={133}
                 height={40}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR_dark.png";
+                }}
               />
             </>
           ) : (
@@ -293,18 +299,24 @@ const AppSidebar: React.FC = () => {
               {/* Light Mode - Logo pequeño */}
               <img
                 className="dark:hidden"
-                src={logoLight}
+                src={logoLight || "/images/logo/itzelLogoR.png"}
                 alt="Logo"
                 width={60}
                 height={50}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR.png";
+                }}
               />
               {/* Dark Mode - Logo pequeño */}
               <img
                 className="hidden dark:block"
-                src={logoDark}
+                src={logoDark || "/images/logo/itzelLogoR_dark.png"}
                 alt="Logo"
                 width={60}
                 height={50}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR_dark.png";
+                }}
               />
             </>
           )}

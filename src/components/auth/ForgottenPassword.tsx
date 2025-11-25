@@ -65,8 +65,22 @@ export default function ForgottenPassword() {
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         {/* Logo dinámico */}
         <div className="flex justify-center mb-6">
-          <img src={logoLight} alt="Logo" className="h-14 dark:hidden" />
-          <img src={logoDark} alt="Logo" className="h-14 hidden dark:block" />
+          <img 
+            src={logoLight || "/images/logo/itzelLogoR.png"} 
+            alt="Logo" 
+            className="h-14 dark:hidden"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR.png";
+            }}
+          />
+          <img 
+            src={logoDark || "/images/logo/itzelLogoR_dark.png"} 
+            alt="Logo" 
+            className="h-14 hidden dark:block"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR_dark.png";
+            }}
+          />
         </div>
         <div>
           <div className="mb-5 sm:mb-8">

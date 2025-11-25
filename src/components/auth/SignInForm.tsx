@@ -66,8 +66,8 @@ export default function SignInForm() {
         setError(err.message || t("auth.invalidCredentials"));
       }
     } finally {
-        setIsLoading(false); 
-      }
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -85,14 +85,22 @@ export default function SignInForm() {
         {/* Logo dinámico */}
         <div className="flex justify-center mb-6">
           <img
-            src={logoLight}
+            src={logoLight || "/images/logo/itzelLogoR.png"}
             alt="Logo"
             className="h-14 dark:hidden"
+            onError={(e) => {
+              // Si falla la carga, usar logo por defecto
+              (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR.png";
+            }}
           />
           <img
-            src={logoDark}
+            src={logoDark || "/images/logo/itzelLogoR_dark.png"}
             alt="Logo"
             className="h-14 hidden dark:block"
+            onError={(e) => {
+              // Si falla la carga, usar logo por defecto
+              (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR_dark.png";
+            }}
           />
         </div>
         <div>

@@ -1023,19 +1023,14 @@ export default function Starter() {
         {/* Ticket Visual */}
         <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6 mb-6">
           <div className="text-center mb-4">
-            {logoLight ? (
-              <img
-                src={logoLight}
-                alt="ITZEL Logo"
-                className="w-32 h-32 mx-auto mb-2 object-contain"
-              />
-            ) : (
-              <img
-                src="/images/Logo2/Logo%20Itzel%20CFE%20Redondo.png"
-                alt="ITZEL Logo"
-                className="w-32 h-32 mx-auto mb-2"
-              />
-            )}
+            <img
+              src={logoLight || "/images/Logo2/Logo%20Itzel%20CFE%20Redondo.png"}
+              alt="ITZEL Logo"
+              className="w-32 h-32 mx-auto mb-2 object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/images/Logo2/Logo%20Itzel%20CFE%20Redondo.png";
+              }}
+            />
             <h3 className="font-bold text-lg text-[#0A1310]">SISTEMA ITZEL</h3>
             <p className="text-sm text-gray-600">Comisión Federal de Electricidad</p>
           </div>

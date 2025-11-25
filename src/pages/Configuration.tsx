@@ -155,16 +155,24 @@ export default function Configuration() {
       setTimeout(() => setShowSuccess(false), 2500);
 
       // ACTUALIZAR CONTEXTO GLOBAL SOLO DESPUÉS DE GUARDAR EXITOSAMENTE
+      // Si hay logo light en base64, actualizarlo en el contexto
       if (data.s_logo_light && data.s_logo_light.startsWith('data:image')) {
         setLogoLight(data.s_logo_light);
-      } else if (data.s_logo_light === null || data.s_logo_light === "") {
+        console.log('Logo light actualizado en contexto global (base64)');
+      } else {
+        // Si no hay logo o está vacío, usar el logo por defecto
         setLogoLight("/images/logo/itzelLogoR.png");
+        console.log('Logo light restablecido a valor por defecto');
       }
 
+      // Si hay logo dark en base64, actualizarlo en el contexto
       if (data.s_logo_dark && data.s_logo_dark.startsWith('data:image')) {
         setLogoDark(data.s_logo_dark);
-      } else if (data.s_logo_dark === null || data.s_logo_dark === "") {
+        console.log('Logo dark actualizado en contexto global (base64)');
+      } else {
+        // Si no hay logo o está vacío, usar el logo por defecto
         setLogoDark("/images/logo/itzelLogoR_dark.png");
+        console.log('Logo dark restablecido a valor por defecto');
       }
 
       // Actualizar estado local con la respuesta del servidor

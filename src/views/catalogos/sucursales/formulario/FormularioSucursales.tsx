@@ -540,6 +540,13 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
 
 
                 <ComponentCard title="Asignar Ejecutivos a Sucursal">
+                    {branchToEdit && ejecutivosAsignados.length > 0 && (
+                        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p className="text-sm text-blue-800">
+                                <strong>Modo edición:</strong> Puedes agregar más ejecutivos usando el formulario de abajo. Los ejecutivos existentes se muestran en la tabla.
+                            </p>
+                        </div>
+                    )}
                     <div className="flex items-end gap-4">
                         <div className="flex-1">
                             <label className="text-sm font-medium text-gray-700">Usuario</label>
@@ -598,30 +605,73 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                         </button>
                     </div>
 
-                    {/* Lista de ejecutivos agregados */}
+                    {/* Tabla de ejecutivos asignados */}
                     {ejecutivosAsignados.length > 0 && (
-                        <div className="mt-4 space-y-2">
-                            <h4 className="text-sm font-semibold text-gray-600">Ejecutivos Asignados:</h4>
-                            {ejecutivosAsignados.map(ejec => (
-                                <div key={ejec.ck_usuario} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg">
-                                    <div>
-                                        <p className="font-medium text-gray-800">{`${ejec.s_nombre} ${ejec.s_apellido_paterno || ''}`}</p>
-                                        <p className="text-xs text-gray-500">{`Área: ${ejec.areaNombre || ''} / Servicio: ${ejec.servicioNombre || ''}`}</p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => eliminarEjecutivo(ejec.ck_usuario)}
-                                        className="text-red-500 hover:text-red-700 font-bold text-xl"
-                                    >
-                                        <FaTimesCircle />
-                                    </button>
-                                </div>
-                            ))}
+                        <div className="mt-6">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-3">Ejecutivos Asignados ({ejecutivosAsignados.length}):</h4>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
+                                                Nombre Completo
+                                            </th>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
+                                                Email
+                                            </th>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
+                                                Área
+                                            </th>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
+                                                Servicio
+                                            </th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
+                                                Acción
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {ejecutivosAsignados.map(ejec => (
+                                            <tr key={ejec.ck_usuario} className="hover:bg-gray-50">
+                                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                                                    {`${ejec.s_nombre || ''} ${ejec.s_apellido_paterno || ''} ${ejec.s_apellido_materno || ''}`.trim()}
+                                                </td>
+                                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                                                    {ejec.s_correo_electronico || '-'}
+                                                </td>
+                                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                                                    {ejec.areaNombre || '-'}
+                                                </td>
+                                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                                                    {ejec.servicioNombre || '-'}
+                                                </td>
+                                                <td className="px-4 py-3 whitespace-nowrap text-center">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => eliminarEjecutivo(ejec.ck_usuario)}
+                                                        className="text-red-500 hover:text-red-700 font-bold text-xl transition-colors"
+                                                        title="Eliminar ejecutivo"
+                                                    >
+                                                        <FaTimesCircle />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     )}
                 </ComponentCard>
 
                 <ComponentCard title="Asignar Asesores a Sucursal">
+                    {branchToEdit && asesoresAsignados.length > 0 && (
+                        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p className="text-sm text-blue-800">
+                                <strong>Modo edición:</strong> Puedes agregar más asesores usando el formulario de abajo. Los asesores existentes se muestran en la tabla.
+                            </p>
+                        </div>
+                    )}
                     <div className="flex items-end gap-4">
                         <div className="flex-1">
                             <label className="text-sm font-medium text-gray-700">Usuario</label>
@@ -648,24 +698,49 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                         </button>
                     </div>
 
-                    {/* Lista de asesores agregados */}
+                    {/* Tabla de asesores asignados */}
                     {asesoresAsignados.length > 0 && (
-                        <div className="mt-4 space-y-2">
-                            <h4 className="text-sm font-semibold text-gray-600">Asesores Asignados:</h4>
-                            {asesoresAsignados.map(asesor => (
-                                <div key={asesor.ck_usuario} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg">
-                                    <div>
-                                        <p className="font-medium text-gray-800">{`${asesor.s_nombre} ${asesor.s_apellido_paterno || ''}`}</p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => eliminarAsesor(asesor.ck_usuario)}
-                                        className="text-red-500 hover:text-red-700 font-bold text-xl"
-                                    >
-                                        <FaTimesCircle />
-                                    </button>
-                                </div>
-                            ))}
+                        <div className="mt-6">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-3">Asesores Asignados ({asesoresAsignados.length}):</h4>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
+                                                Nombre Completo
+                                            </th>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
+                                                Email
+                                            </th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
+                                                Acción
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {asesoresAsignados.map(asesor => (
+                                            <tr key={asesor.ck_usuario} className="hover:bg-gray-50">
+                                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                                                    {`${asesor.s_nombre || ''} ${asesor.s_apellido_paterno || ''} ${asesor.s_apellido_materno || ''}`.trim()}
+                                                </td>
+                                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                                                    {asesor.s_correo_electronico || '-'}
+                                                </td>
+                                                <td className="px-4 py-3 whitespace-nowrap text-center">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => eliminarAsesor(asesor.ck_usuario)}
+                                                        className="text-red-500 hover:text-red-700 font-bold text-xl transition-colors"
+                                                        title="Eliminar asesor"
+                                                    >
+                                                        <FaTimesCircle />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     )}
                 </ComponentCard>

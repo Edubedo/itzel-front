@@ -8,30 +8,32 @@ interface ContractValidationModalProps {
   onSuccess: (clientData: any) => void;
 }
 
-export default function ContractValidationModal({ 
-  isOpen, 
-  onClose, 
-  onSuccess 
+export default function ContractValidationModal({
+  isOpen,
+  onClose,
+  onSuccess
 }: ContractValidationModalProps) {
   const [contractNumber, setContractNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldError, setFieldError] = useState<{ contract?: string }>({});
   const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!contractNumber.trim()) {
-      setError('Por favor ingrese su número de contrato');
+      setFieldError({ contract: 'Por favor ingrese su número de contrato' });
       return;
     }
 
     setLoading(true);
     setError('');
+    setFieldError({});
 
     try {
       const response = await clientesService.validateContractNumber(contractNumber.trim());
-      
+
       if (response.success) {
         onSuccess(response.data);
         setContractNumber('');
@@ -40,7 +42,19 @@ export default function ContractValidationModal({
         setError(response.message || 'Error al validar el contrato');
       }
     } catch (err: any) {
-      setError(err.message || 'Error al validar el número de contrato');
+      console.log('Error capturado:', err);
+
+      // Manejar errores específicos según el código
+      if (err.code === 'CONTRACT_NOT_FOUND' || err.status === 404) {
+        setFieldError({ contract: 'El número de contrato no se encuentra registrado en el sistema' });
+      } else if (err.code === 'NETWORK_ERROR') {
+        setError('Error de conexión. Por favor, verifique su conexión a internet.');
+      } else if (err.code === 'INVALID_CONTRACT') {
+        setFieldError({ contract: 'El formato del número de contrato no es válido' });
+      } else {
+        // Error genérico
+        setError(err.message || 'Error al validar el número de contrato. Por favor, intente nuevamente.');
+      }
     } finally {
       setLoading(false);
     }
@@ -49,6 +63,7 @@ export default function ContractValidationModal({
   const handleClose = () => {
     setContractNumber('');
     setError('');
+    setFieldError({});
     onClose();
   };
 
@@ -84,12 +99,24 @@ export default function ContractValidationModal({
               <input
                 type="text"
                 value={contractNumber}
-                onChange={(e) => setContractNumber(e.target.value)}
+                onChange={(e) => {
+                  setContractNumber(e.target.value);
+                  setError('');
+                  setFieldError({});
+                }}
                 placeholder="Ingrese su número de contrato"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-400 dark:focus:border-blue-400"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 transition-colors dark:bg-gray-700 dark:text-white ${fieldError.contract
+                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-600'
+                    : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400'
+                  }`}
                 disabled={loading}
                 autoFocus
               />
+              {fieldError.contract && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldError.contract}
+                </p>
+              )}
             </div>
 
             {error && (
@@ -114,11 +141,10 @@ export default function ContractValidationModal({
               </button>
               <button
                 type="submit"
-                className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors ${
-                  loading
+                className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors ${loading
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500'
-                }`}
+                  }`}
                 disabled={loading}
               >
                 {loading ? (

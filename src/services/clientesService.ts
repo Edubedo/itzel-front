@@ -245,15 +245,27 @@ export const clientesService = {
         credentials: 'include'
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+        // Lanzar error con el mensaje específico del servidor
+        const error: any = new Error(data.message || 'Error al validar el contrato');
+        error.code = data.code || 'VALIDATION_ERROR';
+        error.status = response.status;
+        throw error;
       }
 
-      return await response.json();
-    } catch (error) {
+      return data;
+    } catch (error: any) {
       console.error('Error en validateContractNumber:', error);
-      throw new Error('Error al validar número de contrato');
+      
+      // Si es un error de red o no hay mensaje específico
+      if (!error.message || error.message === 'Failed to fetch') {
+        error.message = 'Error de conexión. Por favor, intente nuevamente.';
+        error.code = 'NETWORK_ERROR';
+      }
+      
+      throw error;
     }
   }
 

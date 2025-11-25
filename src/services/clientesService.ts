@@ -1,4 +1,8 @@
 // services/clientesService.ts
+import { getApiBaseUrlWithApi } from '../../utils/util_baseUrl';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || getApiBaseUrlWithApi();
+
 export interface Cliente {
   ck_cliente: string;
   c_codigo_cliente: string;
@@ -68,10 +72,12 @@ export const clientesService = {
         });
       }
       
-      const url = `/api/catalogos/clientes${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+      const url = `${API_BASE_URL}/catalogos/clientes${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
       console.log('Fetching clientes from:', url);
       
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        credentials: 'include' // Incluir cookies para autenticación
+      });
       
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -89,7 +95,9 @@ export const clientesService = {
 
   async getClientesStats(): Promise<ClientesStatsResponse> {
     try {
-      const response = await fetch('/api/catalogos/clientes/stats');
+      const response = await fetch(`${API_BASE_URL}/catalogos/clientes/stats`, {
+        credentials: 'include'
+      });
       
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -104,7 +112,9 @@ export const clientesService = {
 
   async getTiposContrato(): Promise<TiposContratoResponse> {
     try {
-      const response = await fetch('/api/catalogos/clientes/tipos-contrato');
+      const response = await fetch(`${API_BASE_URL}/catalogos/clientes/tipos-contrato`, {
+        credentials: 'include'
+      });
       
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -119,11 +129,12 @@ export const clientesService = {
 
   async deleteCliente(clienteId: string): Promise<{ success: boolean; message?: string }> {
     try {
-      const response = await fetch(`/api/catalogos/clientes/${clienteId}`, {
+      const response = await fetch(`${API_BASE_URL}/catalogos/clientes/${clienteId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include'
       });
       
       if (!response.ok) {
@@ -140,7 +151,9 @@ export const clientesService = {
   // Métodos adicionales que puedes necesitar
   async getClienteById(clienteId: string): Promise<{ success: boolean; data?: Cliente; message?: string }> {
     try {
-      const response = await fetch(`/api/catalogos/clientes/${clienteId}`);
+      const response = await fetch(`${API_BASE_URL}/catalogos/clientes/${clienteId}`, {
+        credentials: 'include'
+      });
       
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -155,12 +168,13 @@ export const clientesService = {
 
   async createCliente(clienteData: Omit<Cliente, 'ck_cliente'>): Promise<{ success: boolean; message?: string; data?: any }> {
     try {
-      const response = await fetch('/api/catalogos/clientes', {
+      const response = await fetch(`${API_BASE_URL}/catalogos/clientes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(clienteData),
+        credentials: 'include'
       });
       
       if (!response.ok) {
@@ -176,12 +190,13 @@ export const clientesService = {
 
   async updateCliente(clienteId: string, clienteData: Partial<Cliente>): Promise<{ success: boolean; message?: string }> {
     try {
-      const response = await fetch(`/api/catalogos/clientes/${clienteId}`, {
+      const response = await fetch(`${API_BASE_URL}/catalogos/clientes/${clienteId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(clienteData),
+        credentials: 'include'
       });
       
       if (!response.ok) {
@@ -197,7 +212,9 @@ export const clientesService = {
 
   async getClientesDelDia(): Promise<{ success: boolean; data?: { total: number } }> {
     try {
-      const response = await fetch('/api/operaciones/clientes/del-dia');
+      const response = await fetch(`${API_BASE_URL}/operaciones/clientes/del-dia`, {
+        credentials: 'include'
+      });
 
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -219,12 +236,13 @@ export const clientesService = {
 
   async validateContractNumber(contractNumber: string): Promise<{ success: boolean; data?: any; message?: string }> {
     try {
-      const response = await fetch('/api/catalogos/clientes/validate-contract', {
+      const response = await fetch(`${API_BASE_URL}/catalogos/clientes/validate-contract`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ c_codigo_contrato: contractNumber }),
+        credentials: 'include'
       });
 
       if (!response.ok) {

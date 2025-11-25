@@ -1,6 +1,9 @@
+import { getApiBaseUrl } from '../../utils/util_baseUrl';
+
 export async function getConfiguracion() {
   try {
-    const res = await fetch('/api/configuracion_sistema/configuracion');
+    const baseUrl = getApiBaseUrl();
+    const res = await fetch(`${baseUrl}/api/configuracion_sistema/configuracion`);
     if (!res.ok) {
       throw new Error(`Error ${res.status}: ${res.statusText}`);
     }
@@ -21,7 +24,8 @@ export async function updateConfiguracion(data: any) {
       s_logo_dark: data.s_logo_dark ? `Base64 (${data.s_logo_dark.length} chars)` : 'null'
     });
 
-    const res = await fetch('/api/configuracion_sistema/configuracion', {
+    const baseUrl = getApiBaseUrl();
+    const res = await fetch(`${baseUrl}/api/configuracion_sistema/configuracion`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { getApiBaseUrl } from "../../utils/util_baseUrl";
 
 type LogoContextType = {
     logoLight: string;
@@ -30,7 +31,8 @@ export const LogoProvider = ({ children }: { children: ReactNode }) => {
 
     const loadLogos = async () => {
         try {
-            const response = await fetch('/api/configuracion_sistema/configuracion');
+            const baseUrl = getApiBaseUrl();
+            const response = await fetch(`${baseUrl}/api/configuracion_sistema/configuracion`);
             if (response.ok) {
                 const config = await response.json();
                 

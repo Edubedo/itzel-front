@@ -115,6 +115,17 @@ function FormularioServicios() {
     field: keyof ServicioFormData,
     value: string | number
   ) => {
+    // Validar longitud del código del servicio
+    if (field === "c_codigo_servicio" && typeof value === "string") {
+      if (value.length > 6) {
+        setErrors((prev) => ({
+          ...prev,
+          c_codigo_servicio: "El código del servicio no puede tener más de 6 caracteres",
+        }));
+        return; // No actualizar el valor si excede el límite
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -142,6 +153,8 @@ function FormularioServicios() {
 
     if (!formData.c_codigo_servicio.trim()) {
       newErrors.c_codigo_servicio = "El código del servicio es requerido";
+    } else if (formData.c_codigo_servicio.length > 6) {
+      newErrors.c_codigo_servicio = "El código del servicio no puede tener más de 6 caracteres";
     }
 
     if (!formData.ck_area) {
@@ -261,8 +274,12 @@ function FormularioServicios() {
                   value={formData.c_codigo_servicio}
                   onChange={(e) => handleInputChange("c_codigo_servicio", e.target.value)}
                   placeholder="Ej. SVC-001"
+                  maxLength={6}
                   className={errors.c_codigo_servicio ? "border-red-500" : ""}
                 />
+                <p className="text-gray-500 text-xs mt-1">
+                  Máximo 6 caracteres ({formData.c_codigo_servicio.length}/6)
+                </p>
                 {errors.c_codigo_servicio && (
                   <p className="text-red-500 text-sm mt-1">{errors.c_codigo_servicio}</p>
                 )}

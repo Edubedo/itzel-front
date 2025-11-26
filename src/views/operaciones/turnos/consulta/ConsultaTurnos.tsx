@@ -168,10 +168,8 @@ function ConsultaTurnos() {
           ]);
         } else {
           setAreas(areasConDatos);
-          // Seleccionar la primera área automáticamente si hay áreas disponibles
-          if (areasConDatos.length > 0 && !areaSeleccionada) {
-            setAreaSeleccionada(areasConDatos[0].ck_area);
-          }
+          // NO seleccionar ninguna área por defecto - mostrar todas
+          // El usuario puede filtrar manualmente si lo desea
         }
       }
     } catch (error) {
@@ -339,8 +337,9 @@ function ConsultaTurnos() {
                 }}
                 className="bg-transparent border-none outline-none text-sm font-medium text-gray-800 dark:text-gray-200"
               >
+                <option value="">{t("shifts.allAreas")}</option>
                 {areas.map((area) => (
-                  <option key={area.ck_area || 'all'} value={area.ck_area}>
+                  <option key={area.ck_area} value={area.ck_area}>
                     {translateArea(area.s_area)}
                   </option>
                 ))}

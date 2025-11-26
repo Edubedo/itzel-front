@@ -169,15 +169,15 @@ const Dashboard: React.FC = () => {
       const fecha = new Date(fechaAtencion);
       if (isNaN(fecha.getTime())) return '--:--';
 
-      // Obtener horas y minutos en UTC y ajustar a hora local
-      const hours = fecha.getHours();
-      const minutes = fecha.getMinutes();
+      // Usar toLocaleTimeString con formato específico para obtener hora local correcta
+      const timeString = fecha.toLocaleTimeString('es-MX', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
       
-      // Convertir a formato 12 horas
-      const period = hours >= 12 ? 'p.m.' : 'a.m.';
-      const hours12 = hours % 12 || 12;
-      
-      return `${String(hours12).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+      // Reemplazar "a. m." y "p. m." por "a.m." y "p.m."
+      return timeString.replace('a. m.', 'a.m.').replace('p. m.', 'p.m.');
     } catch (error) {
       return '--:--';
     }

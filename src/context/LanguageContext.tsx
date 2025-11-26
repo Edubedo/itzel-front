@@ -409,6 +409,20 @@ const translations = {
     "privacy.acceptButton": "He leído y acepto los términos",
     "privacy.acceptFooter": "Al continuar, aceptas el tratamiento de tus datos conforme a este aviso",
     
+    // Contract Validation Modal
+    "contractValidation.title": "Validación de Cliente",
+    "contractValidation.subtitle": "Ingrese su número de contrato",
+    "contractValidation.label": "Número de Contrato",
+    "contractValidation.placeholder": "Ingrese su número de contrato",
+    "contractValidation.required": "Por favor ingrese su número de contrato",
+    "contractValidation.notFound": "El número de contrato no se encuentra registrado en el sistema",
+    "contractValidation.invalidFormat": "El formato del número de contrato no es válido",
+    "contractValidation.networkError": "Error de conexión. Por favor, verifique su conexión a internet.",
+    "contractValidation.genericError": "Error al validar el número de contrato. Por favor, intente nuevamente.",
+    "contractValidation.cancel": "Cancelar",
+    "contractValidation.validate": "Validar",
+    "contractValidation.validating": "Validando...",
+    
     // Branches
     "branches.branchQuery": "Consulta de Sucursales",
     "branches.branchCatalog": "Catálogo de Sucursales",
@@ -613,6 +627,20 @@ const translations = {
     "privacy.protection4": "• Periodic security audits",
     "privacy.acceptButton": "I have read and accept the terms",
     "privacy.acceptFooter": "By continuing, you accept the processing of your data in accordance with this notice",
+    
+    // Contract Validation Modal
+    "contractValidation.title": "Client Validation",
+    "contractValidation.subtitle": "Enter your contract number",
+    "contractValidation.label": "Contract Number",
+    "contractValidation.placeholder": "Enter your contract number",
+    "contractValidation.required": "Please enter your contract number",
+    "contractValidation.notFound": "The contract number is not registered in the system",
+    "contractValidation.invalidFormat": "The contract number format is invalid",
+    "contractValidation.networkError": "Connection error. Please check your internet connection.",
+    "contractValidation.genericError": "Error validating contract number. Please try again.",
+    "contractValidation.cancel": "Cancel",
+    "contractValidation.validate": "Validate",
+    "contractValidation.validating": "Validating...",
     
     "nav.branches": "Branches",
     "nav.users": "Users",

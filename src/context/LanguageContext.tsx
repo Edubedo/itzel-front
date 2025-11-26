@@ -478,6 +478,31 @@ const translations = {
     "language.spanish": "Español",
     "language.english": "English",
     "language.change": "Cambiar idioma",
+    
+    // Areas translations
+    "area.atencionCliente": "Atención al Cliente",
+    "area.atencionClienteDesc": "Información, quejas y aclaraciones.",
+    "area.cobranza": "Cobranza",
+    "area.cobranzaDesc": "Convenios, adeudos y reconexiones",
+    "area.facturacion": "Facturación",
+    "area.facturacionDesc": "Servicios de facturación y pagos",
+    "area.conexiones": "Conexiones",
+    "area.conexionesDesc": "Nuevas conexiones y reinstalaciones",
+    "area.serviciosTecnicos": "Servicios Técnicos",
+    "area.serviciosTecnicosDesc1": "Revisión, cambio y calibración de medidores",
+    "area.serviciosTecnicosDesc2": "Inspecciones, dictámenes y asesoría",
+    
+    // Services translations
+    "service.dictamenTecnico": "Dictamen Técnico",
+    "service.dictamenTecnicoDesc": "Evaluación y certificación de instalaciones",
+    "service.inspeccionInstalacion": "Inspección de Instalación",
+    "service.inspeccionInstalacionDesc": "Inspección de Instalación",
+    "service.consultaRecibo": "Consulta de Recibo",
+    "service.consultaReciboDesc": "Consultar estado de cuenta y pagos",
+    "service.reporteFallas": "Reporte de Fallas",
+    "service.reporteFallasDesc": "Reportar interrupciones del servicio",
+    "service.cambioTitularidad": "Cambio de Titularidad",
+    "service.cambioTitularidadDesc": "Cambio de propietario del servicio",
   },
   en: {
     // Header
@@ -943,6 +968,31 @@ const translations = {
     "language.spanish": "Español",
     "language.english": "English",
     "language.change": "Change language",
+    
+    // Areas translations
+    "area.atencionCliente": "Customer Service",
+    "area.atencionClienteDesc": "Information, complaints, and clarifications.",
+    "area.cobranza": "Collections",
+    "area.cobranzaDesc": "Agreements, debts, and reconnections",
+    "area.facturacion": "Billing",
+    "area.facturacionDesc": "Billing and payment services",
+    "area.conexiones": "Connections",
+    "area.conexionesDesc": "New connections and reinstallations",
+    "area.serviciosTecnicos": "Technical Services",
+    "area.serviciosTecnicosDesc1": "Review, change, and calibration of meters",
+    "area.serviciosTecnicosDesc2": "Inspections, opinions, and advice",
+    
+    // Services translations
+    "service.dictamenTecnico": "Technical Opinion",
+    "service.dictamenTecnicoDesc": "Evaluation and certification of installations",
+    "service.inspeccionInstalacion": "Installation Inspection",
+    "service.inspeccionInstalacionDesc": "Installation Inspection",
+    "service.consultaRecibo": "Receipt Inquiry",
+    "service.consultaReciboDesc": "Check account status and payments",
+    "service.reporteFallas": "Failure Report",
+    "service.reporteFallasDesc": "Report service interruptions",
+    "service.cambioTitularidad": "Change of Ownership",
+    "service.cambioTitularidadDesc": "Change of service owner",
   }
 };
 

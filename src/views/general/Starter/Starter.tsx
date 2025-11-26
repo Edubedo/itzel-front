@@ -41,8 +41,133 @@ interface Turno {
 
 
 export default function Starter() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { logoLight } = useLogo();
+  
+  // Helper function to normalize text (remove accents and convert to lowercase)
+  const normalizeText = (text: string): string => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  };
+  
+  // Helper function to translate area names
+  const translateArea = (areaName: string): string => {
+    if (!areaName) return '';
+    const normalized = normalizeText(areaName);
+    
+    if (normalized.includes('atencion al cliente') || normalized.includes('atencion cliente') || normalized.includes('customer service')) {
+      return t("area.atencionCliente");
+    }
+    if (normalized.includes('cobranza') || normalized.includes('collections')) {
+      return t("area.cobranza");
+    }
+    if (normalized.includes('facturacion') || normalized.includes('billing')) {
+      return t("area.facturacion");
+    }
+    if (normalized.includes('conexiones') || normalized.includes('connections')) {
+      return t("area.conexiones");
+    }
+    if (normalized.includes('servicios tecnicos') || normalized.includes('servicio tecnico') || normalized.includes('technical services')) {
+      return t("area.serviciosTecnicos");
+    }
+    // If no translation found, return original
+    return areaName;
+  };
+  
+  // Helper function to translate area descriptions
+  const translateAreaDesc = (areaName: string, desc: string): string => {
+    if (!desc) return '';
+    const normalizedArea = normalizeText(areaName);
+    const normalizedDesc = normalizeText(desc);
+    
+    if (normalizedArea.includes('atencion al cliente') || normalizedArea.includes('atencion cliente') || normalizedArea.includes('customer service')) {
+      return t("area.atencionClienteDesc");
+    }
+    if (normalizedArea.includes('cobranza') || normalizedArea.includes('collections')) {
+      return t("area.cobranzaDesc");
+    }
+    if (normalizedArea.includes('facturacion') || normalizedArea.includes('billing')) {
+      return t("area.facturacionDesc");
+    }
+    if (normalizedArea.includes('conexiones') || normalizedArea.includes('connections')) {
+      return t("area.conexionesDesc");
+    }
+    if (normalizedArea.includes('servicios tecnicos') || normalizedArea.includes('servicio tecnico') || normalizedArea.includes('technical services')) {
+      // Check if description matches first type (medidores, revision, cambio, calibracion)
+      if (normalizedDesc.includes('revision') || normalizedDesc.includes('cambio') || normalizedDesc.includes('medidores') || normalizedDesc.includes('calibracion') || normalizedDesc.includes('meters') || normalizedDesc.includes('calibration')) {
+        return t("area.serviciosTecnicosDesc1");
+      }
+      // Default to second type (inspecciones, dictamenes, asesoria)
+      if (normalizedDesc.includes('inspeccion') || normalizedDesc.includes('dictamen') || normalizedDesc.includes('asesoria') || normalizedDesc.includes('inspection') || normalizedDesc.includes('opinion') || normalizedDesc.includes('advice')) {
+        return t("area.serviciosTecnicosDesc2");
+      }
+      // If description doesn't match, try to infer from area name or return second type
+      return t("area.serviciosTecnicosDesc2");
+    }
+    // If no translation found, return original
+    return desc;
+  };
+  
+  // Helper function to translate service names
+  const translateService = (serviceName: string): string => {
+    if (!serviceName) return '';
+    const normalized = normalizeText(serviceName);
+    
+    // Dictamen Técnico
+    if (normalized.includes('dictamen tecnico') || normalized.includes('dictamen') || normalized.includes('technical opinion')) {
+      return t("service.dictamenTecnico");
+    }
+    // Inspección de Instalación
+    if ((normalized.includes('inspeccion') || normalized.includes('inspection')) && (normalized.includes('instalacion') || normalized.includes('installation'))) {
+      return t("service.inspeccionInstalacion");
+    }
+    // Consulta de Recibo
+    if (normalized.includes('consulta') && (normalized.includes('recibo') || normalized.includes('receipt'))) {
+      return t("service.consultaRecibo");
+    }
+    // Reporte de Fallas
+    if ((normalized.includes('reporte') || normalized.includes('report')) && (normalized.includes('fallas') || normalized.includes('failure') || normalized.includes('fault'))) {
+      return t("service.reporteFallas");
+    }
+    // Cambio de Titularidad
+    if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('titularidad') || normalized.includes('ownership') || normalized.includes('owner'))) {
+      return t("service.cambioTitularidad");
+    }
+    // If no translation found, return original
+    return serviceName;
+  };
+  
+  // Helper function to translate service descriptions
+  const translateServiceDesc = (serviceName: string, desc: string): string => {
+    if (!desc) return '';
+    const normalized = normalizeText(serviceName);
+    
+    // Dictamen Técnico
+    if (normalized.includes('dictamen tecnico') || normalized.includes('dictamen') || normalized.includes('technical opinion')) {
+      return t("service.dictamenTecnicoDesc");
+    }
+    // Inspección de Instalación
+    if ((normalized.includes('inspeccion') || normalized.includes('inspection')) && (normalized.includes('instalacion') || normalized.includes('installation'))) {
+      return t("service.inspeccionInstalacionDesc");
+    }
+    // Consulta de Recibo
+    if (normalized.includes('consulta') && (normalized.includes('recibo') || normalized.includes('receipt'))) {
+      return t("service.consultaReciboDesc");
+    }
+    // Reporte de Fallas
+    if ((normalized.includes('reporte') || normalized.includes('report')) && (normalized.includes('fallas') || normalized.includes('failure') || normalized.includes('fault'))) {
+      return t("service.reporteFallasDesc");
+    }
+    // Cambio de Titularidad
+    if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('titularidad') || normalized.includes('ownership') || normalized.includes('owner'))) {
+      return t("service.cambioTitularidadDesc");
+    }
+    // If no translation found, return original
+    return desc;
+  };
   const [currentStep, setCurrentStep] = useState<'clientType' | 'serviceSelection' | 'ticket'>('clientType');
   const [esCliente, setEsCliente] = useState<boolean | null>(null);
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState<Sucursal | null>(null);
@@ -424,9 +549,9 @@ export default function Starter() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">Confirmar Cancelación</h3>
+          <h3 className="text-xl font-bold text-white mb-2">{t("starter.confirmCancellation")}</h3>
           <p className="text-white/80 text-sm">
-            ¿Estás seguro de que deseas cancelar este turno?
+            {t("starter.sureCancel")}
           </p>
         </div>
 
@@ -439,7 +564,7 @@ export default function Starter() {
                 {t("starter.turnNumber")} {turnoCreado?.i_numero_turno}
               </div>
               <div className="font-semibold text-gray-600 text-sm">
-                {turnoCreado?.s_servicio}
+                {turnoCreado?.s_servicio ? translateService(turnoCreado.s_servicio) : ''}
               </div>
             </div>
           </div>
@@ -450,7 +575,7 @@ export default function Starter() {
               onClick={() => setShowCancelModal(false)} // <-- Solo cierra el modal
               className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-colors duration-200"
             >
-              No, regresar
+              {t("starter.noReturn")}
             </button>
             <button
               onClick={() => {
@@ -459,7 +584,7 @@ export default function Starter() {
               }}
               className="flex-1 bg-gradient-to-r from-[#e66f6f] to-[#ef2525] hover:from-[#ef2525] hover:to-[#e66f6f] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200"
             >
-              Sí, cancelar turno
+              {t("starter.yesCancel")}
             </button>
           </div>
         </div>
@@ -811,9 +936,9 @@ export default function Starter() {
 
                   <div className="relative p-6">
                     <div className="text-center">
-                      <div className="font-bold text-lg mb-2">{area.s_area}</div>
+                      <div className="font-bold text-lg mb-2">{translateArea(area.s_area)}</div>
                       {area.s_descripcion_area && (
-                        <div className="text-sm opacity-90">{area.s_descripcion_area}</div>
+                        <div className="text-sm opacity-90">{translateAreaDesc(area.s_area, area.s_descripcion_area)}</div>
                       )}
                     </div>
                   </div>
@@ -833,7 +958,7 @@ export default function Starter() {
                   <span className="text-white font-bold text-sm">2</span>
                 </div>
                 <h3 className="text-xl font-bold text-[#0A1310]">
-                  {t("starter.selectService")} {areaSeleccionada.s_area}:
+                  {t("starter.selectService")} {translateArea(areaSeleccionada.s_area)}:
                 </h3>
               </div>
 
@@ -867,13 +992,13 @@ export default function Starter() {
                           {getServiceIcon(servicio.s_servicio)}
                           <div className="flex-1">
                             <div className="font-bold text-lg text-[#0A1310] mb-2 group-hover:text-[#3A554B] transition-colors">
-                              {servicio.s_servicio}
+                              {translateService(servicio.s_servicio)}
                             </div>
 
                             {/* Description - Más cerca del título */}
                             {servicio.s_descripcion_servicio && (
                               <div className="text-sm text-gray-600 mt-1 group-hover:text-gray-700 transition-colors"> {/* mt-1 en lugar de mb-4 */}
-                                {servicio.s_descripcion_servicio}
+                                {translateServiceDesc(servicio.s_servicio, servicio.s_descripcion_servicio)}
                               </div>
                             )}
                           </div>
@@ -946,9 +1071,9 @@ export default function Starter() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">¿Confirmar turno?</h3>
+          <h3 className="text-xl font-bold text-white mb-2">{t("starter.confirmTurn")}</h3>
           <p className="text-white/80 text-sm">
-            Está a punto de generar un turno para el servicio seleccionado
+            {t("starter.confirmTurnDesc")}
           </p>
         </div>
 
@@ -956,16 +1081,16 @@ export default function Starter() {
         <div className="p-6">
           <div className="bg-gray-50 rounded-xl p-4 mb-6">
             <div className="text-center mb-4">
-              <h4 className="font-bold text-[#3A554B] text-lg">{servicioSeleccionado?.s_servicio}</h4>
-              <p className="text-sm text-gray-600 mt-1">{servicioSeleccionado?.s_descripcion_servicio}</p>
+              <h4 className="font-bold text-[#3A554B] text-lg">{servicioSeleccionado ? translateService(servicioSeleccionado.s_servicio) : ''}</h4>
+              <p className="text-sm text-gray-600 mt-1">{servicioSeleccionado?.s_descripcion_servicio ? translateServiceDesc(servicioSeleccionado.s_servicio, servicioSeleccionado.s_descripcion_servicio) : ''}</p>
             </div>
 
             {/* Información contextual */}
             <div className="space-y-3">
               <div className="text-center p-3 bg-white rounded-lg">
-                <div className="text-xs text-gray-500">Área</div>
+                <div className="text-xs text-gray-500">{t("starter.area")}</div>
                 <div className="font-semibold text-[#3A554B]">
-                  {areaSeleccionada?.s_area}
+                  {areaSeleccionada ? translateArea(areaSeleccionada.s_area) : ''}
                 </div>
               </div>
 
@@ -978,7 +1103,7 @@ export default function Starter() {
               onClick={cancelarTurno}
               className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-colors duration-200"
             >
-              Cancelar
+              {t("starter.cancel")}
             </button>
             <button
               onClick={confirmarTurno}
@@ -988,10 +1113,10 @@ export default function Starter() {
               {loadingState === 'creating' ? (
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Generando...
+                  {t("starter.generating")}
                 </div>
               ) : (
-                'Sí, confirmar turno'
+                t("starter.yesConfirm")
               )}
             </button>
           </div>
@@ -1003,7 +1128,7 @@ export default function Starter() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
               <p className="text-xs text-amber-700">
-                Una vez confirmado, el turno será generado en el sistema y deberá esperar su atención.
+                {t("starter.warning")}
               </p>
             </div>
           </div>
@@ -1015,8 +1140,8 @@ export default function Starter() {
   const renderTicket = () => (
     <div className="bg-white rounded-xl shadow-xl overflow-hidden border-2 border-[#5D7166] max-w-md mx-auto">
       <div className="bg-[#3A554B] text-white p-4 text-center">
-        <h2 className="text-xl font-bold">¡SERVICIO ASIGNADO!</h2>
-        <p className="text-[#B7F2DA]">Su turno ha sido generado exitosamente</p>
+        <h2 className="text-xl font-bold">{t("starter.serviceAssigned")}</h2>
+        <p className="text-[#B7F2DA]">{t("starter.turnGenerated")}</p>
       </div>
 
       <div className="p-6">
@@ -1031,7 +1156,7 @@ export default function Starter() {
                 (e.target as HTMLImageElement).src = "/images/Logo2/Logo%20Itzel%20CFE%20Redondo.png";
               }}
             />
-            <h3 className="font-bold text-lg text-[#0A1310]">SISTEMA ITZEL</h3>
+            <h3 className="font-bold text-lg text-[#0A1310]">{t("starter.systemItzel")}</h3>
             <p className="text-sm text-gray-600">{t("starter.cfe")}</p>
           </div>
 
@@ -1043,24 +1168,24 @@ export default function Starter() {
             </div>
 
             <div className="space-y-2 text-sm">
-              <div><strong>{t("starter.area")}:</strong> {turnoCreado?.s_area}</div>
-              <div><strong>{t("starter.service")}:</strong> {turnoCreado?.s_servicio}</div>
+              <div><strong>{t("starter.area")}:</strong> {turnoCreado?.s_area ? translateArea(turnoCreado.s_area) : ''}</div>
+              <div><strong>{t("starter.service")}:</strong> {turnoCreado?.s_servicio ? translateService(turnoCreado.s_servicio) : ''}</div>
               <div><strong>{t("starter.branch")}:</strong> {turnoCreado?.s_nombre_sucursal}</div>
               <div><strong>{t("starter.type")}:</strong> {esCliente ? t("starter.cfeClientType") : t("starter.notClientType")}</div>
-              <div><strong>{t("starter.date")}:</strong> {new Date().toLocaleDateString('es-MX')}</div>
-              <div><strong>{t("starter.time")}:</strong> {new Date().toLocaleTimeString('es-MX')}</div>
+              <div><strong>{t("starter.date")}:</strong> {new Date().toLocaleDateString(language === 'es' ? 'es-MX' : 'en-US')}</div>
+              <div><strong>{t("starter.time")}:</strong> {new Date().toLocaleTimeString(language === 'es' ? 'es-MX' : 'en-US')}</div>
             </div>
           </div>
 
           <div className="border-t border-gray-300 pt-4 mt-4 text-center">
             <p className="text-xs text-gray-600">
-              Por favor conserve este ticket y espere a ser llamado
+              {t("starter.keepTicket")}
             </p>
           </div>
 
           <div className="border-t border-gray-300 pt-4 mt-4 text-center">
             <p className="text-xs text-gray-600 mb-3">
-              Escanee el código QR para descargar su ticket
+              {t("starter.scanQR")}
             </p>
             {qrCodeUrl && (
               <div className="flex justify-center">
@@ -1080,14 +1205,14 @@ export default function Starter() {
             onClick={descargarTicket}
             className="w-full bg-[#70A18E] hover:bg-[#547A6B] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
-            📄 Descargar Ticket
+            {t("starter.downloadTicket")}
           </button>
 
           <button
             onClick={handleCancelarTurno}
             className="w-full bg-[#e66f6f] hover:bg-[#ef2525] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
-            Cancelar turno
+            {t("starter.cancelTurn")}
           </button>
 
 
@@ -1101,7 +1226,7 @@ export default function Starter() {
 
         {/* Countdown */}
         <div className="text-center mt-4 text-sm text-gray-600">
-          Regresando automáticamente en {countdown} segundos...
+          {t("starter.returningIn")} {countdown} {t("starter.seconds")}
         </div>
       </div>
     </div>
@@ -1282,8 +1407,8 @@ export default function Starter() {
   if (loadingState !== 'idle') {
     // Determina el texto basado en el estado
     const loadingText = loadingState === 'creating'
-      ? 'Generando su turno...'
-      : 'Cancelando su turno...';
+      ? t("starter.generatingTurn")
+      : t("starter.cancelingTurn");
 
     return (
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#F4F4F4] to-[#CAC9C9]">

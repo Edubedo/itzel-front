@@ -42,6 +42,25 @@ function ConsultaTurnos() {
       .replace(/[\u0300-\u036f]/g, '')
       .trim();
   };
+
+  // Helper function to format time from HH:MM:SS to 12-hour format with AM/PM
+  const formatTime = (timeString: string | null | undefined): string => {
+    if (!timeString) return 'N/A';
+    
+    // Parse time string (HH:MM:SS or HH:MM)
+    const timeMatch = timeString.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+    if (!timeMatch) return timeString;
+    
+    let hours = parseInt(timeMatch[1], 10);
+    const minutes = timeMatch[2];
+    const seconds = timeMatch[3] || '00';
+    
+    // Convert to 12-hour format
+    const period = hours >= 12 ? 'p.m.' : 'a.m.';
+    hours = hours % 12 || 12; // Convert 0 to 12 for midnight
+    
+    return `${hours}:${minutes}:${seconds} ${period}`;
+  };
   
   // Helper function to translate area names
   const translateArea = (areaName: string): string => {
@@ -477,9 +496,7 @@ function ConsultaTurnos() {
         <div className="flex justify-between">
           <span className="font-medium text-gray-600 dark:text-gray-300">{t("shifts.start")}:</span>
           <span className="text-gray-800 dark:text-gray-100">
-            {turnoActual.d_fecha_atendido
-              ? new Date(turnoActual.d_fecha_atendido).toLocaleTimeString('es-MX')
-              : 'N/A'}
+            {formatTime(turnoActual.t_tiempo_espera)}
           </span>
         </div>
       </div>

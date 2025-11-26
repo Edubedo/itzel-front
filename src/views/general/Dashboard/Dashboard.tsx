@@ -161,32 +161,6 @@ const Dashboard: React.FC = () => {
     return '--:--';
   };
 
-  // Función helper para formatear fecha/hora de atención con AM/PM correcto
-  const formatearFechaAtencion = (fechaAtencion: string | null | undefined): string => {
-    if (!fechaAtencion) return '--:--';
-
-    try {
-      // Convertir fecha a objeto Date (viene en UTC)
-      const fecha = new Date(fechaAtencion);
-      if (isNaN(fecha.getTime())) return '--:--';
-
-      // Obtener horas UTC y ajustar a hora de México (UTC - 6 horas)
-      let hours = fecha.getUTCHours() - 6;
-      if (hours < 0) hours += 24; // Ajustar si es negativo
-
-      const minutes = fecha.getUTCMinutes();
-      const seconds = fecha.getUTCSeconds();
-
-      // Convertir a formato 12 horas con AM/PM
-      const period = hours >= 12 ? 'p.m.' : 'a.m.';
-      hours = hours % 12 || 12; // Convert 0 to 12 for midnight
-
-      return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${period}`;
-    } catch (error) {
-      return '--:--';
-    }
-  };
-
   return (
     <div className="flex flex-col h-screen overflow-hidden"
       style={{
@@ -390,17 +364,6 @@ const Dashboard: React.FC = () => {
                       {formatearTiempoEspera(turnoActual.t_tiempo_espera)}
                     </span>
                   </div>
-                  {turnoActual.d_fecha_atendido && (
-                    <>
-                      <div className="h-px bg-gradient-to-r from-transparent via-[#8ECAB2]/30 to-transparent"></div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-xs font-bold text-[#70A18E] min-w-[90px]">Inicio atención:</span>
-                        <span className="text-xs text-gray-700 font-medium">
-                          {formatearFechaAtencion(turnoActual.d_fecha_atendido)}
-                        </span>
-                      </div>
-                    </>
-                  )}
                 </div>
               </div>
             </div>

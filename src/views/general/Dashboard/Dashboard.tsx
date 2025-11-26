@@ -166,18 +166,20 @@ const Dashboard: React.FC = () => {
     if (!fechaAtencion) return '--:--';
 
     try {
+      // Convertir fecha a objeto Date
       const fecha = new Date(fechaAtencion);
       if (isNaN(fecha.getTime())) return '--:--';
 
-      // Usar toLocaleTimeString con formato específico para obtener hora local correcta
-      const timeString = fecha.toLocaleTimeString('es-MX', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      });
+      // Extraer horas, minutos y segundos (hora LOCAL, no UTC)
+      let hours = fecha.getHours();
+      const minutes = fecha.getMinutes();
+      const seconds = fecha.getSeconds();
       
-      // Reemplazar "a. m." y "p. m." por "a.m." y "p.m."
-      return timeString.replace('a. m.', 'a.m.').replace('p. m.', 'p.m.');
+      // Convertir a formato 12 horas con AM/PM
+      const period = hours >= 12 ? 'p.m.' : 'a.m.';
+      hours = hours % 12 || 12; // Convert 0 to 12 for midnight
+      
+      return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${period}`;
     } catch (error) {
       return '--:--';
     }

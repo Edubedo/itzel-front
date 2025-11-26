@@ -434,9 +434,9 @@ export default function Starter() {
         <div className="p-6">
           <div className="bg-gray-50 rounded-xl p-4 mb-6">
             <div className="text-center">
-              <div className="text-xs text-gray-500">Turno a cancelar</div>
+              <div className="text-xs text-gray-500">{t("starter.turnToCancel")}</div>
               <div className="font-semibold text-[#3A554B] text-lg">
-                TURNO No. {turnoCreado?.i_numero_turno}
+                {t("starter.turnNumber")} {turnoCreado?.i_numero_turno}
               </div>
               <div className="font-semibold text-gray-600 text-sm">
                 {turnoCreado?.s_servicio}
@@ -740,21 +740,21 @@ export default function Starter() {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] blur-xl opacity-50 animate-pulse"></div>
                 <h2 className="relative text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#70A18E] tracking-tight">
-                  SELECCIÓN DE SERVICIO
+                  {t("starter.serviceSelection")}
                 </h2>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm md:text-base">
               <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="font-semibold text-[#3A554B]">Cliente: {esCliente ? 'Cliente CFE' : 'No cliente'}</span>
+                <span className="font-semibold text-[#3A554B]">{t("starter.client")}: {esCliente ? t("starter.cfeClientType") : t("starter.notClientType")}</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
                 <svg className="w-4 h-4 text-[#70A18E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span className="font-semibold text-[#3A554B]">Sucursal: {sucursalSeleccionada?.s_nombre_sucursal}</span>
+                <span className="font-semibold text-[#3A554B]">{t("starter.branch")}: {sucursalSeleccionada?.s_nombre_sucursal}</span>
               </div>
             </div>
           </div>
@@ -768,7 +768,7 @@ export default function Starter() {
                   <div className={`w-2 h-2 rounded-full animate-pulse ${timer <= 10 ? 'bg-red-500' : timer <= 20 ? 'bg-amber-500' : 'bg-green-500'
                     }`}></div>
                   <span className="text-sm font-medium text-[#3A554B]">
-                    Tiempo restante:
+                    {t("starter.timeRemaining")}
                     <span className={`font-bold ml-1 ${timer <= 10 ? 'text-red-600' : timer <= 20 ? 'text-amber-600' : 'text-green-600'
                       }`}>
                       {timer}s
@@ -794,7 +794,7 @@ export default function Starter() {
               <div className="w-8 h-8 bg-gradient-to-br from-[#70A18E] to-[#8ECAB2] rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">1</span>
               </div>
-              <h3 className="text-xl font-bold text-[#0A1310]">Seleccione el área:</h3>
+              <h3 className="text-xl font-bold text-[#0A1310]">{t("starter.selectArea")}</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {areas.map((area) => (
@@ -833,7 +833,7 @@ export default function Starter() {
                   <span className="text-white font-bold text-sm">2</span>
                 </div>
                 <h3 className="text-xl font-bold text-[#0A1310]">
-                  Seleccione el servicio en {areaSeleccionada.s_area}:
+                  {t("starter.selectService")} {areaSeleccionada.s_area}:
                 </h3>
               </div>
 
@@ -844,7 +844,7 @@ export default function Starter() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.709M15 6H9a2 2 0 00-2 2v10a2 2 0 002 2h6a2 2 0 002-2V8a2 2 0 00-2-2z" />
                     </svg>
                   </div>
-                  <p className="text-gray-500 text-lg font-medium">No hay servicios disponibles para esta área</p>
+                  <p className="text-gray-500 text-lg font-medium">{t("starter.noServicesAvailable")}</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -882,7 +882,7 @@ export default function Starter() {
                         {/* Action indicator - Movido fuera del flex container */}
                         <div className="flex items-center justify-between mt-4"> {/* Agregado mt-4 */}
                           <div className="flex items-center gap-2 text-[#70A18E] group-hover:gap-3 transition-all">
-                            <span className="text-sm font-bold">SELECCIONAR</span>
+                            <span className="text-sm font-bold">{t("starter.select")}</span>
                             <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                             </svg>
@@ -919,7 +919,7 @@ export default function Starter() {
                 <svg className="w-5 h-5 text-white group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                <span className="text-white font-bold">Regresar al inicio</span>
+                <span className="text-white font-bold">{t("starter.returnToStart")}</span>
               </div>
             </button>
           </div>
@@ -1023,37 +1023,32 @@ export default function Starter() {
         {/* Ticket Visual */}
         <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6 mb-6">
           <div className="text-center mb-4">
-            {logoLight ? (
-              <img
-                src={logoLight}
-                alt="ITZEL Logo"
-                className="w-32 h-32 mx-auto mb-2 object-contain"
-              />
-            ) : (
-              <img
-                src="/images/Logo2/Logo%20Itzel%20CFE%20Redondo.png"
-                alt="ITZEL Logo"
-                className="w-32 h-32 mx-auto mb-2"
-              />
-            )}
+            <img
+              src={logoLight || "/images/Logo2/Logo%20Itzel%20CFE%20Redondo.png"}
+              alt="ITZEL Logo"
+              className="w-32 h-32 mx-auto mb-2 object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/images/Logo2/Logo%20Itzel%20CFE%20Redondo.png";
+              }}
+            />
             <h3 className="font-bold text-lg text-[#0A1310]">SISTEMA ITZEL</h3>
-            <p className="text-sm text-gray-600">Comisión Federal de Electricidad</p>
+            <p className="text-sm text-gray-600">{t("starter.cfe")}</p>
           </div>
 
           <div className="border-t border-gray-300 pt-4">
             <div className="text-center mb-4">
               <div className="text-3xl font-bold text-[#3A554B] mb-2">
-                TURNO No. {turnoCreado?.i_numero_turno}
+                {t("starter.turnNumber")} {turnoCreado?.i_numero_turno}
               </div>
             </div>
 
             <div className="space-y-2 text-sm">
-              <div><strong>Área:</strong> {turnoCreado?.s_area}</div>
-              <div><strong>Servicio:</strong> {turnoCreado?.s_servicio}</div>
-              <div><strong>Sucursal:</strong> {turnoCreado?.s_nombre_sucursal}</div>
-              <div><strong>Tipo:</strong> {esCliente ? 'Cliente CFE' : 'No cliente'}</div>
-              <div><strong>Fecha:</strong> {new Date().toLocaleDateString('es-MX')}</div>
-              <div><strong>Hora:</strong> {new Date().toLocaleTimeString('es-MX')}</div>
+              <div><strong>{t("starter.area")}:</strong> {turnoCreado?.s_area}</div>
+              <div><strong>{t("starter.service")}:</strong> {turnoCreado?.s_servicio}</div>
+              <div><strong>{t("starter.branch")}:</strong> {turnoCreado?.s_nombre_sucursal}</div>
+              <div><strong>{t("starter.type")}:</strong> {esCliente ? t("starter.cfeClientType") : t("starter.notClientType")}</div>
+              <div><strong>{t("starter.date")}:</strong> {new Date().toLocaleDateString('es-MX')}</div>
+              <div><strong>{t("starter.time")}:</strong> {new Date().toLocaleTimeString('es-MX')}</div>
             </div>
           </div>
 
@@ -1100,7 +1095,7 @@ export default function Starter() {
             onClick={regresarAlInicio}
             className="w-full bg-[#5D7166] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#4A5B52] transition-colors"
           >
-            ← Regresar al inicio
+            ← {t("starter.returnToStart")}
           </button>
         </div>
 
@@ -1113,61 +1108,172 @@ export default function Starter() {
   );
 
   // Función para renderizar el modal de aviso de privacidad
-// Función para renderizar el modal de aviso de privacidad
   const renderPrivacyModal = () => (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center z-[100] p-4 pt-20">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-auto border border-white/20">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-6 pt-24 pb-6">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full mx-auto border border-white/20 max-h-[85vh] flex flex-col">
 
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] p-6 rounded-t-2xl text-center">
-          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            {/* Icono de privacidad (escudo) */}
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {/* --- LÍNEA CORREGIDA --- */}
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2.163l-8 3.92V11.2c0 5.4 3.4 10.3 8 11.6 4.6-1.3 8-6.2 8-11.6V6.083l-8-3.92z" />
-            </svg>
+         {/* Header */}
+         <div className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] p-6 rounded-t-2xl text-center flex-shrink-0">
+           <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+             {/* Icono de privacidad (escudo) */}
+             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+             </svg>
+           </div>
+           <h3 className="text-2xl font-bold text-white mb-2">{t("privacy.title")}</h3>
+           <p className="text-white/90 text-sm">
+             {t("privacy.subtitle")}
+           </p>
+         </div>
+
+        {/* Contenido del Aviso - Con Scroll */}
+        <div className="p-6 overflow-y-auto flex-1">
+          <div className="space-y-6">
+            
+             {/* Sección 1: Responsable */}
+             <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
+               <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
+                 <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
+                 {t("privacy.dataResponsible")}
+               </h4>
+               <p className="text-sm text-gray-700 leading-relaxed">
+                 {t("privacy.dataResponsibleText")}
+               </p>
+             </div>
+
+             {/* Sección 2: Finalidad */}
+             <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200">
+               <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
+                 <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
+                 {t("privacy.purposeTitle")}
+               </h4>
+               <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+                 {t("privacy.purposeText")}
+               </p>
+               <div className="space-y-2">
+                 <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
+                   <span className="text-[#70A18E] font-bold">•</span>
+                   <span className="text-sm text-gray-700">{t("privacy.purpose1")}</span>
+                 </div>
+                 <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
+                   <span className="text-[#70A18E] font-bold">•</span>
+                   <span className="text-sm text-gray-700">{t("privacy.purpose2")}</span>
+                 </div>
+                 <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
+                   <span className="text-[#70A18E] font-bold">•</span>
+                   <span className="text-sm text-gray-700">{t("privacy.purpose3")}</span>
+                 </div>
+                 <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
+                   <span className="text-[#70A18E] font-bold">•</span>
+                   <span className="text-sm text-gray-700">{t("privacy.purpose4")}</span>
+                 </div>
+               </div>
+             </div>
+
+             {/* Sección 3: Términos y Condiciones */}
+             <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200">
+               <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
+                 <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
+                 {t("privacy.termsTitle")}
+               </h4>
+               <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+                 {t("privacy.termsText")}
+               </p>
+               <div className="space-y-2">
+                 <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
+                   <p className="text-sm text-gray-700"><strong className="text-gray-800">{t("privacy.term1Title")}</strong> {t("privacy.term1Text")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
+                   <p className="text-sm text-gray-700"><strong className="text-gray-800">{t("privacy.term2Title")}</strong> {t("privacy.term2Text")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
+                   <p className="text-sm text-gray-700"><strong className="text-gray-800">{t("privacy.term3Title")}</strong> {t("privacy.term3Text")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
+                   <p className="text-sm text-gray-700"><strong className="text-gray-800">{t("privacy.term4Title")}</strong> {t("privacy.term4Text")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
+                   <p className="text-sm text-gray-700"><strong className="text-gray-800">{t("privacy.term5Title")}</strong> {t("privacy.term5Text")}</p>
+                 </div>
+               </div>
+             </div>
+
+             {/* Sección 4: Derechos ARCO */}
+             <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 border border-purple-200">
+               <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
+                 <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
+                 {t("privacy.arcoTitle")}
+               </h4>
+               <p className="text-sm text-gray-700 mb-4 leading-relaxed">
+                 {t("privacy.arcoText")}
+               </p>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                 <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
+                   <h5 className="font-bold text-gray-800 mb-1 text-sm">{t("privacy.arcoAccess")}</h5>
+                   <p className="text-xs text-gray-600">{t("privacy.arcoAccessDesc")}</p>
+                 </div>
+                 <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
+                   <h5 className="font-bold text-gray-800 mb-1 text-sm">{t("privacy.arcoRectification")}</h5>
+                   <p className="text-xs text-gray-600">{t("privacy.arcoRectificationDesc")}</p>
+                 </div>
+                 <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
+                   <h5 className="font-bold text-gray-800 mb-1 text-sm">{t("privacy.arcoCancellation")}</h5>
+                   <p className="text-xs text-gray-600">{t("privacy.arcoCancellationDesc")}</p>
+                 </div>
+                 <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
+                   <h5 className="font-bold text-gray-800 mb-1 text-sm">{t("privacy.arcoOpposition")}</h5>
+                   <p className="text-xs text-gray-600">{t("privacy.arcoOppositionDesc")}</p>
+                 </div>
+               </div>
+             </div>
+
+             {/* Sección 5: Protección de Datos */}
+             <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-5 border border-amber-200">
+               <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
+                 <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
+                 {t("privacy.protectionTitle")}
+               </h4>
+               <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+                 {t("privacy.protectionText")}
+               </p>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                 <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
+                   <p className="text-xs text-gray-700 font-medium">{t("privacy.protection1")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
+                   <p className="text-xs text-gray-700 font-medium">{t("privacy.protection2")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
+                   <p className="text-xs text-gray-700 font-medium">{t("privacy.protection3")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
+                   <p className="text-xs text-gray-700 font-medium">{t("privacy.protection4")}</p>
+                 </div>
+               </div>
+             </div>
+
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">Aviso de Privacidad</h3>
-          <p className="text-white/80 text-sm">
-            Su información es importante para nosotros.
-          </p>
         </div>
 
-        {/* Contenido del Aviso */}
-        <div className="p-6">
-          <div className="bg-gray-50 rounded-xl p-4 mb-6">
-            {/* TEXTO DEL AVISO DE PRIVACIDAD */}
-            <h4 className="font-bold text-gray-800 mb-2">Responsable de los datos</h4>
-            <p className="text-sm text-gray-600 mb-4">
-              Comisión Federal de Electricidad (CFE), es responsable del tratamiento de sus datos personales.
-            </p>
-            <h4 className="font-bold text-gray-800 mb-2">Finalidad</h4>
-            <p className="text-sm text-gray-600 mb-4">
-              Los datos personales que recabamos de usted, los utilizaremos para las siguientes finalidades que son necesarias para el servicio que solicita:
-              <ul className="list-disc list-inside ml-4 mt-2">
-                <li>Gestionar y registrar su turno de atención.</li>
-                <li>Validar su identidad como cliente (si aplica).</li>
-                <li>Brindarle el servicio o trámite solicitado.</li>
-                <li>Generar estadísticas internas para la mejora del servicio.</li>
-              </ul>
-            </p>
-            <p className="text-sm text-gray-600">
-              Al continuar, usted acepta el tratamiento de sus datos personales conforme a nuestro aviso de privacidad integral.
-            </p>
-            {/* FIN DEL TEXTO */}
-          </div>
-
-          {/* Botón de Aceptar */}
-          <button
-            onClick={() => setShowPrivacyModal(false)}
-            className="relative w-full bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 group overflow-hidden" // Agrega 'relative' y 'group' y 'overflow-hidden'
-          >
-            {/* Añade este div para el efecto de brillo verde */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#B7F2DA]/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-
-            <span className="relative z-10">Entendido y Aceptar</span> {/* Envuelve el texto con un span y z-10 */}
-          </button>
-        </div>
+         {/* Footer con Botón */}
+         <div className="p-6 border-t border-gray-200 flex-shrink-0 bg-gray-50 rounded-b-2xl">
+           <button
+             onClick={() => setShowPrivacyModal(false)}
+             className="relative w-full bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 group overflow-hidden shadow-lg hover:shadow-xl"
+           >
+             {/* Efecto de brillo */}
+             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#B7F2DA]/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+             <span className="relative z-10 flex items-center justify-center gap-2">
+               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+               </svg>
+               {t("privacy.acceptButton")}
+             </span>
+           </button>
+           <p className="text-center text-xs text-gray-500 mt-3">
+             {t("privacy.acceptFooter")}
+           </p>
+         </div>
       </div>
     </div>
   );

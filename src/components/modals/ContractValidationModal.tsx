@@ -8,39 +8,53 @@ interface ContractValidationModalProps {
   onSuccess: (clientData: any) => void;
 }
 
-export default function ContractValidationModal({ 
-  isOpen, 
-  onClose, 
-  onSuccess 
+export default function ContractValidationModal({
+  isOpen,
+  onClose,
+  onSuccess
 }: ContractValidationModalProps) {
   const [contractNumber, setContractNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldError, setFieldError] = useState<{ contract?: string }>({});
   const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!contractNumber.trim()) {
-      setError('Por favor ingrese su número de contrato');
+      setFieldError({ contract: t('contractValidation.required') });
       return;
     }
 
     setLoading(true);
     setError('');
+    setFieldError({});
 
     try {
       const response = await clientesService.validateContractNumber(contractNumber.trim());
-      
+
       if (response.success) {
         onSuccess(response.data);
         setContractNumber('');
         onClose();
       } else {
-        setError(response.message || 'Error al validar el contrato');
+        setError(response.message || t('contractValidation.genericError'));
       }
     } catch (err: any) {
-      setError(err.message || 'Error al validar el número de contrato');
+      console.log('Error capturado:', err);
+
+      // Manejar errores específicos según el código
+      if (err.code === 'CONTRACT_NOT_FOUND' || err.status === 404) {
+        setFieldError({ contract: t('contractValidation.notFound') });
+      } else if (err.code === 'NETWORK_ERROR') {
+        setError(t('contractValidation.networkError'));
+      } else if (err.code === 'INVALID_CONTRACT') {
+        setFieldError({ contract: t('contractValidation.invalidFormat') });
+      } else {
+        // Error genérico
+        setError(err.message || t('contractValidation.genericError'));
+      }
     } finally {
       setLoading(false);
     }
@@ -49,6 +63,7 @@ export default function ContractValidationModal({
   const handleClose = () => {
     setContractNumber('');
     setError('');
+    setFieldError({});
     onClose();
   };
 
@@ -66,10 +81,10 @@ export default function ContractValidationModal({
           </div>
           <div className="ml-4">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-              Validación de Cliente
+              {t('contractValidation.title')}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Ingrese su número de contrato
+              {t('contractValidation.subtitle')}
             </p>
           </div>
         </div>
@@ -79,17 +94,29 @@ export default function ContractValidationModal({
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Número de Contrato
+                {t('contractValidation.label')}
               </label>
               <input
                 type="text"
                 value={contractNumber}
-                onChange={(e) => setContractNumber(e.target.value)}
-                placeholder="Ingrese su número de contrato"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-400 dark:focus:border-blue-400"
+                onChange={(e) => {
+                  setContractNumber(e.target.value);
+                  setError('');
+                  setFieldError({});
+                }}
+                placeholder={t('contractValidation.placeholder')}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 transition-colors dark:bg-gray-700 dark:text-white ${fieldError.contract
+                  ? 'border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-600'
+                  : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-400 dark:focus:border-blue-400'
+                  }`}
                 disabled={loading}
                 autoFocus
               />
+              {fieldError.contract && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldError.contract}
+                </p>
+              )}
             </div>
 
             {error && (
@@ -110,15 +137,14 @@ export default function ContractValidationModal({
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
                 disabled={loading}
               >
-                Cancelar
+                {t('contractValidation.cancel')}
               </button>
               <button
                 type="submit"
-                className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors ${
-                  loading
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500'
-                }`}
+                className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors ${loading
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500'
+                  }`}
                 disabled={loading}
               >
                 {loading ? (
@@ -127,10 +153,10 @@ export default function ContractValidationModal({
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Validando...
+                    {t('contractValidation.validating')}
                   </span>
                 ) : (
-                  'Validar'
+                  t('contractValidation.validate')
                 )}
               </button>
             </div>

@@ -131,14 +131,20 @@ const Header: React.FC<HeaderProps> = ({ showBranchSelector = true, title, showL
             <div className="absolute inset-0 bg-[#8ECAB2] rounded-full blur-md opacity-40 group-hover:opacity-60 transition-opacity"></div>
             <div className="relative w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center overflow-hidden shadow-lg border-2 border-[#B7F2DA]/30 group-hover:border-[#B7F2DA]/60 transition-all duration-300 group-hover:scale-110">
               <img
-                src={logoLight}
+                src={logoLight || "/images/logo/itzelLogoR.png"}
                 alt="ITZEL Logo"
                 className="w-full h-full object-cover dark:hidden"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR.png";
+                }}
               />
               <img
-                src={logoDark}
+                src={logoDark || "/images/logo/itzelLogoR_dark.png"}
                 alt="ITZEL Logo"
                 className="w-full h-full object-cover hidden dark:block"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR_dark.png";
+                }}
               />
             </div>
           </div>

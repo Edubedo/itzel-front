@@ -38,16 +38,22 @@ export default function AuthLayout({
                   <img
                     width={231}
                     height={48}
-                    src={logoLight}
+                    src={logoLight || "/images/logo/itzelLogoR.png"}
                     alt="Logo"
                     className="dark:hidden relative z-10"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR.png";
+                    }}
                   />
                   <img
                     width={231}
                     height={48}
-                    src={logoDark}
+                    src={logoDark || "/images/logo/itzelLogoR_dark.png"}
                     alt="Logo"
                     className="hidden dark:block relative z-10"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR_dark.png";
+                    }}
                   />
                 </div>
               </Link>

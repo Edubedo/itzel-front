@@ -350,13 +350,21 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
           <Link to="/home" className="lg:hidden">
             <img
               className="dark:hidden h-8 w-auto max-h-10"
-              src={logoLight}
+              src={logoLight || "/images/logo/itzelLogoR.png"}
               alt="Logo"
+              onError={(e) => {
+                // Si falla la carga, usar logo por defecto
+                (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR.png";
+              }}
             />
             <img
               className="hidden dark:block h-8 w-auto max-h-10"
-              src={logoDark}
+              src={logoDark || "/images/logo/itzelLogoR_dark.png"}
               alt="Logo"
+              onError={(e) => {
+                // Si falla la carga, usar logo por defecto
+                (e.target as HTMLImageElement).src = "/images/logo/itzelLogoR_dark.png";
+              }}
             />
           </Link>
 

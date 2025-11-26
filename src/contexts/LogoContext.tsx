@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { getApiBaseUrl } from "../../utils/util_baseUrl";
 
 type LogoContextType = {
     logoLight: string;
@@ -16,8 +17,12 @@ export const useLogo = () => {
 };
 
 export const LogoProvider = ({ children }: { children: ReactNode }) => {
-    const [logoLight, setLogoLight] = useState<string>("");
-    const [logoDark, setLogoDark] = useState<string>("");
+    // Logos por defecto (rutas relativas que funcionan en producción)
+    const DEFAULT_LOGO_LIGHT = "/images/logo/itzelLogoR.png";
+    const DEFAULT_LOGO_DARK = "/images/logo/itzelLogoR_dark.png";
+
+    const [logoLight, setLogoLight] = useState<string>(DEFAULT_LOGO_LIGHT);
+    const [logoDark, setLogoDark] = useState<string>(DEFAULT_LOGO_DARK);
 
     // Cargar logos al inicializar
     useEffect(() => {
@@ -26,24 +31,40 @@ export const LogoProvider = ({ children }: { children: ReactNode }) => {
 
     const loadLogos = async () => {
         try {
-            const response = await fetch('/api/configuracion_sistema/configuracion');
+            const baseUrl = getApiBaseUrl();
+            const response = await fetch(`${baseUrl}/api/configuracion_sistema/configuracion`);
             if (response.ok) {
                 const config = await response.json();
-                if (config.s_logo_light) setLogoLight(config.s_logo_light);
-                if (config.s_logo_dark) setLogoDark(config.s_logo_dark);
+                
+                // Si hay logo light en base64, usarlo; si no, usar el por defecto
+                if (config.s_logo_light && config.s_logo_light.startsWith('data:image')) {
+                    setLogoLight(config.s_logo_light);
+                } else {
+                    setLogoLight(DEFAULT_LOGO_LIGHT);
+                }
+                
+                // Si hay logo dark en base64, usarlo; si no, usar el por defecto
+                if (config.s_logo_dark && config.s_logo_dark.startsWith('data:image')) {
+                    setLogoDark(config.s_logo_dark);
+                } else {
+                    setLogoDark(DEFAULT_LOGO_DARK);
+                }
             }
         } catch (error) {
             console.error("Error cargando logos:", error);
             // Usar logos por defecto si hay error
-            setLogoLight("/images/logo/itzelLogoR.png");
-            setLogoDark("/images/logo/itzelLogoR_dark.png");
+            setLogoLight(DEFAULT_LOGO_LIGHT);
+            setLogoDark(DEFAULT_LOGO_DARK);
         }
     };
 
     useEffect(() => {
         const favicon = document.querySelector("link[rel='icon']");
         if (favicon && logoLight) {
-            favicon.setAttribute("href", logoLight);
+            // Solo actualizar favicon si es base64 o una ruta válida
+            if (logoLight.startsWith('data:image') || logoLight.startsWith('/') || logoLight.startsWith('http')) {
+                favicon.setAttribute("href", logoLight);
+            }
         }
     }, [logoLight]);
 

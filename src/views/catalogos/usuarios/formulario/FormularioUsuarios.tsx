@@ -100,6 +100,38 @@ function FormularioUsuarios() {
   };
 
   const handleInputChange = (field: keyof UsuarioFormData, value: string | number) => {
+    // Validación especial para fecha de nacimiento
+    if (field === 'd_fecha_nacimiento' && typeof value === 'string') {
+      // Validar formato de fecha YYYY-MM-DD
+      const dateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
+      
+      if (value) {
+        // Si el valor tiene el formato completo, validarlo
+        if (dateRegex.test(value)) {
+          const year = parseInt(value.substring(0, 4), 10);
+          const currentYear = new Date().getFullYear();
+          
+          // Validar que el año esté en un rango razonable (1900 - año actual)
+          if (year < 1900 || year > currentYear) {
+            return; // No actualizar si el año está fuera de rango
+          }
+        } else {
+          // Si el usuario está escribiendo manualmente, asegurar que el año tenga máximo 4 dígitos
+          const parts = value.split('-');
+          if (parts[0] && parts[0].length > 4) {
+            // Truncar el año a 4 dígitos
+            parts[0] = parts[0].substring(0, 4);
+            value = parts.join('-');
+          }
+          
+          // No permitir más de 10 caracteres en total (YYYY-MM-DD)
+          if (value.length > 10) {
+            return;
+          }
+        }
+      }
+    }
+
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -325,8 +357,36 @@ function FormularioUsuarios() {
                 <Input
                   type="date"
                   value={formData.d_fecha_nacimiento}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleInputChange('d_fecha_nacimiento', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    let value = e.target.value;
+                    // Asegurar que el año tenga máximo 4 dígitos
+                    if (value) {
+                      const parts = value.split('-');
+                      if (parts[0] && parts[0].length > 4) {
+                        parts[0] = parts[0].substring(0, 4);
+                        value = parts.join('-');
+                        e.target.value = value;
+                      }
+                    }
+                    handleInputChange('d_fecha_nacimiento', value);
+                  }}
+                  min="1900-01-01"
+                  max={new Date().toISOString().split('T')[0]}
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    // Prevenir entrada manual de más de 4 dígitos en el año
+                    const input = e.currentTarget;
+                    const cursorPosition = input.selectionStart || 0;
+                    const currentValue = input.value || '';
+                    
+                    // Si está escribiendo en la posición del año (primeros 4 caracteres)
+                    if (cursorPosition <= 4 && e.key.match(/\d/)) {
+                      const yearPart = currentValue.substring(0, 4).replace(/\D/g, '');
+                      // Si ya hay 4 dígitos en el año y está intentando escribir más, prevenir
+                      if (yearPart.length >= 4 && cursorPosition <= 4) {
+                        e.preventDefault();
+                      }
+                    }
+                  }}
                 />
               </div>
 

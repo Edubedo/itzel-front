@@ -803,13 +803,13 @@ const translations = {
     "area.serviciosTecnicosDesc1": "Revisión, cambio y calibración de medidores",
     "area.serviciosTecnicosDesc2": "Inspecciones, dictámenes y asesoría",
     "area.contratacion": "Contratación",
-    "area.contratacionDesc": "Contratación y altas de servicio",
+    "area.contratacionDesc": "Contratar servicio",
     "area.informacionConsultas": "Información y Consultas",
-    "area.informacionConsultasDesc": "Información general y consultas",
+    "area.informacionConsultasDesc": "Asesorías e información de requisitos",
     "area.recursosHumanos": "Recursos Humanos",
     "area.recursosHumanosDesc": "Gestión de personal y recursos humanos",
     "area.reportes": "Reportes",
-    "area.reportesDesc": "Generación de reportes y estadísticas",
+    "area.reportesDesc": "Área para reportar incidentes",
     "shifts.pending": "pendientes",
     "shifts.pendingCount": "({count} pendientes)",
     
@@ -824,6 +824,10 @@ const translations = {
     "service.reporteFallasDesc": "Reportar interrupciones del servicio",
     "service.cambioTitularidad": "Cambio de Titularidad",
     "service.cambioTitularidadDesc": "Cambio de propietario del servicio",
+    "service.postesPeligrosos": "Postes Peligrosos",
+    "service.postesPeligrososDesc": "Postes inclinados, cables sueltos, accidentes.",
+    "service.transformadoresDanados": "Transformadores Dañados",
+    "service.transformadoresDanadosDesc": "Fallas en equipos de distribución",
   },
   en: {
     // Header
@@ -1614,13 +1618,13 @@ const translations = {
     "area.serviciosTecnicosDesc1": "Review, change, and calibration of meters",
     "area.serviciosTecnicosDesc2": "Inspections, opinions, and advice",
     "area.contratacion": "Contracting",
-    "area.contratacionDesc": "Service contracting and activations",
-    "area.informacionConsultas": "Information and Inquiries",
-    "area.informacionConsultasDesc": "General information and inquiries",
+    "area.contratacionDesc": "Contract service",
+    "area.informacionConsultas": "Information and Consultations",
+    "area.informacionConsultasDesc": "Advice and information on requirements",
     "area.recursosHumanos": "Human Resources",
     "area.recursosHumanosDesc": "Personnel and human resources management",
     "area.reportes": "Reports",
-    "area.reportesDesc": "Report generation and statistics",
+    "area.reportesDesc": "Area to report incidents",
     "shifts.pending": "pending",
     "shifts.pendingCount": "({count} pending)",
     
@@ -1635,6 +1639,10 @@ const translations = {
     "service.reporteFallasDesc": "Report service interruptions",
     "service.cambioTitularidad": "Change of Ownership",
     "service.cambioTitularidadDesc": "Change of service owner",
+    "service.postesPeligrosos": "Dangerous Poles",
+    "service.postesPeligrososDesc": "Inclined poles, loose cables, accidents.",
+    "service.transformadoresDanados": "Damaged Transformers",
+    "service.transformadoresDanadosDesc": "Failures in distribution equipment",
   }
 };
 

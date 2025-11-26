@@ -161,6 +161,28 @@ const Dashboard: React.FC = () => {
     return '--:--';
   };
 
+  // Función helper para formatear fecha/hora de atención con AM/PM correcto
+  const formatearFechaAtencion = (fechaAtencion: string | null | undefined): string => {
+    if (!fechaAtencion) return '--:--';
+
+    try {
+      const fecha = new Date(fechaAtencion);
+      if (isNaN(fecha.getTime())) return '--:--';
+
+      // Obtener horas y minutos en UTC y ajustar a hora local
+      const hours = fecha.getHours();
+      const minutes = fecha.getMinutes();
+      
+      // Convertir a formato 12 horas
+      const period = hours >= 12 ? 'p.m.' : 'a.m.';
+      const hours12 = hours % 12 || 12;
+      
+      return `${String(hours12).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+    } catch (error) {
+      return '--:--';
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen overflow-hidden"
       style={{
@@ -370,10 +392,7 @@ const Dashboard: React.FC = () => {
                       <div className="flex items-start gap-2">
                         <span className="text-xs font-bold text-[#70A18E] min-w-[90px]">Inicio atención:</span>
                         <span className="text-xs text-gray-700 font-medium">
-                          {new Date(turnoActual.d_fecha_atendido).toLocaleTimeString('es-MX', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
+                          {formatearFechaAtencion(turnoActual.d_fecha_atendido)}
                         </span>
                       </div>
                     </>

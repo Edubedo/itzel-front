@@ -73,6 +73,15 @@ export default function Starter() {
     if (normalized.includes('servicios tecnicos') || normalized.includes('servicio tecnico') || normalized.includes('technical services')) {
       return t("area.serviciosTecnicos");
     }
+    if (normalized.includes('contratacion') || normalized.includes('contracting') || normalized.includes('hiring')) {
+      return t("area.contratacion");
+    }
+    if (normalized.includes('informacion y consultas') || normalized.includes('informacion consultas') || normalized.includes('information and inquiries') || normalized.includes('information inquiries')) {
+      return t("area.informacionConsultas");
+    }
+    if (normalized.includes('reportes') || normalized.includes('reports')) {
+      return t("area.reportes");
+    }
     // If no translation found, return original
     return areaName;
   };
@@ -107,6 +116,15 @@ export default function Starter() {
       // If description doesn't match, try to infer from area name or return second type
       return t("area.serviciosTecnicosDesc2");
     }
+    if (normalizedArea.includes('contratacion') || normalizedArea.includes('contracting') || normalizedArea.includes('hiring')) {
+      return t("area.contratacionDesc");
+    }
+    if (normalizedArea.includes('informacion y consultas') || normalizedArea.includes('informacion consultas') || normalizedArea.includes('information and inquiries') || normalizedArea.includes('information inquiries')) {
+      return t("area.informacionConsultasDesc");
+    }
+    if (normalizedArea.includes('reportes') || normalizedArea.includes('reports')) {
+      return t("area.reportesDesc");
+    }
     // If no translation found, return original
     return desc;
   };
@@ -136,6 +154,14 @@ export default function Starter() {
     if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('titularidad') || normalized.includes('ownership') || normalized.includes('owner'))) {
       return t("service.cambioTitularidad");
     }
+    // Postes Peligrosos
+    if (normalized.includes('postes peligrosos') || normalized.includes('poste peligroso') || normalized.includes('dangerous poles') || normalized.includes('dangerous pole')) {
+      return t("service.postesPeligrosos");
+    }
+    // Transformadores Dañados
+    if ((normalized.includes('transformador') || normalized.includes('transformer')) && (normalized.includes('dañado') || normalized.includes('danado') || normalized.includes('damaged'))) {
+      return t("service.transformadoresDanados");
+    }
     // If no translation found, return original
     return serviceName;
   };
@@ -164,6 +190,14 @@ export default function Starter() {
     // Cambio de Titularidad
     if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('titularidad') || normalized.includes('ownership') || normalized.includes('owner'))) {
       return t("service.cambioTitularidadDesc");
+    }
+    // Postes Peligrosos
+    if (normalized.includes('postes peligrosos') || normalized.includes('poste peligroso') || normalized.includes('dangerous poles') || normalized.includes('dangerous pole')) {
+      return t("service.postesPeligrososDesc");
+    }
+    // Transformadores Dañados
+    if ((normalized.includes('transformador') || normalized.includes('transformer')) && (normalized.includes('dañado') || normalized.includes('danado') || normalized.includes('damaged'))) {
+      return t("service.transformadoresDanadosDesc");
     }
     // If no translation found, return original
     return desc;

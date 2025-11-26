@@ -9,6 +9,7 @@ import {
 import Badge from "../../ui/badge/Badge";
 import { SucursalData } from '../../../services/sucursalesService';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useLanguage } from '../../../context/LanguageContext';
 
 interface SucursalesTableProps {
     listaSucursales: SucursalData[];
@@ -29,6 +30,7 @@ export default function SucursalesTable({
     onDelete,
     loading
 }: SucursalesTableProps) {
+    const { t } = useLanguage();
     const { user } = useAuth();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
@@ -62,7 +64,7 @@ export default function SucursalesTable({
         return (
             <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#70A18E] dark:border-[#8ECAB2]"></div>
-                <span className="ml-3 text-gray-600 dark:text-gray-400">Cargando sucursales...</span>
+                <span className="ml-3 text-gray-600 dark:text-gray-400">{t("table.branches.loading")}</span>
             </div>
         );
     }
@@ -72,11 +74,11 @@ export default function SucursalesTable({
             <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <div className="flex flex-col items-center">
                     <span className="text-2xl mb-2">🏢</span>
-                    <span>No se encontraron sucursales</span>
+                    <span>{t("table.branches.notFound")}</span>
                     <span className="text-sm mt-1">
                         {searchTerm || estadoFilter || municipioFilter
-                            ? 'Intente ajustar los filtros de búsqueda'
-                            : 'No hay sucursales registradas en el sistema'
+                            ? t("table.adjustFilters")
+                            : t("table.branches.noData")
                         }
                     </span>
                 </div>
@@ -91,31 +93,31 @@ export default function SucursalesTable({
                     <TableHeader className="border-b border-gray-100 dark:border-gray-700">
                         <TableRow>
                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                Nombre
+                                {t("table.branches.name")}
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                Domicilio
+                                {t("table.branches.address")}
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                Estado
+                                {t("table.branches.state")}
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                Municipio
+                                {t("table.branches.municipality")}
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                Teléfono
+                                {t("table.branches.phone")}
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                Ejecutivos
+                                {t("table.branches.executives")}
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                Asesores
+                                {t("table.branches.advisors")}
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                Estado
+                                {t("table.branches.status")}
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                Acciones
+                                {t("table.actions")}
                             </TableCell>
                         </TableRow>
                     </TableHeader>
@@ -158,7 +160,7 @@ export default function SucursalesTable({
                                         <button
                                             onClick={() => onEdit(sucursal)}
                                             className="p-2 text-[#70A18E] hover:text-[#547A6B] hover:bg-[#B7F2DA]/20 rounded-md transition-colors dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] dark:hover:bg-[#8ECAB2]/10"
-                                            title="Editar sucursal"
+                                            title={t("table.branches.editBranch")}
                                         >
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -168,7 +170,7 @@ export default function SucursalesTable({
                                             <button
                                                 onClick={() => onDelete(sucursal.ck_sucursal!)}
                                                 className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
-                                                title="Eliminar sucursal"
+                                                title={t("table.branches.deleteBranch")}
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" />
@@ -187,7 +189,7 @@ export default function SucursalesTable({
             {totalPages > 1 && (
                 <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200 dark:border-gray-700">
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                        Mostrando {startIndex + 1}-{endIndex} de {sucursalesFiltradas.length} sucursales
+                        {t("table.showing")} {startIndex + 1}-{endIndex} {t("table.of")} {sucursalesFiltradas.length} {t("branches.branchList").toLowerCase()}
                     </span>
                     <div className="flex space-x-2">
                         <button
@@ -195,7 +197,7 @@ export default function SucursalesTable({
                             disabled={currentPage === 1}
                             className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                         >
-                            Anterior
+                            {t("table.previous")}
                         </button>
                         {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                             let page;
@@ -226,7 +228,7 @@ export default function SucursalesTable({
                             disabled={currentPage === totalPages}
                             className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                         >
-                            Siguiente
+                            {t("table.next")}
                         </button>
                     </div>
                 </div>

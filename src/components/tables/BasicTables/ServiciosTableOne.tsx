@@ -9,6 +9,7 @@ import {
 import Badge from "../../ui/badge/Badge";
 import { serviciosService } from "../../../services/serviciosService";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useLanguage } from "../../../context/LanguageContext";
 
 interface ServiciosTableProps {
   servicios: any[];
@@ -29,6 +30,7 @@ export default function ServiciosTableOne({
   estatusFilter,
   onStatsUpdate,
 }: ServiciosTableProps) {
+  const { t } = useLanguage();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -125,7 +127,7 @@ export default function ServiciosTableOne({
   const handleShowDeleteWarning = (servicioId: string, nombre: string) => {
     setToast({
       show: true,
-      message: `¿Seguro que deseas eliminar el servicio "${nombre}"? Esta acción no se puede deshacer.`,
+      message: `${t("table.services.deleteConfirm")} "${nombre}"? ${t("table.thisActionCannotBeUndone")}`,
       type: "warning",
       servicioToDelete: {
         id: servicioId,
@@ -152,13 +154,13 @@ export default function ServiciosTableOne({
 
       setToast({
         show: true,
-        message: `Servicio "${nombre}" eliminado exitosamente`,
+        message: `${t("table.services.name")} "${nombre}" ${t("table.deleteSuccess")}`,
         type: "success"
       });
     } catch (error: any) {
       setToast({
         show: true,
-        message: `Error al eliminar el servicio: ${error.message}`,
+        message: `${t("table.services.deleteError")} ${error.message}`,
         type: "error"
       });
     } finally {
@@ -195,7 +197,7 @@ export default function ServiciosTableOne({
 
   // NUEVO: Función para mostrar el texto del tipo de cliente
   const getTipoClienteText = (esParaClientes: number) => {
-    return esParaClientes === 1 ? "Clientes" : "No clientes";
+    return esParaClientes === 1 ? t("table.services.clients") : t("table.services.nonClients");
   };
 
   // NUEVO: Función para obtener el color del badge del tipo de cliente
@@ -207,7 +209,7 @@ export default function ServiciosTableOne({
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#70A18E] dark:border-[#8ECAB2]"></div>
-        <span className="ml-3 text-gray-600 dark:text-gray-400">Cargando servicios...</span>
+        <span className="ml-3 text-gray-600 dark:text-gray-400">{t("table.services.loading")}</span>
       </div>
     );
   }
@@ -216,14 +218,14 @@ export default function ServiciosTableOne({
     return (
       <div className="flex justify-center items-center h-64">
         <div className="text-center">
-          <div className="text-red-600 dark:text-red-400 mb-2">Error al cargar servicios</div>
+          <div className="text-red-600 dark:text-red-400 mb-2">{t("table.services.error")}</div>
           <div className="text-gray-600 dark:text-gray-400 text-sm mb-3">{error}</div>
           <button
             onClick={handleRetry}
             className="px-4 py-2 bg-[#70A18E] hover:bg-[#547A6B] text-white rounded transition-colors dark:bg-[#8ECAB2] dark:hover:bg-[#70A18E]"
             disabled={loading}
           >
-            {loading ? 'Cargando...' : 'Reintentar'}
+            {loading ? t("table.loading") : t("table.retry")}
           </button>
         </div>
       </div>
@@ -255,8 +257,8 @@ export default function ServiciosTableOne({
                   toast.type === "success" ? "text-green-800 dark:text-green-300" :
                     "text-red-800 dark:text-red-300"
                   }`}>
-                  {toast.type === "warning" ? "Confirmar Eliminación" :
-                    toast.type === "success" ? "¡Éxito!" : "Error"}
+                  {toast.type === "warning" ? t("table.confirmDeletion") :
+                    toast.type === "success" ? t("table.success") : t("table.errorTitle")}
                 </h3>
               </div>
             </div>
@@ -275,7 +277,7 @@ export default function ServiciosTableOne({
                     className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-150 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
                     disabled={loading}
                   >
-                    Cancelar
+                    {t("table.cancel")}
                   </button>
                   <button
                     onClick={confirmarEliminarServicio}
@@ -283,7 +285,7 @@ export default function ServiciosTableOne({
                       }`}
                     disabled={loading}
                   >
-                    {loading ? "Eliminando..." : "Eliminar"}
+                    {loading ? t("table.deleting") : t("table.delete")}
                   </button>
                 </div>
               )}
@@ -298,7 +300,7 @@ export default function ServiciosTableOne({
                       "text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/30"
                       }`}
                   >
-                    Aceptar
+                    {t("table.accept")}
                   </button>
                 </div>
               )}
@@ -312,39 +314,39 @@ export default function ServiciosTableOne({
           <TableHeader className="border-b border-gray-100 dark:border-gray-700">
             <TableRow>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Código
+                {t("table.services.code")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Nombre del Servicio
+                {t("table.services.name")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Descripción
+                {t("table.services.description")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Área
+                {t("table.services.area")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Tipo de Cliente {/* NUEVA COLUMNA */}
+                {t("table.services.clientType")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Estado
+                {t("table.services.status")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Acciones
+                {t("table.actions")}
               </TableCell>
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-700">
             {serviciosPaginados.length === 0 && !loading ? (
               <TableRow>
-                <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400"> {/* Cambiado a 7 columnas */}
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                   <div className="flex flex-col items-center">
                     <span className="text-2xl mb-2">🛠️</span>
-                    <span>No se encontraron servicios</span>
+                    <span>{t("table.services.notFound")}</span>
                     <span className="text-sm mt-1">
                       {searchTerm || estatusFilter || areaFilter || clienteFilter
-                        ? 'Intente ajustar los filtros de búsqueda'
-                        : 'No hay servicios registrados en el sistema'
+                        ? t("table.adjustFilters")
+                        : t("table.noData")
                       }
                     </span>
                   </div>
@@ -389,7 +391,7 @@ export default function ServiciosTableOne({
                       <button
                         onClick={() => handleEdit(servicio.ck_servicio)}
                         className="p-2 text-[#70A18E] hover:text-[#547A6B] hover:bg-[#B7F2DA]/20 rounded-md transition-colors dark:text-[#8ECAB2] dark:hover:text-[#B7F2DA] dark:hover:bg-[#8ECAB2]/10"
-                        title="Editar servicio"
+                        title={t("table.services.editService")}
                         disabled={loading}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -403,7 +405,7 @@ export default function ServiciosTableOne({
                             servicio.s_servicio
                           )}
                           className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
-                          title="Eliminar servicio"
+                          title={t("table.services.deleteService")}
                           disabled={loading}
                         >
                           {/* Ícono de bote de basura */}
@@ -422,7 +424,7 @@ export default function ServiciosTableOne({
         {totalPages > 1 && serviciosPaginados.length > 0 && (
           <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200 dark:border-gray-700">
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              Mostrando {startIndex + 1}-{endIndex} de {filteredServicios.length} servicios
+              {t("table.showing")} {startIndex + 1}-{endIndex} {t("table.of")} {filteredServicios.length} {t("services.serviceQuery").toLowerCase()}
             </span>
             <div className="flex space-x-2">
               <button
@@ -430,7 +432,7 @@ export default function ServiciosTableOne({
                 disabled={currentPage === 1 || loading}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                Anterior
+                {t("table.previous")}
               </button>
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 let page;
@@ -462,7 +464,7 @@ export default function ServiciosTableOne({
                 disabled={currentPage === totalPages || loading}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                Siguiente
+                {t("table.next")}
               </button>
             </div>
           </div>

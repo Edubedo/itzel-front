@@ -6,9 +6,11 @@ import Label from "../../../../components/form/Label";
 import Input from "../../../../components/form/input/InputField";
 import { usuariosService, UsuarioFormData, Usuario } from "../../../../services/usuariosService";
 import { useAuth } from "../../../../contexts/AuthContext";
-import Alert from "../../../../components/ui/alert/Alert"; // Importa el componente de alerta
+import Alert from "../../../../components/ui/alert/Alert";
+import { useLanguage } from "../../../../context/LanguageContext";
 
 function FormularioUsuarios() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<UsuarioFormData>({
     s_nombre: '',
     s_apellido_paterno: '',
@@ -91,7 +93,7 @@ function FormularioUsuarios() {
       }
     } catch (error: any) {
       console.error('Error al cargar datos del usuario:', error);
-      alert('Error al cargar datos del usuario: ' + error.message);
+      alert(t("form.user.errorLoad") + ': ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -117,13 +119,13 @@ function FormularioUsuarios() {
     if (file) {
       // Validar tipo de archivo
       if (!file.type.startsWith('image/')) {
-        alert('Por favor seleccione un archivo de imagen válido');
+        alert(t("form.user.errorImage"));
         return;
       }
 
       // Validar tamaño (5MB máximo)
       if (file.size > 5 * 1024 * 1024) {
-        alert('La imagen no puede ser mayor a 5MB');
+        alert(t("form.user.errorImageSize"));
         return;
       }
 
@@ -151,44 +153,44 @@ function FormularioUsuarios() {
 
     // Validaciones requeridas
     if (!formData.s_nombre.trim()) {
-      newErrors.s_nombre = 'El nombre es requerido';
+      newErrors.s_nombre = t("form.user.nameRequired");
     }
 
     if (!formData.s_correo_electronico.trim()) {
-      newErrors.s_correo_electronico = 'El correo electrónico es requerido';
+      newErrors.s_correo_electronico = t("form.user.emailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.s_correo_electronico)) {
-      newErrors.s_correo_electronico = 'Formato de correo electrónico inválido';
+      newErrors.s_correo_electronico = t("form.user.emailInvalid");
     }
 
     if (!isEditing && !formData.s_password?.trim()) {
-      newErrors.s_password = 'La contraseña es requerida para usuarios nuevos';
+      newErrors.s_password = t("form.user.passwordRequired");
     } else if (formData.s_password && formData.s_password.length < 6) {
-      newErrors.s_password = 'La contraseña debe tener al menos 6 caracteres';
+      newErrors.s_password = t("form.user.passwordMin");
     }
 
     if (!formData.s_rfc.trim()) {
-      newErrors.s_rfc = 'El RFC es requerido';
+      newErrors.s_rfc = t("form.user.rfcRequired");
     } else if (formData.s_rfc.length !== 13) {
-      newErrors.s_rfc = 'El RFC debe tener exactamente 13 caracteres';
+      newErrors.s_rfc = t("form.user.rfcLength");
     }
 
     if (!formData.d_fecha_nacimiento || formData.d_fecha_nacimiento === '  ') {
-      newErrors.d_fecha_nacimiento = 'La fecha de nacimiento es requerida';
+      newErrors.d_fecha_nacimiento = t("form.user.birthDate") + ' ' + t("form.required");
     }
 
     if (!formData.s_curp.trim()) {
-      newErrors.s_curp = 'El CURP es requerido';
+      newErrors.s_curp = t("form.user.curpRequired");
     } else if (formData.s_curp.length !== 18) {
-      newErrors.s_curp = 'El CURP debe tener exactamente 18 caracteres';
+      newErrors.s_curp = t("form.user.curpLength");
     }
 
     if (!formData.s_domicilio.trim()) {
-      newErrors.s_domicilio = 'El domicilio es requerido';
+      newErrors.s_domicilio = t("form.user.addressRequired");
     }
 
     // Validar teléfono si se proporciona
     if (formData.s_telefono && !/^\d{10}$/.test(formData.s_telefono)) {
-      newErrors.s_telefono = 'El teléfono debe tener 10 dígitos';
+      newErrors.s_telefono = t("form.user.phoneInvalid");
     }
 
     setErrors(newErrors);
@@ -199,7 +201,7 @@ function FormularioUsuarios() {
     e.preventDefault();
 
     if (!validateForm()) {
-      alert('Por favor, corrija los errores en el formulario');
+      alert(t("form.correctErrors"));
       return;
     }
 
@@ -223,13 +225,10 @@ function FormularioUsuarios() {
       if (response.success) {
         setShowSuccess(true);
         if (isEditing) {
-          setSuccessMessage('Usuario actualizado correctamente');
+          setSuccessMessage(t("form.user.updated"));
         } else {
           // Para nuevos usuarios con verificación de email
-          setSuccessMessage(
-            'Usuario creado correctamente. Se ha enviado un correo electrónico de verificación. ' +
-            'Por favor, revisa tu bandeja de entrada y haz clic en el enlace de verificación para activar tu cuenta.'
-          );
+          setSuccessMessage(t("form.user.created"));
           
           setTimeout(() => {
             window.location.href = "/catalogos/usuarios/consulta/";
@@ -238,7 +237,7 @@ function FormularioUsuarios() {
       }
     } catch (error: any) {
       console.error('Error al guardar el usuario:', error);
-      alert('Error al guardar el usuario: ' + error.message);
+      alert(t("form.user.errorCreate") + ': ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -254,7 +253,7 @@ function FormularioUsuarios() {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600">Cargando datos del usuario...</span>
+        <span className="ml-3 text-gray-600">{t("form.user.loading")}</span>
       </div>
     );
   }
@@ -262,19 +261,19 @@ function FormularioUsuarios() {
   return (
     <div>
       <PageMeta
-        title={isEditing ? "Editar Usuario - Sistema de Turnos" : "Crear Usuario - Sistema de Turnos"}
+        title={isEditing ? t("form.user.edit") + " - Sistema de Turnos" : t("form.user.create") + " - Sistema de Turnos"}
         description="Formulario para gestionar usuarios del sistema"
       />
 
       <PageBreadcrumb
-        pageTitle={isEditing ? "Editar Usuario" : "Crear Nuevo Usuario"}
+        pageTitle={isEditing ? t("form.user.edit") : t("form.user.createNew")}
       />
 
       {showSuccess && (
         <div ref={successRef} className="mb-8 mt-2">
           <Alert
             variant="success"
-            title="¡Operación exitosa!"
+            title={t("form.success")}
             message={successMessage}
           />
         </div>
@@ -284,45 +283,45 @@ function FormularioUsuarios() {
         <div className="grid grid-cols-1 gap-6">
 
           {/* Información Personal */}
-          <ComponentCard title="Información Personal">
+          <ComponentCard title={t("form.user.personalInfo")}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label>Nombre <span className="text-red-500 text-sm">*</span></Label>
+                <Label>{t("form.user.name")} <span className="text-red-500 text-sm">*</span></Label>
                 <Input
                   type="text"
                   value={formData.s_nombre}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_nombre', e.target.value)}
-                  placeholder="Nombre del usuario"
+                  placeholder={t("form.user.namePlaceholder")}
                   className={errors.s_nombre ? 'border-red-500' : ''}
                 />
                 {errors.s_nombre && <p className="text-red-500 text-sm mt-1">{errors.s_nombre}</p>}
               </div>
 
               <div>
-                <Label>Apellido Paterno</Label>
+                <Label>{t("form.user.lastName")}</Label>
                 <Input
                   type="text"
                   value={formData.s_apellido_paterno}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_apellido_paterno', e.target.value)}
-                  placeholder="Apellido paterno"
+                  placeholder={t("form.user.lastNamePlaceholder")}
                 />
               </div>
 
               <div>
-                <Label>Apellido Materno</Label>
+                <Label>{t("form.user.motherLastName")}</Label>
                 <Input
                   type="text"
                   value={formData.s_apellido_materno}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_apellido_materno', e.target.value)}
-                  placeholder="Apellido materno"
+                  placeholder={t("form.user.motherLastNamePlaceholder")}
                 />
               </div>
 
               <div>
-                <Label>Fecha de Nacimiento <span className="text-red-500 text-sm">*</span></Label>
+                <Label>{t("form.user.birthDate")} <span className="text-red-500 text-sm">*</span></Label>
                 <Input
                   type="date"
                   value={formData.d_fecha_nacimiento}
@@ -332,13 +331,13 @@ function FormularioUsuarios() {
               </div>
 
               <div>
-                <Label>Teléfono</Label>
+                <Label>{t("form.user.phone")}</Label>
                 <input
                   type="tel"
                   value={formData.s_telefono}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_telefono', e.target.value)}
-                  placeholder="10 dígitos"
+                  placeholder={t("form.user.phonePlaceholder")}
                   maxLength={10}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${errors.s_telefono ? 'border-red-500' : 'border-gray-300'}`}
                 />
@@ -348,29 +347,29 @@ function FormularioUsuarios() {
           </ComponentCard>
 
           {/* Información de Contacto y Acceso */}
-          <ComponentCard title="Información de Contacto y Acceso">
+          <ComponentCard title={t("form.user.contactInfo")}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label>Correo Electrónico <span className="text-red-500 text-sm">*</span></Label>
+                <Label>{t("form.user.email")} <span className="text-red-500 text-sm">*</span></Label>
                 <Input
                   type="email"
                   value={formData.s_correo_electronico}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_correo_electronico', e.target.value)}
-                  placeholder="correo@ejemplo.com"
+                  placeholder={t("form.user.emailPlaceholder")}
                   className={errors.s_correo_electronico ? 'border-red-500' : ''}
                 />
                 {errors.s_correo_electronico && <p className="text-red-500 text-sm mt-1">{errors.s_correo_electronico}</p>}
               </div>
 
               <div>
-                <Label>{isEditing ? 'Nueva Contraseña (opcional)' : 'Contraseña *'}</Label>
+                <Label>{isEditing ? t("form.user.newPassword") : t("form.user.password") + ' *'}</Label>
                 <Input
                   type="password"
                   value={formData.s_password}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_password', e.target.value)}
-                  placeholder={isEditing ? 'Dejar en blanco para mantener actual' : 'Mínimo 6 caracteres'}
+                  placeholder={isEditing ? t("form.user.passwordPlaceholderEdit") : t("form.user.passwordPlaceholder")}
                   className={errors.s_password ? 'border-red-500' : ''}
                 />
                 {errors.s_password && <p className="text-red-500 text-sm mt-1">{errors.s_password}</p>}
@@ -379,16 +378,16 @@ function FormularioUsuarios() {
           </ComponentCard>
 
           {/* Información Oficial */}
-          <ComponentCard title="Información Oficial">
+          <ComponentCard title={t("form.user.officialInfo")}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label>RFC <span className="text-red-500 text-sm">*</span></Label>
+                <Label>{t("form.user.rfc")} <span className="text-red-500 text-sm">*</span></Label>
                 <input
                   type="text"
                   value={formData.s_rfc}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_rfc', e.target.value.toUpperCase())}
-                  placeholder="13 caracteres"
+                  placeholder={t("form.user.rfcPlaceholder")}
                   maxLength={13}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${errors.s_rfc ? 'border-red-500' : 'border-gray-300'}`}
                 />
@@ -396,13 +395,13 @@ function FormularioUsuarios() {
               </div>
 
               <div>
-                <Label>CURP <span className="text-red-500 text-sm">*</span></Label>
+                <Label>{t("form.user.curp")} <span className="text-red-500 text-sm">*</span></Label>
                 <input
                   type="text"
                   value={formData.s_curp}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_curp', e.target.value.toUpperCase())}
-                  placeholder="18 caracteres"
+                  placeholder={t("form.user.curpPlaceholder")}
                   maxLength={18}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${errors.s_curp ? 'border-red-500' : 'border-gray-300'}`}
                 />
@@ -411,24 +410,24 @@ function FormularioUsuarios() {
             </div>
 
             <div className="mt-6">
-              <Label>Domicilio <span className="text-red-500 text-sm">*</span></Label>
+              <Label>{t("form.user.address")} <span className="text-red-500 text-sm">*</span></Label>
               <textarea
                 value={formData.s_domicilio}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                   handleInputChange('s_domicilio', e.target.value)}
                 rows={3}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-vertical ${errors.s_domicilio ? 'border-red-500' : 'border-gray-300'}`}
-                placeholder="Dirección completa del usuario..."
+                placeholder={t("form.user.addressPlaceholder")}
               />
               {errors.s_domicilio && <p className="text-red-500 text-sm mt-1">{errors.s_domicilio}</p>}
             </div>
           </ComponentCard>
 
           {/* Foto de Perfil */}
-          <ComponentCard title="Foto de Perfil">
+          <ComponentCard title={t("form.user.profilePhoto")}>
             <div className="space-y-4">
               <div>
-                <Label>Seleccionar Imagen</Label>
+                <Label>{t("form.user.selectImage")}</Label>
                 <input
                   id="imagen"
                   type="file"
@@ -465,11 +464,11 @@ function FormularioUsuarios() {
           </ComponentCard>
 
           {/* Configuración del Sistema */}
-          <ComponentCard title="Configuración del Sistema">
+          <ComponentCard title={t("form.user.systemConfig")}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {(user?.tipo_usuario === 1 || isEditing) && (
                 <div>
-                  <Label>Tipo de Usuario</Label>
+                  <Label>{t("form.user.userType")}</Label>
                   <select
                     value={formData.i_tipo_usuario}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -477,17 +476,17 @@ function FormularioUsuarios() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                     disabled={user?.tipo_usuario !== 1}
                   >
-                    <option value={3}>Asesor</option>
-                    <option value={2}>Ejecutivo</option>
+                    <option value={3}>{t("userType.advisor")}</option>
+                    <option value={2}>{t("userType.executive")}</option>
                     {user?.tipo_usuario === 1 && (
-                      <option value={1}>Administrador</option>
+                      <option value={1}>{t("userType.admin")}</option>
                     )}
                   </select>
                 </div>
               )}
 
               <div>
-                <Label>Estado</Label>
+                <Label>{t("form.user.status")}</Label>
                 <div className="flex items-center">
                   <label className="inline-flex items-center cursor-pointer">
                     <input
@@ -499,7 +498,7 @@ function FormularioUsuarios() {
                     />
                     <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                     <span className="ms-3 text-sm font-medium text-gray-900">
-                      {formData.ck_estatus === 'ACTIVO' ? 'Activo' : 'Inactivo'}
+                      {formData.ck_estatus === 'ACTIVO' ? t("form.user.active") : t("form.user.inactive")}
                     </span>
                   </label>
                 </div>
@@ -515,7 +514,7 @@ function FormularioUsuarios() {
               className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              Cancelar
+              {t("form.cancel")}
             </button>
             
             <button
@@ -526,7 +525,7 @@ function FormularioUsuarios() {
               {loading && (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
               )}
-              {loading ? 'Guardando...' : (isEditing ? 'Actualizar Usuario' : 'Crear Usuario')}
+              {loading ? t("form.saving") : (isEditing ? t("form.user.update") : t("form.user.create"))}
             </button>
           </div>
         </div>

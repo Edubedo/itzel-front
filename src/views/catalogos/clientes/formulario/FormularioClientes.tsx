@@ -6,8 +6,10 @@ import Label from "../../../../components/form/Label";
 import Input from "../../../../components/form/input/InputField";
 import { clientesService, Cliente } from '../../../../services/clientesService';
 import Alert from "../../../../components/ui/alert/Alert";
+import { useLanguage } from "../../../../context/LanguageContext";
 
 function FormularioClientes() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<Omit<Cliente, 'ck_cliente'>>({
     c_codigo_cliente: '',
     s_nombre: '',
@@ -83,24 +85,24 @@ function FormularioClientes() {
   const validateForm = (): boolean => {
     const newErrors: Partial<Omit<Cliente, 'ck_cliente'>> = {};
     if (!formData.c_codigo_cliente.trim()) {
-      newErrors.c_codigo_cliente = 'El código del cliente es obligatorio';
+      newErrors.c_codigo_cliente = t("form.client.codeRequired");
     } else if (!/^[A-Z0-9]{6}$/.test(formData.c_codigo_cliente.trim())) {
-      newErrors.c_codigo_cliente = 'El código debe ser alfanumérico y tener exactamente 6 caracteres';
+      newErrors.c_codigo_cliente = t("form.client.codeRequired");
     }
     if (!formData.s_nombre.trim()) {
-      newErrors.s_nombre = 'El nombre es obligatorio';
+      newErrors.s_nombre = t("form.client.nameRequired");
     }
     if (!formData.s_apellido_paterno.trim()) {
-      newErrors.s_apellido_paterno = 'El apellido paterno es obligatorio';
+      newErrors.s_apellido_paterno = t("form.client.lastNameRequired");
     }
     if (!formData.s_domicilio.trim()) {
-      newErrors.s_domicilio = 'El domicilio es obligatorio';
+      newErrors.s_domicilio = t("form.client.addressRequired");
     }
     if (!formData.s_tipo_contrato.trim()) {
-      newErrors.s_tipo_contrato = 'El tipo de contrato es obligatorio';
+      newErrors.s_tipo_contrato = t("form.client.contractTypeRequired");
     }
     if (!formData.c_codigo_contrato || !formData.c_codigo_contrato.trim()) {
-      newErrors.c_codigo_contrato = 'El código de contrato es obligatorio';
+      newErrors.c_codigo_contrato = t("form.client.contractCodeRequired");
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -109,7 +111,7 @@ function FormularioClientes() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
-      alert('Por favor, corrija los errores en el formulario');
+      alert(t("form.correctErrors"));
       return;
     }
     setLoading(true);
@@ -122,29 +124,29 @@ function FormularioClientes() {
           response = await clientesService.updateCliente(clienteId, formData);
           if (response?.success) {
             setShowSuccess(true);
-            setSuccessMessage('Cliente actualizado correctamente');
+            setSuccessMessage(t("form.client.updated"));
             setTimeout(() => {
               window.location.href = '/catalogos/clientes/consulta/';
             }, 1800);
           } else {
-            alert(response?.message || 'Error al guardar cliente');
+            alert(response?.message || t("form.client.errorCreate"));
           }
         }
       } else {
         response = await clientesService.createCliente(formData);
         if (response?.success) {
           setShowSuccess(true);
-          setSuccessMessage('Cliente creado correctamente');
+          setSuccessMessage(t("form.client.created"));
           window.scrollTo({ top: 0, behavior: 'smooth' });
           setTimeout(() => {
             window.location.href = '/catalogos/clientes/consulta/';
           }, 5000);
         } else {
-          alert(response?.message || 'Error al guardar cliente');
+          alert(response?.message || t("form.client.errorCreate"));
         }
       }
     } catch (error: any) {
-      alert('Error al guardar el cliente: ' + (error.message || 'Error desconocido'));
+      alert(t("form.client.errorCreate") + ': ' + (error.message || 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -158,7 +160,7 @@ function FormularioClientes() {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600">Cargando formulario...</span>
+        <span className="ml-3 text-gray-600">{t("form.client.loading")}</span>
       </div>
     );
   }
@@ -166,12 +168,12 @@ function FormularioClientes() {
   if (notFound) {
     return (
       <div className="flex flex-col items-center justify-center h-64">
-        <span className="text-xl text-red-500 font-bold mb-4">😅 Eso no existe</span>
+        <span className="text-xl text-red-500 font-bold mb-4">{t("form.client.notFound")}</span>
         <button
           className="mt-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           onClick={() => window.location.href = '/catalogos/clientes/consulta/'}
         >
-          Volver al listado
+          {t("form.client.backToList")}
         </button>
       </div>
     );
@@ -180,25 +182,25 @@ function FormularioClientes() {
   return (
     <div>
       <PageMeta
-        title={isEditing ? "Editar Cliente - Sistema de Turnos" : "Crear Cliente - Sistema de Turnos"}
+        title={isEditing ? t("form.client.edit") + " - Sistema de Turnos" : t("form.client.create") + " - Sistema de Turnos"}
         description="Formulario para gestionar clientes del sistema"
       />
-      <PageBreadcrumb pageTitle={isEditing ? "Editar Cliente" : "Crear Nuevo Cliente"} />
+      <PageBreadcrumb pageTitle={isEditing ? t("form.client.edit") : t("form.client.createNew")} />
       {showSuccess && (
         <div className="mb-8 mt-2">
           <Alert
             variant="success"
-            title="¡Operación exitosa!"
+            title={t("form.success")}
             message={successMessage}
           />
         </div>
       )}
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-6">
-          <ComponentCard title="Información del Cliente">
+          <ComponentCard title={t("form.client.title")}>
             <div className="space-y-6">
               <div>
-                <Label>Código del Cliente *</Label>
+                <Label>{t("form.client.code")} *</Label>
                 <Input
                   type="text"
                   value={formData.c_codigo_cliente}
@@ -207,7 +209,7 @@ function FormularioClientes() {
                     const sanitized = upper.replace(/[^A-Z0-9]/g, '').slice(0, 6);
                     handleInputChange('c_codigo_cliente', sanitized);
                   }}
-                  placeholder="Ej: CL001"
+                  placeholder={t("form.client.codePlaceholder")}
                   className={errors.c_codigo_cliente ? 'border-red-500' : ''}
                 />
                 {errors.c_codigo_cliente && (
@@ -215,12 +217,12 @@ function FormularioClientes() {
                 )}
               </div>
               <div>
-                <Label>Nombre *</Label>
+                <Label>{t("form.client.name")} *</Label>
                 <Input
                   type="text"
                   value={formData.s_nombre}
                   onChange={e => handleInputChange('s_nombre', e.target.value)}
-                  placeholder="Nombre"
+                  placeholder={t("form.client.namePlaceholder")}
                   className={errors.s_nombre ? 'border-red-500' : ''}
                 />
                 {errors.s_nombre && (
@@ -228,12 +230,12 @@ function FormularioClientes() {
                 )}
               </div>
               <div>
-                <Label>Apellido Paterno *</Label>
+                <Label>{t("form.client.lastName")} *</Label>
                 <Input
                   type="text"
                   value={formData.s_apellido_paterno}
                   onChange={e => handleInputChange('s_apellido_paterno', e.target.value)}
-                  placeholder="Apellido paterno"
+                  placeholder={t("form.client.lastNamePlaceholder")}
                   className={errors.s_apellido_paterno ? 'border-red-500' : ''}
                 />
                 {errors.s_apellido_paterno && (
@@ -241,21 +243,21 @@ function FormularioClientes() {
                 )}
               </div>
               <div>
-                <Label>Apellido Materno</Label>
+                <Label>{t("form.client.motherLastName")}</Label>
                 <Input
                   type="text"
                   value={formData.s_apellido_materno}
                   onChange={e => handleInputChange('s_apellido_materno', e.target.value)}
-                  placeholder="Apellido materno"
+                  placeholder={t("form.client.motherLastNamePlaceholder")}
                 />
               </div>
               <div>
-                <Label>Domicilio *</Label>
+                <Label>{t("form.client.address")} *</Label>
                 <Input
                   type="text"
                   value={formData.s_domicilio}
                   onChange={e => handleInputChange('s_domicilio', e.target.value)}
-                  placeholder="Domicilio"
+                  placeholder={t("form.client.addressPlaceholder")}
                   className={errors.s_domicilio ? 'border-red-500' : ''}
                 />
                 {errors.s_domicilio && (
@@ -264,18 +266,18 @@ function FormularioClientes() {
               </div>
             </div>
           </ComponentCard>
-          <ComponentCard title="Información Adicional">
+          <ComponentCard title={t("form.client.additionalInfo")}>
             <div>
-              <Label>Tipo de Contrato *</Label>
+              <Label>{t("form.client.contractType")} *</Label>
               <select
                 value={formData.s_tipo_contrato}
                 onChange={e => handleInputChange('s_tipo_contrato', e.target.value)}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${errors.s_tipo_contrato ? 'border-red-500' : 'border-gray-300'}`}
               >
-                <option value="" disabled hidden>Selecciona una opción</option>
-                <option value="MONOFÁSICA">Monofásica</option>
-                <option value="BIFÁSICA">Bifásica</option>
-                <option value="TRIFÁSICA">Trifásica</option>
+                <option value="" disabled hidden>{t("form.client.selectOption")}</option>
+                <option value="MONOFÁSICA">{t("form.client.monofasica")}</option>
+                <option value="BIFÁSICA">{t("form.client.bifasica")}</option>
+                <option value="TRIFÁSICA">{t("form.client.trifasica")}</option>
                 {/* Agrega más opciones si lo necesitas */}
               </select>
               {errors.s_tipo_contrato && (
@@ -284,17 +286,17 @@ function FormularioClientes() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label>Cliente Premium</Label>
+                <Label>{t("form.client.premium")}</Label>
                 <input
                   type="checkbox"
                   checked={formData.l_cliente_premium}
                   onChange={e => handleInputChange('l_cliente_premium', e.target.checked)}
                   className="mr-2"
                 />
-                <span>{formData.l_cliente_premium ? 'Sí' : 'No'}</span>
+                <span>{formData.l_cliente_premium ? t("form.client.yes") : t("form.client.no")}</span>
               </div>
               <div>
-                <Label>Estado</Label>
+                <Label>{t("form.client.status")}</Label>
                 <div className="flex items-center">
                   <button
                     type="button"
@@ -308,7 +310,7 @@ function FormularioClientes() {
                     />
                   </button>
                   <span className="ml-3 text-sm">
-                    {formData.ck_estatus === 'ACTIVO' ? 'Activo' : 'Inactivo'}
+                    {formData.ck_estatus === 'ACTIVO' ? t("form.client.active") : t("form.client.inactive")}
                   </span>
                 </div>
               </div>
@@ -334,14 +336,14 @@ function FormularioClientes() {
               className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              Cancelar
+              {t("form.cancel")}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Guardando...' : (isEditing ? 'Actualizar Cliente' : 'Crear Cliente')}
+              {loading ? t("form.saving") : (isEditing ? t("form.client.update") : t("form.client.create"))}
             </button>
           </div>
         </div>

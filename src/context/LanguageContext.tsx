@@ -18,6 +18,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const translations = {
   es: {
     // Header
+    "header.access": "Acceso",
     "header.search": "Buscar",
     "header.selectBranch": "Seleccionar sucursal",
     "header.loadingBranches": "Cargando sucursales...",
@@ -812,6 +813,7 @@ const translations = {
   },
   en: {
     // Header
+    "header.access": "Access",
     "header.search": "Search",
     "header.selectBranch": "Select branch",
     "header.loadingBranches": "Loading branches...",

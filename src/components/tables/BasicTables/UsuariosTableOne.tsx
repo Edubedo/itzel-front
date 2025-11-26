@@ -9,6 +9,7 @@ import {
 import Badge from "../../ui/badge/Badge";
 import { usuariosService, Usuario, UsuariosResponse } from "../../../services/usuariosService";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useLanguage } from "../../../context/LanguageContext";
 
 interface UsuariosTableProps {
   searchTerm: string;
@@ -17,18 +18,13 @@ interface UsuariosTableProps {
   onStatsUpdate: (stats: any) => void;
 }
 
-const USER_TYPE_LABELS = {
-  1: 'Administrador',
-  2: 'Ejecutivo',
-  3: 'Asesor'
-};
-
 export default function UsuariosTableOne({ 
   searchTerm, 
   tipoUsuarioFilter, 
   estatusFilter, 
   onStatsUpdate 
 }: UsuariosTableProps) {
+  const { t, language } = useLanguage();
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -36,6 +32,12 @@ export default function UsuariosTableOne({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  
+  const USER_TYPE_LABELS = {
+    1: t("userType.admin"),
+    2: t("userType.executive"),
+    3: t("userType.advisor")
+  };
 
   const itemsPerPage = 8;
 
@@ -102,13 +104,13 @@ export default function UsuariosTableOne({
 
   // Manejar eliminación de usuario
   const handleDelete = async (usuarioId: string, nombre: string) => {
-    if (window.confirm(`¿Está seguro de que desea eliminar al usuario "${nombre}"?`)) {
+    if (window.confirm(`${t("table.users.deleteConfirm")} "${nombre}"?`)) {
       try {
         await usuariosService.deleteUsuario(usuarioId);
-        alert('Usuario eliminado exitosamente');
+        alert(t("table.users.deleteSuccess"));
         loadUsuarios(); // Recargar la lista
       } catch (error: any) {
-        alert('Error al eliminar usuario: ' + error.message);
+        alert(t("table.users.deleteError") + ' ' + error.message);
       }
     }
   };
@@ -120,11 +122,11 @@ export default function UsuariosTableOne({
 
   // Función para formatear fecha
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'No especificada';
+    if (!dateString) return t("table.users.noDate");
     try {
-      return new Date(dateString).toLocaleDateString('es-ES');
+      return new Date(dateString).toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US');
     } catch {
-      return 'Fecha inválida';
+      return t("table.users.invalidDate");
     }
   };
 
@@ -133,7 +135,7 @@ export default function UsuariosTableOne({
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600">Cargando usuarios...</span>
+        <span className="ml-3 text-gray-600">{t("table.users.loading")}</span>
       </div>
     );
   }
@@ -143,13 +145,13 @@ export default function UsuariosTableOne({
     return (
       <div className="flex justify-center items-center h-64">
         <div className="text-center">
-          <div className="text-red-600 mb-2">⚠️ Error al cargar usuarios</div>
+          <div className="text-red-600 mb-2">{t("table.users.error")}</div>
           <div className="text-gray-600 text-sm">{error}</div>
           <button 
             onClick={loadUsuarios}
             className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
-            Reintentar
+            {t("table.retry")}
           </button>
         </div>
       </div>
@@ -166,25 +168,25 @@ export default function UsuariosTableOne({
           <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
             <TableRow>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Foto
+                {t("table.users.photo")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Nombre Completo
+                {t("table.users.fullName")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Correo / Teléfono
+                {t("table.users.emailPhone")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                RFC / CURP
+                {t("table.users.rfcCurp")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Tipo de Usuario
+                {t("table.users.userType")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Estado
+                {t("table.users.status")}
               </TableCell>
               <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                Acciones
+                {t("table.actions")}
               </TableCell>
             </TableRow>
           </TableHeader>
@@ -195,8 +197,8 @@ export default function UsuariosTableOne({
                 <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                   <div className="flex flex-col items-center">
                     <span className="text-2xl mb-2">👥</span>
-                    <span>No se encontraron usuarios</span>
-                    <span className="text-sm mt-1">Intente ajustar los filtros de búsqueda</span>
+                    <span>{t("table.users.notFound")}</span>
+                    <span className="text-sm mt-1">{t("table.adjustFilters")}</span>
                   </div>
                 </td>
               </TableRow>
@@ -229,7 +231,7 @@ export default function UsuariosTableOne({
                       </span>
                       {usuario.d_fecha_nacimiento && (
                         <div className="text-xs text-gray-500 mt-1">
-                          Nacido: {formatDate(usuario.d_fecha_nacimiento)}
+                          {t("table.users.born")} {formatDate(usuario.d_fecha_nacimiento)}
                         </div>
                       )}
                     </div>
@@ -239,7 +241,7 @@ export default function UsuariosTableOne({
                     <div>
                       <div className="text-gray-800 dark:text-white/90">{usuario.s_correo_electronico}</div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        📞 {usuario.s_telefono || 'Sin teléfono'}
+                        📞 {usuario.s_telefono || t("table.users.noPhone")}
                       </div>
                     </div>
                   </TableCell>
@@ -263,7 +265,7 @@ export default function UsuariosTableOne({
                         usuario.i_tipo_usuario === 2 ? "warning" : "info"
                       }
                     >
-                      {USER_TYPE_LABELS[usuario.i_tipo_usuario as keyof typeof USER_TYPE_LABELS] || 'Desconocido'}
+                      {USER_TYPE_LABELS[usuario.i_tipo_usuario as keyof typeof USER_TYPE_LABELS] || t("table.users.unknown")}
                     </Badge>
                   </TableCell>
                   
@@ -281,7 +283,7 @@ export default function UsuariosTableOne({
                       <button 
                         onClick={() => handleEdit(usuario.ck_usuario)}
                         className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"
-                        title="Editar usuario"
+                        title={t("table.users.editUser")}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -292,7 +294,7 @@ export default function UsuariosTableOne({
                         <button 
                           onClick={() => handleDelete(usuario.ck_usuario, `${usuario.s_nombre} ${usuario.s_apellido_paterno}`)}
                           className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
-                          title="Eliminar usuario"
+                          title={t("table.users.deleteUser")}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -311,7 +313,7 @@ export default function UsuariosTableOne({
         {totalPages > 1 && (
           <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200">
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              Mostrando {startIndex + 1}-{endIndex} de {totalItems} usuarios
+              {t("table.showing")} {startIndex + 1}-{endIndex} {t("table.of")} {totalItems} {t("users.userList").toLowerCase()}
             </span>
             <div className="flex space-x-2">
               <button 
@@ -319,7 +321,7 @@ export default function UsuariosTableOne({
                 disabled={currentPage === 1}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:hover:bg-gray-700"
               >
-                Anterior
+                {t("table.previous")}
               </button>
               
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -354,7 +356,7 @@ export default function UsuariosTableOne({
                 disabled={currentPage === totalPages}
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:hover:bg-gray-700"
               >
-                Siguiente
+                {t("table.next")}
               </button>
             </div>
           </div>

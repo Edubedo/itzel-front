@@ -7,8 +7,10 @@ import Input from "../../../../components/form/input/InputField";
 import Alert from "../../../../components/ui/alert/Alert";
 import { serviciosService, ServicioFormData, Servicio } from "../../../../services/serviciosService";
 import { areasService, Area } from "../../../../services/areasService";
+import { useLanguage } from "../../../../context/LanguageContext";
 
 function FormularioServicios() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<ServicioFormData>({
     s_servicio: "",
     s_descripcion_servicio: "",
@@ -63,11 +65,11 @@ function FormularioServicios() {
         }
       } else {
         console.error("Error en respuesta de áreas:", response);
-        alert("Error al cargar las áreas: " + response.message);
+        alert(t("form.service.errorLoadAreas") + ": " + response.message);
       }
     } catch (error: any) {
       console.error("Error al cargar las áreas:", error);
-      alert("Error al cargar las áreas: " + error.message);
+      alert(t("form.service.errorLoadAreas") + ": " + error.message);
     } finally {
       setLoadingAreas(false);
     }
@@ -101,11 +103,11 @@ function FormularioServicios() {
           }
         }
       } else {
-        alert("Error al cargar datos del servicio: " + response.message);
+        alert(t("form.service.errorLoad") + ": " + response.message);
       }
     } catch (error: any) {
       console.error("Error al cargar datos del servicio:", error);
-      alert("Error al cargar datos del servicio: " + error.message);
+      alert(t("form.service.errorLoad") + ": " + error.message);
     } finally {
       setLoading(false);
     }
@@ -120,7 +122,7 @@ function FormularioServicios() {
       if (value.length > 6) {
         setErrors((prev) => ({
           ...prev,
-          c_codigo_servicio: "El código del servicio no puede tener más de 6 caracteres",
+          c_codigo_servicio: t("form.service.codeMaxLength"),
         }));
         return; // No actualizar el valor si excede el límite
       }
@@ -148,17 +150,17 @@ function FormularioServicios() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.s_servicio.trim()) {
-      newErrors.s_servicio = "El nombre del servicio es requerido";
+      newErrors.s_servicio = t("form.service.nameRequired");
     }
 
     if (!formData.c_codigo_servicio.trim()) {
-      newErrors.c_codigo_servicio = "El código del servicio es requerido";
+      newErrors.c_codigo_servicio = t("form.service.codeRequired");
     } else if (formData.c_codigo_servicio.length > 6) {
-      newErrors.c_codigo_servicio = "El código del servicio no puede tener más de 6 caracteres";
+      newErrors.c_codigo_servicio = t("form.service.codeMaxLength");
     }
 
     if (!formData.ck_area) {
-      newErrors.ck_area = "El área es requerida";
+      newErrors.ck_area = t("form.service.areaRequired");
     }
 
     setErrors(newErrors);
@@ -169,7 +171,7 @@ function FormularioServicios() {
     e.preventDefault();
 
     if (!validateForm()) {
-      alert('Por favor, corrija los errores en el formulario');
+      alert(t("form.correctErrors"));
       return;
     }
 
@@ -192,8 +194,8 @@ function FormularioServicios() {
         setShowSuccess(true);
         setSuccessMessage(
           isEditing 
-            ? "Servicio actualizado correctamente" 
-            : "Servicio creado correctamente"
+            ? t("form.service.updated")
+            : t("form.service.created")
         );
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -204,11 +206,11 @@ function FormularioServicios() {
           }
         }, isEditing ? 1300 : 1300); 
       } else {
-        alert("Error al guardar el servicio: " + response.message);
+        alert(t("form.service.errorCreate") + ": " + response.message);
       }
     } catch (error: any) {
       console.error("Error al guardar el servicio:", error);
-      alert("Error al guardar el servicio: " + error.message);
+      alert(t("form.service.errorCreate") + ": " + error.message);
     } finally {
       setLoading(false);
     }
@@ -224,7 +226,7 @@ function FormularioServicios() {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600">Cargando datos del servicio...</span>
+        <span className="ml-3 text-gray-600">{t("form.service.loading")}</span>
       </div>
     );
   }
@@ -232,18 +234,18 @@ function FormularioServicios() {
   return (
     <div>
       <PageMeta
-        title={isEditing ? "Editar Servicio - Sistema de Turnos" : "Crear Servicio - Sistema de Turnos"}
+        title={isEditing ? t("form.service.edit") + " - Sistema de Turnos" : t("form.service.create") + " - Sistema de Turnos"}
         description="Formulario para gestionar servicios del sistema"
       />
 
-      <PageBreadcrumb pageTitle={isEditing ? "Editar Servicio" : "Crear Nuevo Servicio"} />
+      <PageBreadcrumb pageTitle={isEditing ? t("form.service.edit") : t("form.service.createNew")} />
 
       {/* ALERTA DE ÉXITO */}
       {showSuccess && (
         <div className="mb-8 mt-2">
           <Alert
             variant="success"
-            title="¡Operación exitosa!"
+            title={t("form.success")}
             message={successMessage}
           />
         </div>
@@ -251,15 +253,15 @@ function FormularioServicios() {
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-6">
-          <ComponentCard title="Información del Servicio">
+          <ComponentCard title={t("form.service.title")}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label>Nombre del Servicio <span className="text-red-500 text-sm">*</span></Label>
+                <Label>{t("form.service.name")} <span className="text-red-500 text-sm">*</span></Label>
                 <Input
                   type="text"
                   value={formData.s_servicio}
                   onChange={(e) => handleInputChange("s_servicio", e.target.value)}
-                  placeholder="Ej. Cobro de facturas"
+                  placeholder={t("form.service.namePlaceholder")}
                   className={errors.s_servicio ? "border-red-500" : ""}
                 />
                 {errors.s_servicio && (
@@ -268,17 +270,17 @@ function FormularioServicios() {
               </div>
 
               <div>
-                <Label>Código del Servicio <span className="text-red-500 text-sm">*</span></Label>
+                <Label>{t("form.service.code")} <span className="text-red-500 text-sm">*</span></Label>
                 <Input
                   type="text"
                   value={formData.c_codigo_servicio}
                   onChange={(e) => handleInputChange("c_codigo_servicio", e.target.value)}
-                  placeholder="Ej. SVC-001"
+                  placeholder={t("form.service.codePlaceholder")}
                   maxLength={6}
                   className={errors.c_codigo_servicio ? "border-red-500" : ""}
                 />
                 <p className="text-gray-500 text-xs mt-1">
-                  Máximo 6 caracteres ({formData.c_codigo_servicio.length}/6)
+                  {t("form.service.codeMax")} ({formData.c_codigo_servicio.length}/6)
                 </p>
                 {errors.c_codigo_servicio && (
                   <p className="text-red-500 text-sm mt-1">{errors.c_codigo_servicio}</p>
@@ -287,7 +289,7 @@ function FormularioServicios() {
 
               {/* ¿Es para clientes? */}
               <div>
-                <Label>¿Es para clientes o no clientes? <span className="text-red-500 text-sm">*</span></Label>
+                <Label>{t("form.service.clientType")} <span className="text-red-500 text-sm">*</span></Label>
                 <div className="flex items-center space-x-4">
                   <label className="inline-flex items-center">
                     <input
@@ -298,7 +300,7 @@ function FormularioServicios() {
                       onChange={(e) => handleInputChange("i_es_para_clientes", parseInt(e.target.value))}
                       className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                     />
-                    <span className="ml-2 text-sm text-gray-700">Clientes</span>
+                    <span className="ml-2 text-sm text-gray-700">{t("form.service.forClients")}</span>
                   </label>
                   <label className="inline-flex items-center">
                     <input
@@ -309,11 +311,11 @@ function FormularioServicios() {
                       onChange={(e) => handleInputChange("i_es_para_clientes", parseInt(e.target.value))}
                       className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                     />
-                    <span className="ml-2 text-sm text-gray-700">No clientes</span>
+                    <span className="ml-2 text-sm text-gray-700">{t("form.service.forNonClients")}</span>
                   </label>
                 </div>
                 <p className="text-gray-500 text-sm mt-1">
-                  Selecciona si este servicio es para clientes o no clientes.
+                  {t("form.service.clientTypeDesc")}
                 </p>
               </div>
 
@@ -321,10 +323,10 @@ function FormularioServicios() {
               <div className="md:col-span-2">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label>Área <span className="text-red-500 text-sm">*</span></Label>
+                    <Label>{t("form.service.area")} <span className="text-red-500 text-sm">*</span></Label>
                     {loadingAreas ? (
                       <div className="px-4 py-2 border border-gray-300 rounded-lg text-gray-500 bg-gray-100">
-                        Cargando áreas...
+                        {t("form.service.loadingAreas")}
                       </div>
                     ) : (
                       <select
@@ -332,10 +334,10 @@ function FormularioServicios() {
                         onChange={(e) => handleInputChange("ck_area", e.target.value)}
                         className={`w-full px-4 py-2 border rounded-lg ${errors.ck_area ? "border-red-500" : "border-gray-300"}`}
                       >
-                        <option value="">Seleccione un área</option>
+                        <option value="">{t("form.service.selectArea")}</option>
                         {areas.map((area) => (
                           <option key={area.ck_area} value={area.ck_area}>
-                            {area.s_area} - {area.sucursal_nombre || "Sin sucursal"}
+                            {area.s_area} - {area.sucursal_nombre || t("branches.noBranch")}
                           </option>
                         ))}
                       </select>
@@ -345,27 +347,27 @@ function FormularioServicios() {
                     )}
                     {areas.length === 0 && !loadingAreas && (
                       <p className="text-yellow-600 text-sm mt-1">
-                        No hay áreas disponibles. Por favor, cree áreas primero.
+                        {t("form.service.noAreas")}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <Label>Sucursal del Área</Label>
+                    <Label>{t("form.service.areaBranch")}</Label>
                     <div className={`px-4 py-2 border rounded-lg ${
                       selectedAreaSucursal ? "border-gray-300 bg-gray-50 text-gray-700" : "border-gray-200 bg-gray-100 text-gray-500"
                     }`}>
-                      {selectedAreaSucursal || "Seleccione un área"}
+                      {selectedAreaSucursal || t("form.service.selectAreaFirst")}
                     </div>
                     <p className="text-gray-500 text-sm mt-1">
-                      Sucursal a la que pertenece el área seleccionada
+                      {t("form.service.areaBranchDesc")}
                     </p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <Label>Estado</Label>
+                <Label>{t("form.service.status")}</Label>
                 <div className="flex items-center">
                   <label className="inline-flex items-center cursor-pointer">
                     <input
@@ -378,7 +380,7 @@ function FormularioServicios() {
                     />
                     <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
                     <span className="ml-3 text-sm font-medium text-gray-900">
-                      {formData.ck_estatus === "ACTIVO" ? "Activo" : "Inactivo"}
+                      {formData.ck_estatus === "ACTIVO" ? t("form.service.active") : t("form.service.inactive")}
                     </span>
                   </label>
                 </div>
@@ -386,13 +388,13 @@ function FormularioServicios() {
             </div>
 
             <div className="mt-6">
-              <Label>Descripción del Servicio</Label>
+              <Label>{t("form.service.description")}</Label>
               <textarea
                 value={formData.s_descripcion_servicio}
                 onChange={(e) => handleInputChange("s_descripcion_servicio", e.target.value)}
                 rows={3}
                 className="w-full px-4 py-2 border rounded-lg border-gray-300 resize-vertical"
-                placeholder="Detalles adicionales del servicio..."
+                placeholder={t("form.service.descriptionPlaceholder")}
               />
             </div>
           </ComponentCard>
@@ -404,14 +406,14 @@ function FormularioServicios() {
               className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              Cancelar
+              {t("form.cancel")}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Guardando...' : (isEditing ? 'Actualizar Servicio' : 'Crear Servicio')}
+              {loading ? t("form.saving") : (isEditing ? t("form.service.update") : t("form.service.create"))}
             </button>
           </div>
         </div>

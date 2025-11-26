@@ -166,19 +166,21 @@ const Dashboard: React.FC = () => {
     if (!fechaAtencion) return '--:--';
 
     try {
-      // Convertir fecha a objeto Date
+      // Convertir fecha a objeto Date (viene en UTC)
       const fecha = new Date(fechaAtencion);
       if (isNaN(fecha.getTime())) return '--:--';
 
-      // Extraer horas, minutos y segundos (hora LOCAL, no UTC)
-      let hours = fecha.getHours();
-      const minutes = fecha.getMinutes();
-      const seconds = fecha.getSeconds();
-      
+      // Obtener horas UTC y ajustar a hora de México (UTC - 6 horas)
+      let hours = fecha.getUTCHours() - 6;
+      if (hours < 0) hours += 24; // Ajustar si es negativo
+
+      const minutes = fecha.getUTCMinutes();
+      const seconds = fecha.getUTCSeconds();
+
       // Convertir a formato 12 horas con AM/PM
       const period = hours >= 12 ? 'p.m.' : 'a.m.';
       hours = hours % 12 || 12; // Convert 0 to 12 for midnight
-      
+
       return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${period}`;
     } catch (error) {
       return '--:--';

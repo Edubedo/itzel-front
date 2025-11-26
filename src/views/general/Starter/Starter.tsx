@@ -434,9 +434,9 @@ export default function Starter() {
         <div className="p-6">
           <div className="bg-gray-50 rounded-xl p-4 mb-6">
             <div className="text-center">
-              <div className="text-xs text-gray-500">Turno a cancelar</div>
+              <div className="text-xs text-gray-500">{t("starter.turnToCancel")}</div>
               <div className="font-semibold text-[#3A554B] text-lg">
-                TURNO No. {turnoCreado?.i_numero_turno}
+                {t("starter.turnNumber")} {turnoCreado?.i_numero_turno}
               </div>
               <div className="font-semibold text-gray-600 text-sm">
                 {turnoCreado?.s_servicio}
@@ -740,21 +740,21 @@ export default function Starter() {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] blur-xl opacity-50 animate-pulse"></div>
                 <h2 className="relative text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#3A554B] via-[#5D7166] to-[#70A18E] tracking-tight">
-                  SELECCIÓN DE SERVICIO
+                  {t("starter.serviceSelection")}
                 </h2>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm md:text-base">
               <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="font-semibold text-[#3A554B]">Cliente: {esCliente ? 'Cliente CFE' : 'No cliente'}</span>
+                <span className="font-semibold text-[#3A554B]">{t("starter.client")}: {esCliente ? t("starter.cfeClientType") : t("starter.notClientType")}</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full border border-white/30">
                 <svg className="w-4 h-4 text-[#70A18E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span className="font-semibold text-[#3A554B]">Sucursal: {sucursalSeleccionada?.s_nombre_sucursal}</span>
+                <span className="font-semibold text-[#3A554B]">{t("starter.branch")}: {sucursalSeleccionada?.s_nombre_sucursal}</span>
               </div>
             </div>
           </div>
@@ -768,7 +768,7 @@ export default function Starter() {
                   <div className={`w-2 h-2 rounded-full animate-pulse ${timer <= 10 ? 'bg-red-500' : timer <= 20 ? 'bg-amber-500' : 'bg-green-500'
                     }`}></div>
                   <span className="text-sm font-medium text-[#3A554B]">
-                    Tiempo restante:
+                    {t("starter.timeRemaining")}
                     <span className={`font-bold ml-1 ${timer <= 10 ? 'text-red-600' : timer <= 20 ? 'text-amber-600' : 'text-green-600'
                       }`}>
                       {timer}s
@@ -794,7 +794,7 @@ export default function Starter() {
               <div className="w-8 h-8 bg-gradient-to-br from-[#70A18E] to-[#8ECAB2] rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">1</span>
               </div>
-              <h3 className="text-xl font-bold text-[#0A1310]">Seleccione el área:</h3>
+              <h3 className="text-xl font-bold text-[#0A1310]">{t("starter.selectArea")}</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {areas.map((area) => (
@@ -833,7 +833,7 @@ export default function Starter() {
                   <span className="text-white font-bold text-sm">2</span>
                 </div>
                 <h3 className="text-xl font-bold text-[#0A1310]">
-                  Seleccione el servicio en {areaSeleccionada.s_area}:
+                  {t("starter.selectService")} {areaSeleccionada.s_area}:
                 </h3>
               </div>
 
@@ -844,7 +844,7 @@ export default function Starter() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.709M15 6H9a2 2 0 00-2 2v10a2 2 0 002 2h6a2 2 0 002-2V8a2 2 0 00-2-2z" />
                     </svg>
                   </div>
-                  <p className="text-gray-500 text-lg font-medium">No hay servicios disponibles para esta área</p>
+                  <p className="text-gray-500 text-lg font-medium">{t("starter.noServicesAvailable")}</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -882,7 +882,7 @@ export default function Starter() {
                         {/* Action indicator - Movido fuera del flex container */}
                         <div className="flex items-center justify-between mt-4"> {/* Agregado mt-4 */}
                           <div className="flex items-center gap-2 text-[#70A18E] group-hover:gap-3 transition-all">
-                            <span className="text-sm font-bold">SELECCIONAR</span>
+                            <span className="text-sm font-bold">{t("starter.select")}</span>
                             <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                             </svg>
@@ -919,7 +919,7 @@ export default function Starter() {
                 <svg className="w-5 h-5 text-white group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                <span className="text-white font-bold">Regresar al inicio</span>
+                <span className="text-white font-bold">{t("starter.returnToStart")}</span>
               </div>
             </button>
           </div>
@@ -1032,23 +1032,23 @@ export default function Starter() {
               }}
             />
             <h3 className="font-bold text-lg text-[#0A1310]">SISTEMA ITZEL</h3>
-            <p className="text-sm text-gray-600">Comisión Federal de Electricidad</p>
+            <p className="text-sm text-gray-600">{t("starter.cfe")}</p>
           </div>
 
           <div className="border-t border-gray-300 pt-4">
             <div className="text-center mb-4">
               <div className="text-3xl font-bold text-[#3A554B] mb-2">
-                TURNO No. {turnoCreado?.i_numero_turno}
+                {t("starter.turnNumber")} {turnoCreado?.i_numero_turno}
               </div>
             </div>
 
             <div className="space-y-2 text-sm">
-              <div><strong>Área:</strong> {turnoCreado?.s_area}</div>
-              <div><strong>Servicio:</strong> {turnoCreado?.s_servicio}</div>
-              <div><strong>Sucursal:</strong> {turnoCreado?.s_nombre_sucursal}</div>
-              <div><strong>Tipo:</strong> {esCliente ? 'Cliente CFE' : 'No cliente'}</div>
-              <div><strong>Fecha:</strong> {new Date().toLocaleDateString('es-MX')}</div>
-              <div><strong>Hora:</strong> {new Date().toLocaleTimeString('es-MX')}</div>
+              <div><strong>{t("starter.area")}:</strong> {turnoCreado?.s_area}</div>
+              <div><strong>{t("starter.service")}:</strong> {turnoCreado?.s_servicio}</div>
+              <div><strong>{t("starter.branch")}:</strong> {turnoCreado?.s_nombre_sucursal}</div>
+              <div><strong>{t("starter.type")}:</strong> {esCliente ? t("starter.cfeClientType") : t("starter.notClientType")}</div>
+              <div><strong>{t("starter.date")}:</strong> {new Date().toLocaleDateString('es-MX')}</div>
+              <div><strong>{t("starter.time")}:</strong> {new Date().toLocaleTimeString('es-MX')}</div>
             </div>
           </div>
 
@@ -1095,7 +1095,7 @@ export default function Starter() {
             onClick={regresarAlInicio}
             className="w-full bg-[#5D7166] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#4A5B52] transition-colors"
           >
-            ← Regresar al inicio
+            ← {t("starter.returnToStart")}
           </button>
         </div>
 

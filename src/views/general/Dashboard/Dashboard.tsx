@@ -364,20 +364,6 @@ const Dashboard: React.FC = () => {
                       {formatearTiempoEspera(turnoActual.t_tiempo_espera)}
                     </span>
                   </div>
-                  {turnoActual.d_fecha_atendido && (
-                    <>
-                      <div className="h-px bg-gradient-to-r from-transparent via-[#8ECAB2]/30 to-transparent"></div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-xs font-bold text-[#70A18E] min-w-[90px]">Inicio atención:</span>
-                        <span className="text-xs text-gray-700 font-medium">
-                          {new Date(turnoActual.d_fecha_atendido).toLocaleTimeString('es-MX', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </span>
-                      </div>
-                    </>
-                  )}
                 </div>
               </div>
             </div>

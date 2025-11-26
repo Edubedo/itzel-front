@@ -9,6 +9,7 @@ import axios from "axios";
 import { FaTimesCircle } from "react-icons/fa";
 import Alert from "../../../../components/ui/alert/Alert";
 import { getApiBaseUrlWithApi } from "../../../../../utils/util_baseUrl";
+import { useLanguage } from "../../../../context/LanguageContext";
 
 // Definición de las props del componente
 interface FormularioProps {
@@ -18,6 +19,7 @@ interface FormularioProps {
 }
 
 export default function FormularioSucursales({ onSave, onCancel, branchToEdit }: FormularioProps) {
+    const { t } = useLanguage();
     // Estado para los campos del formulario de la sucursal
     const [formData, setFormData] = useState({
         s_nombre_sucursal: "",
@@ -190,7 +192,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
 
             } catch (error) {
                 console.error("Error al cargar datos:", error);
-                setErrorMessage("No se pudieron cargar los datos iniciales. Por favor, intente nuevamente.");
+                setErrorMessage(t("form.branch.errorLoad"));
                 setShowError(true);
             } finally {
                 setLoading(false);
@@ -328,7 +330,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
 
         // Valida los campos obligatorios
         if (!formData.s_nombre_sucursal || !formData.ck_municipio || !formData.s_domicilio) {
-            setErrorMessage("Por favor, complete todos los campos obligatorios.");
+            setErrorMessage(t("form.branch.completeFields"));
             setShowError(true);
             setSaving(false);
             return;
@@ -371,7 +373,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
             console.error('Error response statusText:', error.response?.statusText);
             console.error('Error message:', error.message);
             console.error('Error stack:', error.stack);
-            setErrorMessage("Error al guardar la sucursal: " + (error.response?.data?.message || error.message));
+            setErrorMessage(t("form.branch.errorSave") + " " + (error.response?.data?.message || error.message));
             setShowError(true);
         } finally {
             setSaving(false);
@@ -393,7 +395,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
         return (
             <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Cargando datos...</span>
+                <span className="ml-3 text-gray-600">{t("form.branch.loading")}</span>
             </div>
         );
     }
@@ -405,15 +407,15 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                 title="Sistema de Turnos - Registrar Sucursal"
                 description="Formulario para la creación de nuevas sucursales y asignación de personal"
             />
-            <PageBreadcrumb pageTitle={branchToEdit ? "Editar Sucursal" : "Registrar Nueva Sucursal"} />
+            <PageBreadcrumb pageTitle={branchToEdit ? t("form.branch.edit") : t("form.branch.register")} />
 
             {/* Alertas */}
             {showSuccess && (
                 <div className="mb-6">
                     <Alert
                         variant="success"
-                        title="¡Éxito!"
-                        message={branchToEdit ? "Sucursal actualizada exitosamente!" : "Sucursal guardada exitosamente!"}
+                        title={t("form.branch.success")}
+                        message={branchToEdit ? t("form.branch.updated") : t("form.branch.saved")}
                     />
                 </div>
             )}
@@ -422,18 +424,18 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                 <div className="mb-6">
                     <Alert
                         variant="error"
-                        title="Error"
+                        title={t("form.branch.error")}
                         message={errorMessage}
                     />
                 </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                <ComponentCard title="Datos de la Sucursal">
+                <ComponentCard title={t("form.branch.branchData")}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="s_nombre_sucursal" className="block text-sm font-medium text-gray-700">
-                                Nombre de la Sucursal <span className="text-red-500">*</span>
+                                {t("form.branch.name")} <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -442,13 +444,13 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                 value={formData.s_nombre_sucursal}
                                 onChange={handleFormChange}
                                 required
-                                placeholder="Ej: Sucursal Centro"
+                                placeholder={t("form.branch.namePlaceholder")}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
                             />
                         </div>
                         <div>
                             <label htmlFor="s_telefono" className="block text-sm font-medium text-gray-700">
-                                Teléfono
+                                {t("form.branch.phone")}
                             </label>
                             <input
                                 type="tel"
@@ -456,18 +458,18 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                 name="s_telefono"
                                 value={formData.s_telefono}
                                 onChange={handleFormChange}
-                                placeholder="Ej: 312-123-4567"
+                                placeholder={t("form.branch.phonePlaceholder")}
                                 maxLength={20}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
                             />
-                            <p className="mt-1 text-xs text-gray-500">Máximo 20 caracteres</p>
+                            <p className="mt-1 text-xs text-gray-500">{t("form.branch.phoneMax")}</p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div>
                             <label htmlFor="estado" className="block text-sm font-medium text-gray-700">
-                                Estado <span className="text-red-500">*</span>
+                                {t("form.branch.state")} <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="estado"
@@ -477,7 +479,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                 required
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
                             >
-                                <option value="">Seleccionar Estado</option>
+                                <option value="">{t("form.branch.selectState")}</option>
                                 {estados.map(estado => (
                                     <option key={estado.ck_estado} value={estado.s_estado}>{estado.s_estado}</option>
                                 ))}
@@ -485,7 +487,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                         </div>
                         <div>
                             <label htmlFor="ck_municipio" className="block text-sm font-medium text-gray-700">
-                                Municipio <span className="text-red-500">*</span>
+                                {t("form.branch.municipality")} <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="ck_municipio"
@@ -496,7 +498,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                 disabled={!estadoSeleccionado}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border disabled:bg-gray-100"
                             >
-                                <option value="">{estadoSeleccionado ? 'Seleccionar Municipio' : 'Primero elige un estado'}</option>
+                                <option value="">{estadoSeleccionado ? t("form.branch.selectMunicipality") : t("form.branch.selectStateFirst")}</option>
                                 {municipiosDisponibles.map(municipio => (
                                     <option key={municipio.ck_municipio} value={municipio.ck_municipio}>{municipio.s_municipio}</option>
                                 ))}
@@ -507,7 +509,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div>
                             <label htmlFor="s_domicilio" className="block text-sm font-medium text-gray-700">
-                                Domicilio <span className="text-red-500">*</span>
+                                {t("form.branch.address")} <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -516,13 +518,13 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                 value={formData.s_domicilio}
                                 onChange={handleFormChange}
                                 required
-                                placeholder="Calle, número, colonia"
+                                placeholder={t("form.branch.addressPlaceholder")}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
                             />
                         </div>
                         <div>
                             <label htmlFor="s_codigo_postal" className="block text-sm font-medium text-gray-700">
-                                Código Postal
+                                {t("form.branch.postalCode")}
                             </label>
                             <input
                                 type="text"
@@ -530,7 +532,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                 name="s_codigo_postal"
                                 value={formData.s_codigo_postal}
                                 onChange={handleFormChange}
-                                placeholder="Ej: 28000"
+                                placeholder={t("form.branch.postalCodePlaceholder")}
                                 maxLength={5}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
                             />
@@ -539,24 +541,24 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                 </ComponentCard>
 
 
-                <ComponentCard title="Asignar Ejecutivos a Sucursal">
+                <ComponentCard title={t("form.branch.assignExecutives")}>
                     {branchToEdit && ejecutivosAsignados.length > 0 && (
                         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                             <p className="text-sm text-blue-800">
-                                <strong>Modo edición:</strong> Puedes agregar más ejecutivos usando el formulario de abajo. Los ejecutivos existentes se muestran en la tabla.
+                                <strong>Modo edición:</strong> {t("form.branch.editMode").replace(/{type}/g, t("form.branch.executives").toLowerCase())}
                             </p>
                         </div>
                     )}
                     <div className="flex items-end gap-4">
                         <div className="flex-1">
-                            <label className="text-sm font-medium text-gray-700">Usuario</label>
+                            <label className="text-sm font-medium text-gray-700">{t("form.branch.user")}</label>
                             <select
                                 name="usuario"
                                 value={ejecutivoActual.usuarioId}
                                 onChange={handleEjecutivoChange}
                                 className="w-full border border-gray-300 rounded-lg p-2 mt-1"
                             >
-                                <option value="">Seleccionar Ejecutivo</option>
+                                <option value="">{t("form.branch.selectExecutive")}</option>
                                 {ejecutivosDisponibles.map(ejec => (
                                     <option key={ejec.ck_usuario} value={ejec.ck_usuario}>
                                         {`${ejec.s_nombre} ${ejec.s_apellido_paterno || ''}`}
@@ -565,7 +567,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                             </select>
                         </div>
                         <div className="flex-1">
-                            <label className="text-sm font-medium text-gray-700">Área</label>
+                            <label className="text-sm font-medium text-gray-700">{t("form.branch.area")}</label>
                             <select
                                 name="area"
                                 value={ejecutivoActual.ck_area}
@@ -573,14 +575,14 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                 disabled={!ejecutivoActual.usuarioId}
                                 className="w-full border border-gray-300 rounded-lg p-2 mt-1 disabled:bg-gray-100"
                             >
-                                <option value="">{ejecutivoActual.usuarioId ? "Seleccionar Área" : "Seleccione primero un Usuario"}</option>
+                                <option value="">{ejecutivoActual.usuarioId ? t("form.branch.selectArea") : t("form.branch.selectUserFirst")}</option>
                                 {ejecutivoActual.usuarioId && areas.map(area => (
                                     <option key={area.ck_area} value={area.ck_area}>{area.s_area}</option>
                                 ))}
                             </select>
                         </div>
                         <div className="flex-1">
-                            <label className="text-sm font-medium text-gray-700">Servicio</label>
+                            <label className="text-sm font-medium text-gray-700">{t("form.branch.service")}</label>
                             <select
                                 name="servicio"
                                 value={ejecutivoActual.ck_servicio}
@@ -589,7 +591,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                 className="w-full border border-gray-300 rounded-lg p-2 mt-1 disabled:bg-gray-100"
                             >
                                 <option value="">
-                                    {ejecutivoActual.ck_area ? "Seleccionar Servicio" : "Primero elija un área"}
+                                    {ejecutivoActual.ck_area ? t("form.branch.selectService") : t("form.branch.selectAreaFirst")}
                                 </option>
                                 {serviciosDisponiblesEjecutivo.map(servicio => (
                                     <option key={servicio.ck_servicio} value={servicio.ck_servicio}>{servicio.s_servicio}</option>
@@ -608,25 +610,25 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                     {/* Tabla de ejecutivos asignados */}
                     {ejecutivosAsignados.length > 0 && (
                         <div className="mt-6">
-                            <h4 className="text-sm font-semibold text-gray-700 mb-3">Ejecutivos Asignados ({ejecutivosAsignados.length}):</h4>
+                            <h4 className="text-sm font-semibold text-gray-700 mb-3">{t("form.branch.assignedExecutives")} ({ejecutivosAsignados.length}):</h4>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg">
                                     <thead className="bg-gray-50">
                                         <tr>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
-                                                Nombre Completo
+                                                {t("form.branch.fullName")}
                                             </th>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
-                                                Email
+                                                {t("form.branch.email")}
                                             </th>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
-                                                Área
+                                                {t("form.branch.area")}
                                             </th>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
-                                                Servicio
+                                                {t("form.branch.service")}
                                             </th>
                                             <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
-                                                Acción
+                                                {t("form.branch.action")}
                                             </th>
                                         </tr>
                                     </thead>
@@ -650,7 +652,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                                         type="button"
                                                         onClick={() => eliminarEjecutivo(ejec.ck_usuario)}
                                                         className="text-red-500 hover:text-red-700 font-bold text-xl transition-colors"
-                                                        title="Eliminar ejecutivo"
+                                                        title={t("form.branch.removeExecutive")}
                                                     >
                                                         <FaTimesCircle />
                                                     </button>
@@ -664,24 +666,24 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                     )}
                 </ComponentCard>
 
-                <ComponentCard title="Asignar Asesores a Sucursal">
+                <ComponentCard title={t("form.branch.assignAdvisors")}>
                     {branchToEdit && asesoresAsignados.length > 0 && (
                         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                             <p className="text-sm text-blue-800">
-                                <strong>Modo edición:</strong> Puedes agregar más asesores usando el formulario de abajo. Los asesores existentes se muestran en la tabla.
+                                <strong>Modo edición:</strong> {t("form.branch.editMode").replace(/{type}/g, t("form.branch.advisors").toLowerCase())}
                             </p>
                         </div>
                     )}
                     <div className="flex items-end gap-4">
                         <div className="flex-1">
-                            <label className="text-sm font-medium text-gray-700">Usuario</label>
+                            <label className="text-sm font-medium text-gray-700">{t("form.branch.user")}</label>
                             <select
                                 name="usuario"
                                 value={asesorActual.usuarioId}
                                 onChange={handleAsesorChange}
                                 className="w-full border border-gray-300 rounded-lg p-2 mt-1"
                             >
-                                <option value="">Seleccionar Asesor</option>
+                                <option value="">{t("form.branch.selectAdvisor")}</option>
                                 {asesoresDisponibles.map(asesor => (
                                     <option key={asesor.ck_usuario} value={asesor.ck_usuario}>
                                         {`${asesor.s_nombre} ${asesor.s_apellido_paterno || ''}`}
@@ -701,19 +703,19 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                     {/* Tabla de asesores asignados */}
                     {asesoresAsignados.length > 0 && (
                         <div className="mt-6">
-                            <h4 className="text-sm font-semibold text-gray-700 mb-3">Asesores Asignados ({asesoresAsignados.length}):</h4>
+                            <h4 className="text-sm font-semibold text-gray-700 mb-3">{t("form.branch.assignedAdvisors")} ({asesoresAsignados.length}):</h4>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg">
                                     <thead className="bg-gray-50">
                                         <tr>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
-                                                Nombre Completo
+                                                {t("form.branch.fullName")}
                                             </th>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
-                                                Email
+                                                {t("form.branch.email")}
                                             </th>
                                             <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-b">
-                                                Acción
+                                                {t("form.branch.action")}
                                             </th>
                                         </tr>
                                     </thead>
@@ -731,7 +733,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                                                         type="button"
                                                         onClick={() => eliminarAsesor(asesor.ck_usuario)}
                                                         className="text-red-500 hover:text-red-700 font-bold text-xl transition-colors"
-                                                        title="Eliminar asesor"
+                                                        title={t("form.branch.removeAdvisor")}
                                                     >
                                                         <FaTimesCircle />
                                                     </button>
@@ -753,7 +755,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                         disabled={saving}
                         className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-semibold disabled:opacity-50"
                     >
-                        Cancelar
+                        {t("form.cancel")}
                     </button>
                     <button
                         type="submit"
@@ -761,7 +763,7 @@ export default function FormularioSucursales({ onSave, onCancel, branchToEdit }:
                         className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-semibold disabled:opacity-50 flex items-center"
                     >
                         {saving && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>}
-                        {saving ? 'Guardando...' : (branchToEdit ? 'Actualizar Sucursal' : 'Guardar Sucursal')}
+                        {saving ? t("form.saving") : (branchToEdit ? t("form.branch.update") : t("form.branch.save"))}
                     </button>
                 </div>
             </form>

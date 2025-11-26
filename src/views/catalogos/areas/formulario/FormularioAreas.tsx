@@ -7,14 +7,16 @@ import Input from "../../../../components/form/input/InputField";
 import Select from "../../../../components/form/Select";
 import { areasService, AreaFormData, Sucursal } from '../../../../services/areasService';
 import Alert from "../../../../components/ui/alert/Alert";
-
-// Define las opciones de estado
-const estatusOptions = [
-  { value: 'ACTIVO', label: 'Activo' },
-  { value: 'INACTI', label: 'Inactivo' }
-];
+import { useLanguage } from "../../../../context/LanguageContext";
 
 function FormularioAreas() {
+  const { t } = useLanguage();
+  
+  // Define las opciones de estado con traducciones
+  const estatusOptions = [
+    { value: 'ACTIVO', label: t("form.area.active") },
+    { value: 'INACTI', label: t("form.area.inactive") }
+  ];
   const [formData, setFormData] = useState<AreaFormData>({
     c_codigo_area: '',
     s_area: '',
@@ -54,7 +56,7 @@ function FormularioAreas() {
         }
       } catch (error) {
         console.error('Error al inicializar formulario:', error);
-        alert('Error al cargar los datos iniciales');
+        alert(t("form.area.errorInitial"));
       } finally {
         setInitialLoading(false);
       }
@@ -87,7 +89,7 @@ function FormularioAreas() {
       }
     } catch (error) {
       console.error('Error al cargar datos del área:', error);
-      alert('Error al cargar los datos del área');
+      alert(t("form.area.errorLoad"));
     }
   };
 
@@ -116,21 +118,21 @@ function FormularioAreas() {
     const newErrors: Partial<AreaFormData> = {};
 
     if (!formData.c_codigo_area.trim()) {
-      newErrors.c_codigo_area = 'El código del área es obligatorio';
+      newErrors.c_codigo_area = t("form.area.codeRequired");
     } else if (formData.c_codigo_area.length > 6) {
-      newErrors.c_codigo_area = 'El código no puede tener más de 6 caracteres';
+      newErrors.c_codigo_area = t("form.area.codeMaxLength");
     }
 
     if (!formData.s_area.trim()) {
-      newErrors.s_area = 'El nombre del área es obligatorio';
+      newErrors.s_area = t("form.area.nameRequired");
     }
 
     if (!formData.s_descripcion_area.trim()) {
-      newErrors.s_descripcion_area = 'La descripción del área es obligatoria';
+      newErrors.s_descripcion_area = t("form.area.descriptionRequired");
     }
 
     if (!formData.ck_sucursal) {
-      newErrors.ck_sucursal = 'Debe seleccionar una sucursal';
+      newErrors.ck_sucursal = t("form.area.branchRequired");
     }
 
     setErrors(newErrors);
@@ -141,7 +143,7 @@ function FormularioAreas() {
     e.preventDefault();
 
     if (!validateForm()) {
-      alert('Por favor, corrija los errores en el formulario');
+      alert(t("form.correctErrors"));
       return;
     }
 
@@ -157,31 +159,31 @@ function FormularioAreas() {
           response = await areasService.updateArea(areaId, formData);
           if (response.success) {
             setShowSuccess(true);
-            setSuccessMessage('Área actualizada correctamente');
+            setSuccessMessage(t("form.area.updated"));
             window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(() => {
               window.location.href = '/catalogos/areas/consulta/';
             }, 1300); 
           } else {
-            alert(response.message || 'Error al actualizar área');
+            alert(response.message || t("form.area.errorUpdate"));
           }
         }
       } else {
         response = await areasService.createArea(formData);
         if (response.success) {
           setShowSuccess(true);
-          setSuccessMessage('Área creada correctamente');
+          setSuccessMessage(t("form.area.created"));
           window.scrollTo({ top: 0, behavior: 'smooth' });
           setTimeout(() => {
             window.location.href = '/catalogos/areas/consulta/';
           }, 1300);
         } else {
-          alert(response.message || 'Error al crear área');
+          alert(response.message || t("form.area.errorCreate"));
         }
       }
     } catch (error: any) {
       console.error('Error al guardar el área:', error);
-      alert('Error al guardar el área: ' + (error.message || 'Error desconocido'));
+      alert(t("form.area.errorCreate") + ': ' + (error.message || 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -203,7 +205,7 @@ function FormularioAreas() {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600">Cargando formulario...</span>
+        <span className="ml-3 text-gray-600">{t("form.area.loading")}</span>
       </div>
     );
   }
@@ -211,18 +213,18 @@ function FormularioAreas() {
   return (
     <div>
       <PageMeta
-        title={isEditing ? "Editar Área - Sistema de Turnos" : "Crear Área - Sistema de Turnos"}
+        title={isEditing ? t("form.area.edit") + " - Sistema de Turnos" : t("form.area.create") + " - Sistema de Turnos"}
         description="Formulario para gestionar áreas del sistema"
       />
 
       <PageBreadcrumb
-        pageTitle={isEditing ? "Editar Área" : "Crear Nueva Área"}
+        pageTitle={isEditing ? t("form.area.edit") : t("form.area.createNew")}
       />
       {showSuccess && (
         <div className="mb-8 mt-2">
           <Alert
             variant="success"
-            title="¡Operación exitosa!"
+            title={t("form.success")}
             message={successMessage}
           />
         </div>
@@ -230,32 +232,32 @@ function FormularioAreas() {
 
       <form onSubmit={handleSubmit} className="mt-4">
         <div className="grid grid-cols-1 gap-6">
-          <ComponentCard title="Información del Área">
+          <ComponentCard title={t("form.area.title")}>
             <div className="space-y-6">
               <div>
-                <Label>Código del Área *</Label>
+                <Label>{t("form.area.code")} *</Label>
                 <Input
                   type="text"
                   value={formData.c_codigo_area}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('c_codigo_area', e.target.value.toUpperCase())}
-                  placeholder="Ej: CONTA, RECHUM"
+                  placeholder={t("form.area.codePlaceholder")}
                   className={errors.c_codigo_area ? 'border-red-500' : ''}
                 />
                 {errors.c_codigo_area && (
                   <p className="text-red-500 text-sm mt-1">{errors.c_codigo_area}</p>
                 )}
-                <p className="text-xs text-gray-500 mt-1">Máximo 6 caracteres</p>
+                <p className="text-xs text-gray-500 mt-1">{t("form.area.codeMax")}</p>
               </div>
 
               <div>
-                <Label>Nombre del Área *</Label>
+                <Label>{t("form.area.name")} *</Label>
                 <Input
                   type="text"
                   value={formData.s_area}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleInputChange('s_area', e.target.value)}
-                  placeholder="Ej: Contabilidad, Recursos Humanos"
+                  placeholder={t("form.area.namePlaceholder")}
                   className={errors.s_area ? 'border-red-500' : ''}
                 />
                 {errors.s_area && (
@@ -265,7 +267,7 @@ function FormularioAreas() {
 
             </div>
             <div>
-              <Label>Descripción del Área *</Label>
+              <Label>{t("form.area.description")} *</Label>
               <textarea
                 value={formData.s_descripcion_area}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
@@ -273,7 +275,7 @@ function FormularioAreas() {
                 rows={3}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-vertical ${errors.s_descripcion_area ? 'border-red-500' : 'border-gray-300'
                   }`}
-                placeholder="Describe las funciones y responsabilidades del área..."
+                placeholder={t("form.area.descriptionPlaceholder")}
               />
               {errors.s_descripcion_area && (
                 <p className="text-red-500 text-sm mt-1">{errors.s_descripcion_area}</p>
@@ -281,10 +283,10 @@ function FormularioAreas() {
             </div>
           </ComponentCard>
 
-          <ComponentCard title="Configuración Adicional">
+          <ComponentCard title={t("form.area.additionalConfig")}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label>Sucursal *</Label>
+                <Label>{t("form.area.branch")} *</Label>
                 {/* REEMPLAZAR Select por select nativo para evitar errores */}
                 <select
                   value={formData.ck_sucursal}
@@ -292,7 +294,7 @@ function FormularioAreas() {
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${errors.ck_sucursal ? 'border-red-500' : 'border-gray-300'
                     }`}
                 >
-                  <option value="" disabled hidden>Selecciona una sucursal</option>
+                  <option value="" disabled hidden>{t("form.area.selectBranch")}</option>
                   {sucursalesOptions.map(option => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -305,7 +307,7 @@ function FormularioAreas() {
               </div>
 
               <div>
-                <Label>Estado</Label>
+                <Label>{t("form.area.status")}</Label>
                 <div className="flex items-center">
                   <label className="inline-flex items-center cursor-pointer">
                     <input
@@ -317,7 +319,7 @@ function FormularioAreas() {
                     />
                     <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                     <span className="ms-3 text-sm font-medium text-gray-900">
-                      {formData.ck_estatus === 'ACTIVO' ? 'Activo' : 'Inactivo'}
+                      {formData.ck_estatus === 'ACTIVO' ? t("form.area.active") : t("form.area.inactive")}
                     </span>
                   </label>
                 </div>
@@ -332,14 +334,14 @@ function FormularioAreas() {
               className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              Cancelar
+              {t("form.cancel")}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Guardando...' : (isEditing ? 'Actualizar Área' : 'Crear Área')}
+              {loading ? t("form.saving") : (isEditing ? t("form.area.update") : t("form.area.create"))}
             </button>
           </div>
         </div>

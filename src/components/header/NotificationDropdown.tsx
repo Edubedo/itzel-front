@@ -84,6 +84,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     if (!sucursalActiva) return;
     try {
       const token = localStorage.getItem("token");
+      
       const response = await fetch(
         `${getApiBaseUrlWithApi()}/operaciones/turnos/notificaciones?sucursalId=${sucursalActiva.ck_sucursal}`,
         {
@@ -154,7 +155,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
   const handleClickNotificacion = (n: Notificacion) => {
     handleMarcarComoLeida(n);
-    navigate("/turnos");
+    navigate("/operaciones/turnos/consulta");
   };
 
   const noLeidas = notificaciones.filter((n) => !n.leida);

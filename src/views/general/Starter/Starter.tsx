@@ -32,6 +32,8 @@ interface Servicio {
 interface Turno {
   ck_turno: string;
   i_numero_turno: number;
+  c_codigo_turno?: string;
+  c_codigo_servicio?: string;
   s_area: string;
   s_servicio: string;
   s_nombre_sucursal: string;
@@ -475,7 +477,7 @@ export default function Starter() {
       const url = URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `ticket-turno-${turnoCreado.i_numero_turno}.pdf`;
+      a.download = `ticket-turno-${turnoCreado.c_codigo_turno || turnoCreado.i_numero_turno}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -595,7 +597,7 @@ export default function Starter() {
             <div className="text-center">
               <div className="text-xs text-gray-500">{t("starter.turnToCancel")}</div>
               <div className="font-semibold text-[#3A554B] text-lg">
-                {t("starter.turnNumber")} {turnoCreado?.i_numero_turno}
+                {t("starter.turnNumber")} {turnoCreado?.c_codigo_turno || turnoCreado?.i_numero_turno}
               </div>
               <div className="font-semibold text-gray-600 text-sm">
                 {turnoCreado?.s_servicio ? translateService(turnoCreado.s_servicio) : ''}
@@ -1197,7 +1199,7 @@ export default function Starter() {
           <div className="border-t border-gray-300 pt-4">
             <div className="text-center mb-4">
               <div className="text-3xl font-bold text-[#3A554B] mb-2">
-                {t("starter.turnNumber")} {turnoCreado?.i_numero_turno}
+                {t("starter.turnNumber")} {turnoCreado?.c_codigo_turno || turnoCreado?.i_numero_turno}
               </div>
             </div>
 

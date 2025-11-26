@@ -9,6 +9,8 @@ import { useLogo } from '../../../contexts/LogoContext';
 interface Turno {
   ck_turno: string;
   i_numero_turno: number;
+  c_codigo_turno?: string;
+  c_codigo_servicio?: string;
   ck_area: string;
   s_area: string;
   c_codigo_area: string;
@@ -291,7 +293,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <span className="relative text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br from-[#3A554B] via-[#5D7166] to-[#70A18E]"
                   style={{ textShadow: '0 4px 20px rgba(58, 85, 75, 0.2)' }}>
-                  {turnoActual ? turnoActual.i_numero_turno : "--"}
+                  {turnoActual ? (turnoActual.c_codigo_turno || turnoActual.i_numero_turno) : "--"}
                 </span>
               </div>
 
@@ -429,7 +431,7 @@ const Dashboard: React.FC = () => {
                         <div className="relative w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30">
                           <span className="text-xl font-black text-white"
                             style={{ textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
-                            {turno.i_numero_turno}
+                            {turno.c_codigo_turno || turno.i_numero_turno}
                           </span>
                         </div>
                       </div>

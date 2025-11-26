@@ -34,6 +34,60 @@ function ConsultaTurnos() {
   const sucursalActiva = useSucursalActiva();
   const { t } = useLanguage();
   
+  // Helper function to normalize text (remove accents and convert to lowercase)
+  const normalizeText = (text: string): string => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  };
+  
+  // Helper function to translate area names
+  const translateArea = (areaName: string): string => {
+    if (!areaName) return '';
+    
+    // Eliminar puntos entre palabras
+    let cleanAreaName = areaName.replace(/\./g, ' ').replace(/\s+/g, ' ').trim();
+    
+    // Si ya es "Todas las áreas" o "All areas" (ya traducido), devolverlo tal cual
+    const normalized = normalizeText(cleanAreaName);
+    if (normalized === normalizeText(t("shifts.allAreas")) || normalized === 'todas las areas' || normalized === 'all areas') {
+      return t("shifts.allAreas");
+    }
+    
+    // Traducir nombres de áreas del backend
+    if (normalized.includes('atencion al cliente') || normalized.includes('atencion cliente') || normalized.includes('customer service')) {
+      return t("area.atencionCliente");
+    }
+    if (normalized.includes('cobranza') || normalized.includes('collections')) {
+      return t("area.cobranza");
+    }
+    if (normalized.includes('facturacion') || normalized.includes('billing')) {
+      return t("area.facturacion");
+    }
+    if (normalized.includes('conexiones') || normalized.includes('connections')) {
+      return t("area.conexiones");
+    }
+    if (normalized.includes('servicios tecnicos') || normalized.includes('servicio tecnico') || normalized.includes('technical services')) {
+      return t("area.serviciosTecnicos");
+    }
+    if (normalized.includes('contratacion') || normalized.includes('contratación') || normalized.includes('contracting')) {
+      return t("area.contratacion");
+    }
+    if ((normalized.includes('informacion') || normalized.includes('información')) && (normalized.includes('consultas') || normalized.includes('inquiries'))) {
+      return t("area.informacionConsultas");
+    }
+    if (normalized.includes('recursos humanos') || normalized.includes('human resources')) {
+      return t("area.recursosHumanos");
+    }
+    if (normalized.includes('reportes') || normalized.includes('reports')) {
+      return t("area.reportes");
+    }
+    // If no translation found, return original without dots
+    return cleanAreaName;
+  };
+  
   const [areas, setAreas] = useState<Area[]>([]);
   const [areaSeleccionada, setAreaSeleccionada] = useState<string>('');
   const [turnos, setTurnos] = useState<Turno[]>([]);
@@ -269,8 +323,7 @@ function ConsultaTurnos() {
               >
                 {areas.map((area) => (
                   <option key={area.ck_area || 'all'} value={area.ck_area}>
-                    {area.s_area}
-                    {area.turnos_pendientes !== undefined && area.turnos_pendientes > 0 && ` (${area.turnos_pendientes} pendientes)`}
+                    {translateArea(area.s_area)}
                   </option>
                 ))}
               </select>

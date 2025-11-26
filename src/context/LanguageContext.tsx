@@ -798,6 +798,16 @@ const translations = {
     "area.serviciosTecnicos": "Servicios Técnicos",
     "area.serviciosTecnicosDesc1": "Revisión, cambio y calibración de medidores",
     "area.serviciosTecnicosDesc2": "Inspecciones, dictámenes y asesoría",
+    "area.contratacion": "Contratación",
+    "area.contratacionDesc": "Contratación y altas de servicio",
+    "area.informacionConsultas": "Información y Consultas",
+    "area.informacionConsultasDesc": "Información general y consultas",
+    "area.recursosHumanos": "Recursos Humanos",
+    "area.recursosHumanosDesc": "Gestión de personal y recursos humanos",
+    "area.reportes": "Reportes",
+    "area.reportesDesc": "Generación de reportes y estadísticas",
+    "shifts.pending": "pendientes",
+    "shifts.pendingCount": "({count} pendientes)",
     
     // Services translations
     "service.dictamenTecnico": "Dictamen Técnico",
@@ -1595,6 +1605,16 @@ const translations = {
     "area.serviciosTecnicos": "Technical Services",
     "area.serviciosTecnicosDesc1": "Review, change, and calibration of meters",
     "area.serviciosTecnicosDesc2": "Inspections, opinions, and advice",
+    "area.contratacion": "Contracting",
+    "area.contratacionDesc": "Service contracting and activations",
+    "area.informacionConsultas": "Information and Inquiries",
+    "area.informacionConsultasDesc": "General information and inquiries",
+    "area.recursosHumanos": "Human Resources",
+    "area.recursosHumanosDesc": "Personnel and human resources management",
+    "area.reportes": "Reports",
+    "area.reportesDesc": "Report generation and statistics",
+    "shifts.pending": "pending",
+    "shifts.pendingCount": "({count} pending)",
     
     // Services translations
     "service.dictamenTecnico": "Technical Opinion",

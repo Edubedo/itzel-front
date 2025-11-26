@@ -43,6 +43,131 @@ interface Turno {
 export default function Starter() {
   const { t } = useLanguage();
   const { logoLight } = useLogo();
+  
+  // Helper function to normalize text (remove accents and convert to lowercase)
+  const normalizeText = (text: string): string => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  };
+  
+  // Helper function to translate area names
+  const translateArea = (areaName: string): string => {
+    if (!areaName) return '';
+    const normalized = normalizeText(areaName);
+    
+    if (normalized.includes('atencion al cliente') || normalized.includes('atencion cliente') || normalized.includes('customer service')) {
+      return t("area.atencionCliente");
+    }
+    if (normalized.includes('cobranza') || normalized.includes('collections')) {
+      return t("area.cobranza");
+    }
+    if (normalized.includes('facturacion') || normalized.includes('billing')) {
+      return t("area.facturacion");
+    }
+    if (normalized.includes('conexiones') || normalized.includes('connections')) {
+      return t("area.conexiones");
+    }
+    if (normalized.includes('servicios tecnicos') || normalized.includes('servicio tecnico') || normalized.includes('technical services')) {
+      return t("area.serviciosTecnicos");
+    }
+    // If no translation found, return original
+    return areaName;
+  };
+  
+  // Helper function to translate area descriptions
+  const translateAreaDesc = (areaName: string, desc: string): string => {
+    if (!desc) return '';
+    const normalizedArea = normalizeText(areaName);
+    const normalizedDesc = normalizeText(desc);
+    
+    if (normalizedArea.includes('atencion al cliente') || normalizedArea.includes('atencion cliente') || normalizedArea.includes('customer service')) {
+      return t("area.atencionClienteDesc");
+    }
+    if (normalizedArea.includes('cobranza') || normalizedArea.includes('collections')) {
+      return t("area.cobranzaDesc");
+    }
+    if (normalizedArea.includes('facturacion') || normalizedArea.includes('billing')) {
+      return t("area.facturacionDesc");
+    }
+    if (normalizedArea.includes('conexiones') || normalizedArea.includes('connections')) {
+      return t("area.conexionesDesc");
+    }
+    if (normalizedArea.includes('servicios tecnicos') || normalizedArea.includes('servicio tecnico') || normalizedArea.includes('technical services')) {
+      // Check if description matches first type (medidores, revision, cambio, calibracion)
+      if (normalizedDesc.includes('revision') || normalizedDesc.includes('cambio') || normalizedDesc.includes('medidores') || normalizedDesc.includes('calibracion') || normalizedDesc.includes('meters') || normalizedDesc.includes('calibration')) {
+        return t("area.serviciosTecnicosDesc1");
+      }
+      // Default to second type (inspecciones, dictamenes, asesoria)
+      if (normalizedDesc.includes('inspeccion') || normalizedDesc.includes('dictamen') || normalizedDesc.includes('asesoria') || normalizedDesc.includes('inspection') || normalizedDesc.includes('opinion') || normalizedDesc.includes('advice')) {
+        return t("area.serviciosTecnicosDesc2");
+      }
+      // If description doesn't match, try to infer from area name or return second type
+      return t("area.serviciosTecnicosDesc2");
+    }
+    // If no translation found, return original
+    return desc;
+  };
+  
+  // Helper function to translate service names
+  const translateService = (serviceName: string): string => {
+    if (!serviceName) return '';
+    const normalized = normalizeText(serviceName);
+    
+    // Dictamen Técnico
+    if (normalized.includes('dictamen tecnico') || normalized.includes('dictamen') || normalized.includes('technical opinion')) {
+      return t("service.dictamenTecnico");
+    }
+    // Inspección de Instalación
+    if ((normalized.includes('inspeccion') || normalized.includes('inspection')) && (normalized.includes('instalacion') || normalized.includes('installation'))) {
+      return t("service.inspeccionInstalacion");
+    }
+    // Consulta de Recibo
+    if (normalized.includes('consulta') && (normalized.includes('recibo') || normalized.includes('receipt'))) {
+      return t("service.consultaRecibo");
+    }
+    // Reporte de Fallas
+    if ((normalized.includes('reporte') || normalized.includes('report')) && (normalized.includes('fallas') || normalized.includes('failure') || normalized.includes('fault'))) {
+      return t("service.reporteFallas");
+    }
+    // Cambio de Titularidad
+    if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('titularidad') || normalized.includes('ownership') || normalized.includes('owner'))) {
+      return t("service.cambioTitularidad");
+    }
+    // If no translation found, return original
+    return serviceName;
+  };
+  
+  // Helper function to translate service descriptions
+  const translateServiceDesc = (serviceName: string, desc: string): string => {
+    if (!desc) return '';
+    const normalized = normalizeText(serviceName);
+    
+    // Dictamen Técnico
+    if (normalized.includes('dictamen tecnico') || normalized.includes('dictamen') || normalized.includes('technical opinion')) {
+      return t("service.dictamenTecnicoDesc");
+    }
+    // Inspección de Instalación
+    if ((normalized.includes('inspeccion') || normalized.includes('inspection')) && (normalized.includes('instalacion') || normalized.includes('installation'))) {
+      return t("service.inspeccionInstalacionDesc");
+    }
+    // Consulta de Recibo
+    if (normalized.includes('consulta') && (normalized.includes('recibo') || normalized.includes('receipt'))) {
+      return t("service.consultaReciboDesc");
+    }
+    // Reporte de Fallas
+    if ((normalized.includes('reporte') || normalized.includes('report')) && (normalized.includes('fallas') || normalized.includes('failure') || normalized.includes('fault'))) {
+      return t("service.reporteFallasDesc");
+    }
+    // Cambio de Titularidad
+    if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('titularidad') || normalized.includes('ownership') || normalized.includes('owner'))) {
+      return t("service.cambioTitularidadDesc");
+    }
+    // If no translation found, return original
+    return desc;
+  };
   const [currentStep, setCurrentStep] = useState<'clientType' | 'serviceSelection' | 'ticket'>('clientType');
   const [esCliente, setEsCliente] = useState<boolean | null>(null);
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState<Sucursal | null>(null);
@@ -439,7 +564,7 @@ export default function Starter() {
                 {t("starter.turnNumber")} {turnoCreado?.i_numero_turno}
               </div>
               <div className="font-semibold text-gray-600 text-sm">
-                {turnoCreado?.s_servicio}
+                {turnoCreado?.s_servicio ? translateService(turnoCreado.s_servicio) : ''}
               </div>
             </div>
           </div>
@@ -811,9 +936,9 @@ export default function Starter() {
 
                   <div className="relative p-6">
                     <div className="text-center">
-                      <div className="font-bold text-lg mb-2">{area.s_area}</div>
+                      <div className="font-bold text-lg mb-2">{translateArea(area.s_area)}</div>
                       {area.s_descripcion_area && (
-                        <div className="text-sm opacity-90">{area.s_descripcion_area}</div>
+                        <div className="text-sm opacity-90">{translateAreaDesc(area.s_area, area.s_descripcion_area)}</div>
                       )}
                     </div>
                   </div>
@@ -833,7 +958,7 @@ export default function Starter() {
                   <span className="text-white font-bold text-sm">2</span>
                 </div>
                 <h3 className="text-xl font-bold text-[#0A1310]">
-                  {t("starter.selectService")} {areaSeleccionada.s_area}:
+                  {t("starter.selectService")} {translateArea(areaSeleccionada.s_area)}:
                 </h3>
               </div>
 
@@ -867,13 +992,13 @@ export default function Starter() {
                           {getServiceIcon(servicio.s_servicio)}
                           <div className="flex-1">
                             <div className="font-bold text-lg text-[#0A1310] mb-2 group-hover:text-[#3A554B] transition-colors">
-                              {servicio.s_servicio}
+                              {translateService(servicio.s_servicio)}
                             </div>
 
                             {/* Description - Más cerca del título */}
                             {servicio.s_descripcion_servicio && (
                               <div className="text-sm text-gray-600 mt-1 group-hover:text-gray-700 transition-colors"> {/* mt-1 en lugar de mb-4 */}
-                                {servicio.s_descripcion_servicio}
+                                {translateServiceDesc(servicio.s_servicio, servicio.s_descripcion_servicio)}
                               </div>
                             )}
                           </div>
@@ -956,16 +1081,16 @@ export default function Starter() {
         <div className="p-6">
           <div className="bg-gray-50 rounded-xl p-4 mb-6">
             <div className="text-center mb-4">
-              <h4 className="font-bold text-[#3A554B] text-lg">{servicioSeleccionado?.s_servicio}</h4>
-              <p className="text-sm text-gray-600 mt-1">{servicioSeleccionado?.s_descripcion_servicio}</p>
+              <h4 className="font-bold text-[#3A554B] text-lg">{servicioSeleccionado ? translateService(servicioSeleccionado.s_servicio) : ''}</h4>
+              <p className="text-sm text-gray-600 mt-1">{servicioSeleccionado?.s_descripcion_servicio ? translateServiceDesc(servicioSeleccionado.s_servicio, servicioSeleccionado.s_descripcion_servicio) : ''}</p>
             </div>
 
             {/* Información contextual */}
             <div className="space-y-3">
               <div className="text-center p-3 bg-white rounded-lg">
-                <div className="text-xs text-gray-500">Área</div>
+                <div className="text-xs text-gray-500">{t("starter.area")}</div>
                 <div className="font-semibold text-[#3A554B]">
-                  {areaSeleccionada?.s_area}
+                  {areaSeleccionada ? translateArea(areaSeleccionada.s_area) : ''}
                 </div>
               </div>
 
@@ -1043,8 +1168,8 @@ export default function Starter() {
             </div>
 
             <div className="space-y-2 text-sm">
-              <div><strong>{t("starter.area")}:</strong> {turnoCreado?.s_area}</div>
-              <div><strong>{t("starter.service")}:</strong> {turnoCreado?.s_servicio}</div>
+              <div><strong>{t("starter.area")}:</strong> {turnoCreado?.s_area ? translateArea(turnoCreado.s_area) : ''}</div>
+              <div><strong>{t("starter.service")}:</strong> {turnoCreado?.s_servicio ? translateService(turnoCreado.s_servicio) : ''}</div>
               <div><strong>{t("starter.branch")}:</strong> {turnoCreado?.s_nombre_sucursal}</div>
               <div><strong>{t("starter.type")}:</strong> {esCliente ? t("starter.cfeClientType") : t("starter.notClientType")}</div>
               <div><strong>{t("starter.date")}:</strong> {new Date().toLocaleDateString('es-MX')}</div>

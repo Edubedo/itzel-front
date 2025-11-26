@@ -366,6 +366,7 @@ const translations = {
     "starter.turnToCancel": "Turno a cancelar",
     "starter.noReturn": "No, regresar",
     "starter.yesCancel": "Sí, cancelar turno",
+    "starter.privacyNotice": "Aviso de Privacidad",
     
     // Privacy Notice
     "privacy.title": "Aviso de Privacidad y Términos de Uso",
@@ -585,6 +586,7 @@ const translations = {
     "starter.turnToCancel": "Turn to cancel",
     "starter.noReturn": "No, return",
     "starter.yesCancel": "Yes, cancel turn",
+    "starter.privacyNotice": "Privacy Notice",
     
     // Privacy Notice
     "privacy.title": "Privacy Notice and Terms of Use",

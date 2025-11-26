@@ -614,17 +614,17 @@ export default function Starter() {
           </div> {/* <<< FIN DEL GRID DE BOTONES */}
 
 
-          {/* +++ INICIO: BOTÓN DE AVISO DE PRIVACIDAD +++ */}
-          <div className="text-center mt-6">
-            <button
-              // Al hacer clic, mostramos el modal de privacidad
-              onClick={() => setShowPrivacyModal(true)}
-              className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-2 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 text-sm"
-            >
-              Aviso de Privacidad
-            </button>
-          </div>
-          {/* +++ FIN: BOTÓN DE AVISO DE PRIVACIDAD +++ */}
+           {/* +++ INICIO: BOTÓN DE AVISO DE PRIVACIDAD +++ */}
+           <div className="text-center mt-6">
+             <button
+               // Al hacer clic, mostramos el modal de privacidad
+               onClick={() => setShowPrivacyModal(true)}
+               className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-2 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#8ECAB2]/50 text-sm"
+             >
+               {t("starter.privacyNotice")}
+             </button>
+           </div>
+           {/* +++ FIN: BOTÓN DE AVISO DE PRIVACIDAD +++ */}
 
 
           {/* Warning message with modern style - Compacto */}

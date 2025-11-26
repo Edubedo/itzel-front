@@ -73,12 +73,19 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   };
 
   useEffect(() => {
-    if (sucursalActiva) {
-      cargarNotificaciones();
-      const interval = setInterval(cargarNotificaciones, 3000);
-      return () => clearInterval(interval);
-    }
-  }, [sucursalActiva]);
+    if (!sucursalActiva) return;
+    
+    // Cargar notificaciones inmediatamente
+    cargarNotificaciones();
+    
+    // Configurar intervalo
+    const interval = setInterval(cargarNotificaciones, 3000);
+    
+    // Limpiar intervalo cuando cambie sucursal o se desmonte el componente
+    return () => {
+      clearInterval(interval);
+    };
+  }, [sucursalActiva?.ck_sucursal]); // Solo dependemos del ID de la sucursal
 
   const cargarNotificaciones = async () => {
     if (!sucursalActiva) return;

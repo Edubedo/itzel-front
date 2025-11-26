@@ -126,20 +126,19 @@ function ConsultaTurnos() {
       cargarAreas();
       setAreaSeleccionada(''); 
     }
-  }, [sucursalActiva, user]);
+  }, [sucursalActiva?.ck_sucursal, user?.uk_usuario]);
 
-  const cargarDatos = useCallback(async () => {
+  // Efecto para cargar datos cuando cambia la sucursal o el área
+  useEffect(() => {
     if (!sucursalActiva) return;
     
-    await cargarTurnos();
-    await cargarEstadisticas();
-  }, [sucursalActiva, areaSeleccionada]); 
-
-  useEffect(() => {
-    if (sucursalActiva) {
-      cargarDatos();
-    }
-  }, [ cargarDatos]);
+    const cargarDatos = async () => {
+      await cargarTurnos();
+      await cargarEstadisticas();
+    };
+    
+    cargarDatos();
+  }, [sucursalActiva?.ck_sucursal, areaSeleccionada]);
 
   const cargarAreas = async () => {
     if (!sucursalActiva || !user) return;

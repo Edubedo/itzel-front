@@ -178,6 +178,18 @@ export default function Starter() {
     if ((normalized.includes('alta') || normalized.includes('registration') || normalized.includes('register')) && (normalized.includes('servicio') || normalized.includes('service'))) {
       return t("service.altaServicio");
     }
+    // Aumento de Carga
+    if ((normalized.includes('aumento') || normalized.includes('increase') || normalized.includes('load')) && (normalized.includes('carga') || normalized.includes('capacity'))) {
+      return t("service.aumentoCarga");
+    }
+    // Cambio de Tarifa
+    if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('tarifa') || normalized.includes('rate') || normalized.includes('tariff'))) {
+      return t("service.cambioTarifa");
+    }
+    // Cambio de Titular
+    if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('titular') || normalized.includes('ownership') || normalized.includes('holder'))) {
+      return t("service.cambioTitular");
+    }
     // If no translation found, return original
     return serviceName;
   };
@@ -230,6 +242,18 @@ export default function Starter() {
     // Alta de Servicio
     if ((normalized.includes('alta') || normalized.includes('registration') || normalized.includes('register')) && (normalized.includes('servicio') || normalized.includes('service'))) {
       return t("service.altaServicioDesc");
+    }
+    // Aumento de Carga
+    if ((normalized.includes('aumento') || normalized.includes('increase') || normalized.includes('load')) && (normalized.includes('carga') || normalized.includes('capacity'))) {
+      return t("service.aumentoCargaDesc");
+    }
+    // Cambio de Tarifa
+    if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('tarifa') || normalized.includes('rate') || normalized.includes('tariff'))) {
+      return t("service.cambioTarifaDesc");
+    }
+    // Cambio de Titular
+    if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('titular') || normalized.includes('ownership') || normalized.includes('holder'))) {
+      return t("service.cambioTitularDesc");
     }
     // If no translation found, return original
     return desc;

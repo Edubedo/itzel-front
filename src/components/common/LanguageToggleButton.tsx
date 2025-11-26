@@ -22,11 +22,10 @@ const LanguageToggleButton: React.FC = () => {
     >
       <div className="transition-transform duration-500 group-hover:scale-110">
         {language === "es" ? (
-  <SpanishIcon className="w-6 h-6 text-gray-800 dark:text-gray-200" /> 
-      ) : (
-  <EnglishIcon className="w-6 h-6 text-gray-800 dark:text-gray-200" />
-      )}
-
+          <SpanishIcon className="w-6 h-6" /> 
+        ) : (
+          <EnglishIcon className="w-6 h-6" />
+        )}
       </div>
     </button>
   );

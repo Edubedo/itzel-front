@@ -36,6 +36,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   const [toasts, setToasts] = useState<Toast[]>([]);
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const notificacionesMostradasRef = useRef<Set<string>>(new Set());
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -74,6 +75,9 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
   useEffect(() => {
     if (!sucursalActiva) return;
+    
+    // Limpiar el registro de notificaciones mostradas cuando cambia la sucursal
+    notificacionesMostradasRef.current.clear();
     
     // Cargar notificaciones inmediatamente
     cargarNotificaciones();
@@ -133,8 +137,13 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
       const prevIds = notificacionesGuardadas.map((n) => n.id);
       const nuevasNotificaciones = dataConLeidas.filter((n) => !prevIds.includes(n.id));
+      
+      // Solo mostrar toast si la notificación no se ha mostrado antes
       nuevasNotificaciones.forEach((n) => {
-        agregarToastTemporal(`${t("notifications.newShift")} ${n.numero_turno} - ${n.s_servicio}`);
+        if (!notificacionesMostradasRef.current.has(n.id)) {
+          agregarToastTemporal(`${t("notifications.newShift")} ${n.numero_turno} - ${n.s_servicio}`);
+          notificacionesMostradasRef.current.add(n.id);
+        }
       });
 
       setNotificaciones(dataConLeidas);

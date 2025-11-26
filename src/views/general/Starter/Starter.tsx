@@ -41,7 +41,7 @@ interface Turno {
 
 
 export default function Starter() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { logoLight } = useLogo();
   
   // Helper function to normalize text (remove accents and convert to lowercase)
@@ -549,9 +549,9 @@ export default function Starter() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">Confirmar Cancelación</h3>
+          <h3 className="text-xl font-bold text-white mb-2">{t("starter.confirmCancellation")}</h3>
           <p className="text-white/80 text-sm">
-            ¿Estás seguro de que deseas cancelar este turno?
+            {t("starter.sureCancel")}
           </p>
         </div>
 
@@ -575,7 +575,7 @@ export default function Starter() {
               onClick={() => setShowCancelModal(false)} // <-- Solo cierra el modal
               className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-colors duration-200"
             >
-              No, regresar
+              {t("starter.noReturn")}
             </button>
             <button
               onClick={() => {
@@ -584,7 +584,7 @@ export default function Starter() {
               }}
               className="flex-1 bg-gradient-to-r from-[#e66f6f] to-[#ef2525] hover:from-[#ef2525] hover:to-[#e66f6f] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200"
             >
-              Sí, cancelar turno
+              {t("starter.yesCancel")}
             </button>
           </div>
         </div>
@@ -1071,9 +1071,9 @@ export default function Starter() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">¿Confirmar turno?</h3>
+          <h3 className="text-xl font-bold text-white mb-2">{t("starter.confirmTurn")}</h3>
           <p className="text-white/80 text-sm">
-            Está a punto de generar un turno para el servicio seleccionado
+            {t("starter.confirmTurnDesc")}
           </p>
         </div>
 
@@ -1103,7 +1103,7 @@ export default function Starter() {
               onClick={cancelarTurno}
               className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-colors duration-200"
             >
-              Cancelar
+              {t("starter.cancel")}
             </button>
             <button
               onClick={confirmarTurno}
@@ -1113,10 +1113,10 @@ export default function Starter() {
               {loadingState === 'creating' ? (
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Generando...
+                  {t("starter.generating")}
                 </div>
               ) : (
-                'Sí, confirmar turno'
+                t("starter.yesConfirm")
               )}
             </button>
           </div>
@@ -1128,7 +1128,7 @@ export default function Starter() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
               <p className="text-xs text-amber-700">
-                Una vez confirmado, el turno será generado en el sistema y deberá esperar su atención.
+                {t("starter.warning")}
               </p>
             </div>
           </div>
@@ -1140,8 +1140,8 @@ export default function Starter() {
   const renderTicket = () => (
     <div className="bg-white rounded-xl shadow-xl overflow-hidden border-2 border-[#5D7166] max-w-md mx-auto">
       <div className="bg-[#3A554B] text-white p-4 text-center">
-        <h2 className="text-xl font-bold">¡SERVICIO ASIGNADO!</h2>
-        <p className="text-[#B7F2DA]">Su turno ha sido generado exitosamente</p>
+        <h2 className="text-xl font-bold">{t("starter.serviceAssigned")}</h2>
+        <p className="text-[#B7F2DA]">{t("starter.turnGenerated")}</p>
       </div>
 
       <div className="p-6">
@@ -1156,7 +1156,7 @@ export default function Starter() {
                 (e.target as HTMLImageElement).src = "/images/Logo2/Logo%20Itzel%20CFE%20Redondo.png";
               }}
             />
-            <h3 className="font-bold text-lg text-[#0A1310]">SISTEMA ITZEL</h3>
+            <h3 className="font-bold text-lg text-[#0A1310]">{t("starter.systemItzel")}</h3>
             <p className="text-sm text-gray-600">{t("starter.cfe")}</p>
           </div>
 
@@ -1172,20 +1172,20 @@ export default function Starter() {
               <div><strong>{t("starter.service")}:</strong> {turnoCreado?.s_servicio ? translateService(turnoCreado.s_servicio) : ''}</div>
               <div><strong>{t("starter.branch")}:</strong> {turnoCreado?.s_nombre_sucursal}</div>
               <div><strong>{t("starter.type")}:</strong> {esCliente ? t("starter.cfeClientType") : t("starter.notClientType")}</div>
-              <div><strong>{t("starter.date")}:</strong> {new Date().toLocaleDateString('es-MX')}</div>
-              <div><strong>{t("starter.time")}:</strong> {new Date().toLocaleTimeString('es-MX')}</div>
+              <div><strong>{t("starter.date")}:</strong> {new Date().toLocaleDateString(language === 'es' ? 'es-MX' : 'en-US')}</div>
+              <div><strong>{t("starter.time")}:</strong> {new Date().toLocaleTimeString(language === 'es' ? 'es-MX' : 'en-US')}</div>
             </div>
           </div>
 
           <div className="border-t border-gray-300 pt-4 mt-4 text-center">
             <p className="text-xs text-gray-600">
-              Por favor conserve este ticket y espere a ser llamado
+              {t("starter.keepTicket")}
             </p>
           </div>
 
           <div className="border-t border-gray-300 pt-4 mt-4 text-center">
             <p className="text-xs text-gray-600 mb-3">
-              Escanee el código QR para descargar su ticket
+              {t("starter.scanQR")}
             </p>
             {qrCodeUrl && (
               <div className="flex justify-center">
@@ -1205,14 +1205,14 @@ export default function Starter() {
             onClick={descargarTicket}
             className="w-full bg-[#70A18E] hover:bg-[#547A6B] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
-            📄 Descargar Ticket
+            {t("starter.downloadTicket")}
           </button>
 
           <button
             onClick={handleCancelarTurno}
             className="w-full bg-[#e66f6f] hover:bg-[#ef2525] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
           >
-            Cancelar turno
+            {t("starter.cancelTurn")}
           </button>
 
 
@@ -1226,7 +1226,7 @@ export default function Starter() {
 
         {/* Countdown */}
         <div className="text-center mt-4 text-sm text-gray-600">
-          Regresando automáticamente en {countdown} segundos...
+          {t("starter.returningIn")} {countdown} {t("starter.seconds")}
         </div>
       </div>
     </div>
@@ -1407,8 +1407,8 @@ export default function Starter() {
   if (loadingState !== 'idle') {
     // Determina el texto basado en el estado
     const loadingText = loadingState === 'creating'
-      ? 'Generando su turno...'
-      : 'Cancelando su turno...';
+      ? t("starter.generatingTurn")
+      : t("starter.cancelingTurn");
 
     return (
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#F4F4F4] to-[#CAC9C9]">

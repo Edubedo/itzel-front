@@ -190,6 +190,26 @@ export default function Starter() {
     if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('titular') || normalized.includes('ownership') || normalized.includes('holder'))) {
       return t("service.cambioTitular");
     }
+    // Aclaraciones de Facturación
+    if ((normalized.includes('aclaracion') || normalized.includes('clarification')) && (normalized.includes('facturacion') || normalized.includes('billing'))) {
+      return t("service.aclaracionesFacturacion");
+    }
+    // Convenio de Pago
+    if ((normalized.includes('convenio') || normalized.includes('agreement')) && (normalized.includes('pago') || normalized.includes('payment'))) {
+      return t("service.convenioPago");
+    }
+    // Reconexión por Pago
+    if ((normalized.includes('reconexion') || normalized.includes('reconnection')) && (normalized.includes('pago') || normalized.includes('payment'))) {
+      return t("service.reconexionPago");
+    }
+    // Cambio de Medidor
+    if ((normalized.includes('cambio') || normalized.includes('replacement') || normalized.includes('change')) && (normalized.includes('medidor') || normalized.includes('meter'))) {
+      return t("service.cambioMedidor");
+    }
+    // Verificación de Medidor
+    if ((normalized.includes('verificacion') || normalized.includes('verification') || normalized.includes('review')) && (normalized.includes('medidor') || normalized.includes('meter'))) {
+      return t("service.verificacionMedidor");
+    }
     // If no translation found, return original
     return serviceName;
   };
@@ -254,6 +274,26 @@ export default function Starter() {
     // Cambio de Titular
     if ((normalized.includes('cambio') || normalized.includes('change')) && (normalized.includes('titular') || normalized.includes('ownership') || normalized.includes('holder'))) {
       return t("service.cambioTitularDesc");
+    }
+    // Aclaraciones de Facturación
+    if ((normalized.includes('aclaracion') || normalized.includes('clarification')) && (normalized.includes('facturacion') || normalized.includes('billing'))) {
+      return t("service.aclaracionesFacturacionDesc");
+    }
+    // Convenio de Pago
+    if ((normalized.includes('convenio') || normalized.includes('agreement')) && (normalized.includes('pago') || normalized.includes('payment'))) {
+      return t("service.convenioPagoDesc");
+    }
+    // Reconexión por Pago
+    if ((normalized.includes('reconexion') || normalized.includes('reconnection')) && (normalized.includes('pago') || normalized.includes('payment'))) {
+      return t("service.reconexionPagoDesc");
+    }
+    // Cambio de Medidor
+    if ((normalized.includes('cambio') || normalized.includes('replacement') || normalized.includes('change')) && (normalized.includes('medidor') || normalized.includes('meter'))) {
+      return t("service.cambioMedidorDesc");
+    }
+    // Verificación de Medidor
+    if ((normalized.includes('verificacion') || normalized.includes('verification') || normalized.includes('review')) && (normalized.includes('medidor') || normalized.includes('meter'))) {
+      return t("service.verificacionMedidorDesc");
     }
     // If no translation found, return original
     return desc;

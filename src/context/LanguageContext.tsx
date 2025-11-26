@@ -367,6 +367,7 @@ const translations = {
     "starter.turnToCancel": "Turno a cancelar",
     "starter.noReturn": "No, regresar",
     "starter.yesCancel": "Sí, cancelar turno",
+    "starter.turnCanceled": "Turno cancelado exitosamente",
     "starter.privacyNotice": "Aviso de Privacidad",
     
     // Form translations - Areas
@@ -838,6 +839,7 @@ const translations = {
     "starter.turnToCancel": "Turn to cancel",
     "starter.noReturn": "No, return",
     "starter.yesCancel": "Yes, cancel turn",
+    "starter.turnCanceled": "Turn canceled successfully",
     "starter.privacyNotice": "Privacy Notice",
     
     // Form translations - Areas

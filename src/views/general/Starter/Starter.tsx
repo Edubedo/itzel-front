@@ -498,7 +498,7 @@ export default function Starter() {
 
       if (response.ok) {
         setLoadingState('idle');
-        setNotificacion(data.message || 'Turno cancelado exitosamente');
+        setNotificacion(data.message || t('starter.turnCanceled'));
         setTimeout(() => {
           setNotificacion(null);
           regresarAlInicio();

@@ -10,6 +10,7 @@ import { ChevronDown, MapPin, CheckCircle } from "lucide-react";
 import { useLogo } from "../contexts/LogoContext";
 import { useLanguage } from "../context/LanguageContext";
 import { getApiBaseUrlWithApi } from "../../utils/util_baseUrl";
+import { FaClipboardList } from "react-icons/fa";
 
 interface Sucursal {
   ck_sucursal: string;
@@ -521,6 +522,9 @@ const AppHeader: React.FC<HeaderProps> = ({ title }) => {
             <ThemeToggleButton />
             <LanguageToggleButton />
             <NotificationDropdown />
+            <FaClipboardList className="h-5 w-5 text-[#5D7166] dark:text-white hover:cursor-pointer" onClick={
+              () => navigate('/dashboard')
+            } />
           </div>
           <UserDropdown />
         </div>

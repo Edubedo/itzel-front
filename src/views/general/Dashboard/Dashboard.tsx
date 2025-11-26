@@ -5,6 +5,7 @@ import { useSucursalActiva } from '../../../components/header/Header';
 import { getApiBaseUrlWithApi } from '../../../../utils/util_baseUrl';
 import Cookies from 'js-cookie';
 import { useLogo } from '../../../contexts/LogoContext';
+import { Link, useNavigate } from "react-router";
 
 interface Turno {
   ck_turno: string;
@@ -29,6 +30,7 @@ interface Sucursal {
 }
 
 const Dashboard: React.FC = () => {
+    const navigate = useNavigate();
   const [time, setTime] = useState(new Date());
   const [sucursalActiva, setSucursalActiva] = useState<Sucursal | null>(null);
 
@@ -194,9 +196,10 @@ const Dashboard: React.FC = () => {
               <div className="relative w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center overflow-hidden shadow-lg border-2 border-[#B7F2DA]/30 group-hover:border-[#B7F2DA]/60 transition-all duration-300 group-hover:scale-110">
                 {logoLight && (
                   <img
+                    onClick={() => navigate('/')}
                     src={logoLight}
                     alt="ITZEL Logo"
-                    className="w-full h-full object-cover p-1.5"
+                    className="hover:cursor-pointer w-full h-full object-cover p-1.5"
                   />
                 )}
               </div>

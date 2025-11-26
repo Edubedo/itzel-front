@@ -162,6 +162,22 @@ export default function Starter() {
     if ((normalized.includes('transformador') || normalized.includes('transformer')) && (normalized.includes('dañado') || normalized.includes('danado') || normalized.includes('damaged'))) {
       return t("service.transformadoresDanados");
     }
+    // Asesoría en Eficiencia Energética
+    if ((normalized.includes('asesoria') || normalized.includes('advisory') || normalized.includes('advice')) && ((normalized.includes('eficiencia') || normalized.includes('efficiency')) || (normalized.includes('energetica') || normalized.includes('energy')))) {
+      return t("service.asesoriaEficienciaEnergetica");
+    }
+    // Consulta de Requisitos para Servicio Nuevo
+    if ((normalized.includes('consulta') || normalized.includes('consultation') || normalized.includes('inquiry')) && (normalized.includes('requisitos') || normalized.includes('requirements')) && (normalized.includes('servicio nuevo') || normalized.includes('new service') || normalized.includes('nuevo servicio') || normalized.includes('nuevo'))) {
+      return t("service.consultaRequisitosServicioNuevo");
+    }
+    // Información de Tarifas Eléctricas
+    if ((normalized.includes('informacion') || normalized.includes('information')) && (normalized.includes('tarifas') || normalized.includes('rates') || normalized.includes('tariffs')) && (normalized.includes('electricas') || normalized.includes('electric') || normalized.includes('electricity'))) {
+      return t("service.informacionTarifasElectricas");
+    }
+    // Alta de Servicio
+    if ((normalized.includes('alta') || normalized.includes('registration') || normalized.includes('register')) && (normalized.includes('servicio') || normalized.includes('service'))) {
+      return t("service.altaServicio");
+    }
     // If no translation found, return original
     return serviceName;
   };
@@ -198,6 +214,22 @@ export default function Starter() {
     // Transformadores Dañados
     if ((normalized.includes('transformador') || normalized.includes('transformer')) && (normalized.includes('dañado') || normalized.includes('danado') || normalized.includes('damaged'))) {
       return t("service.transformadoresDanadosDesc");
+    }
+    // Asesoría en Eficiencia Energética
+    if ((normalized.includes('asesoria') || normalized.includes('advisory') || normalized.includes('advice')) && ((normalized.includes('eficiencia') || normalized.includes('efficiency')) || (normalized.includes('energetica') || normalized.includes('energy')))) {
+      return t("service.asesoriaEficienciaEnergeticaDesc");
+    }
+    // Consulta de Requisitos para Servicio Nuevo
+    if ((normalized.includes('consulta') || normalized.includes('consultation') || normalized.includes('inquiry')) && (normalized.includes('requisitos') || normalized.includes('requirements')) && (normalized.includes('servicio nuevo') || normalized.includes('new service') || normalized.includes('nuevo servicio') || normalized.includes('nuevo'))) {
+      return t("service.consultaRequisitosServicioNuevoDesc");
+    }
+    // Información de Tarifas Eléctricas
+    if ((normalized.includes('informacion') || normalized.includes('information')) && (normalized.includes('tarifas') || normalized.includes('rates') || normalized.includes('tariffs')) && (normalized.includes('electricas') || normalized.includes('electric') || normalized.includes('electricity'))) {
+      return t("service.informacionTarifasElectricasDesc");
+    }
+    // Alta de Servicio
+    if ((normalized.includes('alta') || normalized.includes('registration') || normalized.includes('register')) && (normalized.includes('servicio') || normalized.includes('service'))) {
+      return t("service.altaServicioDesc");
     }
     // If no translation found, return original
     return desc;

@@ -8,8 +8,6 @@ import Cookies from 'js-cookie';
 interface Turno {
   ck_turno: string;
   i_numero_turno: number;
-  c_codigo_turno?: string;
-  c_codigo_servicio?: string;
   ck_area: string;
   s_area: string;
   c_codigo_area: string;
@@ -476,7 +474,7 @@ function ConsultaTurnos() {
   {turnoActual ? (
     <div className="text-center">
       <div className="text-6xl font-bold text-[#3A554B] dark:text-gray-200 mb-4">
-        {turnoActual.c_codigo_turno || turnoActual.i_numero_turno}
+        {turnoActual.i_numero_turno}
       </div>
       
       <div className="space-y-3 text-left bg-[#D3EEE3] dark:bg-gray-800 rounded-lg p-4">

@@ -150,6 +150,9 @@ const translations = {
     "dashboard.averageTime": "Tiempo Promedio",
     "dashboard.attendedClients": "Clientes Atendidos",
     "dashboard.activeBranches": "Sucursales Activas",
+    "dashboard.shiftsDistributionByArea": "Distribución de Turnos por Área",
+    "dashboard.shifts": "Turnos",
+    "dashboard.loading": "Cargando...",
     
     // Service names (for chart labels)
     "services.collection": "Cobranza",
@@ -1411,6 +1414,9 @@ const translations = {
     "dashboard.averageTime": "Average Time",
     "dashboard.attendedClients": "Attended Clients",
     "dashboard.activeBranches": "Active Branches",
+    "dashboard.shiftsDistributionByArea": "Shifts Distribution by Area",
+    "dashboard.shifts": "Shifts",
+    "dashboard.loading": "Loading...",
     
     // Service names (for chart labels)
     "services.collection": "Collection",

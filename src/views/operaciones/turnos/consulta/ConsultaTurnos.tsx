@@ -202,12 +202,20 @@ function ConsultaTurnos() {
       
       if (data.success) {
         const todosLosTurnos = data.turnos || [];
+        console.log('🔑 Usuario actual ID:', user.uk_usuario);
+        console.log('📋 Todos los turnos:', todosLosTurnos.map(t => ({
+          numero: t.i_numero_turno,
+          estatus: t.ck_estatus,
+          atendiendo: t.ck_usuario_atendiendo
+        })));
+        
         setTurnos(todosLosTurnos);
         
         // Buscar turno en proceso que esté siendo atendido por el usuario actual
         const turnoEnProceso = todosLosTurnos.find((t: Turno) => 
           t.ck_estatus === 'PROCES' && t.ck_usuario_atendiendo === user.uk_usuario
         );
+        console.log('🎯 Turno en proceso encontrado:', turnoEnProceso ? turnoEnProceso.i_numero_turno : 'Ninguno');
         
         // Filtrar solo turnos activos disponibles (no asignados a otros usuarios)
         const turnosActivos = todosLosTurnos
@@ -216,6 +224,7 @@ function ConsultaTurnos() {
             (!t.ck_usuario_atendiendo || t.ck_usuario_atendiendo === user.uk_usuario)
           )
           .sort((a: Turno, b: Turno) => a.i_numero_turno - b.i_numero_turno);
+        console.log('✅ Turnos activos filtrados:', turnosActivos.length);
         
         setTurnoActual(turnoEnProceso || null);
         setTurnosSiguientes(turnosActivos);

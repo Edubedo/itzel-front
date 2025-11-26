@@ -33,10 +33,14 @@ export default function UsuariosTableOne({
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   
-  const USER_TYPE_LABELS = {
-    1: t("userType.admin"),
-    2: t("userType.executive"),
-    3: t("userType.advisor")
+  // Función para obtener el label del tipo de usuario (se recalcula con cada cambio de idioma)
+  const getUserTypeLabel = (tipoUsuario: number): string => {
+    const labels: { [key: number]: string } = {
+      1: t("userType.administrator"),
+      2: t("userType.executive"),
+      3: t("userType.advisor")
+    };
+    return labels[tipoUsuario] || t("table.users.unknown");
   };
 
   const itemsPerPage = 8;
@@ -265,7 +269,7 @@ export default function UsuariosTableOne({
                         usuario.i_tipo_usuario === 2 ? "warning" : "info"
                       }
                     >
-                      {USER_TYPE_LABELS[usuario.i_tipo_usuario as keyof typeof USER_TYPE_LABELS] || t("table.users.unknown")}
+                      {getUserTypeLabel(usuario.i_tipo_usuario)}
                     </Badge>
                   </TableCell>
                   

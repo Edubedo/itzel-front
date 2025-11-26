@@ -1346,7 +1346,7 @@ const translations = {
     "common.warning": "Warning",
     "common.info": "Information",
     "common.viewMore": "View more",
-    "common.clear": "Clear",
+    "common.clear": "Clean",
     
     // Auth
     "auth.signIn": "Sign In",

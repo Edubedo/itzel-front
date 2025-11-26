@@ -539,7 +539,7 @@ function FormularioUsuarios() {
                     <option value={3}>{t("userType.advisor")}</option>
                     <option value={2}>{t("userType.executive")}</option>
                     {user?.tipo_usuario === 1 && (
-                      <option value={1}>{t("userType.admin")}</option>
+                      <option value={1}>{t("userType.administrator")}</option>
                     )}
                   </select>
                 </div>

@@ -1112,170 +1112,168 @@ export default function Starter() {
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-6 pt-24 pb-6">
       <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full mx-auto border border-white/20 max-h-[85vh] flex flex-col">
 
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] p-6 rounded-t-2xl text-center flex-shrink-0">
-          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            {/* Icono de privacidad (escudo) */}
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-          </div>
-          <h3 className="text-2xl font-bold text-white mb-2">Aviso de Privacidad y Términos de Uso</h3>
-          <p className="text-white/90 text-sm">
-            Su información es importante para nosotros. Por favor, lea los siguientes términos.
-          </p>
-        </div>
+         {/* Header */}
+         <div className="bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] p-6 rounded-t-2xl text-center flex-shrink-0">
+           <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+             {/* Icono de privacidad (escudo) */}
+             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+             </svg>
+           </div>
+           <h3 className="text-2xl font-bold text-white mb-2">{t("privacy.title")}</h3>
+           <p className="text-white/90 text-sm">
+             {t("privacy.subtitle")}
+           </p>
+         </div>
 
         {/* Contenido del Aviso - Con Scroll */}
         <div className="p-6 overflow-y-auto flex-1">
           <div className="space-y-6">
             
-            {/* Sección 1: Responsable */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
-              <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
-                <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
-                Responsable de los Datos
-              </h4>
-              <p className="text-sm text-gray-700 leading-relaxed">
-                La <strong>Comisión Federal de Electricidad (CFE)</strong> es responsable del tratamiento de sus datos personales 
-                de acuerdo con la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.
-              </p>
-            </div>
+             {/* Sección 1: Responsable */}
+             <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
+               <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
+                 <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
+                 {t("privacy.dataResponsible")}
+               </h4>
+               <p className="text-sm text-gray-700 leading-relaxed">
+                 {t("privacy.dataResponsibleText")}
+               </p>
+             </div>
 
-            {/* Sección 2: Finalidad */}
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200">
-              <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
-                <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
-                Finalidad del Tratamiento de Datos
-              </h4>
-              <p className="text-sm text-gray-700 mb-3 leading-relaxed">
-                Los datos personales que recabamos de usted serán utilizados para las siguientes finalidades necesarias para el servicio:
-              </p>
-              <div className="space-y-2">
-                <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
-                  <span className="text-[#70A18E] font-bold">•</span>
-                  <span className="text-sm text-gray-700">Gestión y administración de tu cuenta de usuario</span>
-                </div>
-                <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
-                  <span className="text-[#70A18E] font-bold">•</span>
-                  <span className="text-sm text-gray-700">Comunicación relacionada con los servicios del sistema</span>
-                </div>
-                <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
-                  <span className="text-[#70A18E] font-bold">•</span>
-                  <span className="text-sm text-gray-700">Mejora continua de nuestros servicios</span>
-                </div>
-                <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
-                  <span className="text-[#70A18E] font-bold">•</span>
-                  <span className="text-sm text-gray-700">Cumplimiento de obligaciones legales y regulatorias</span>
-                </div>
-              </div>
-            </div>
+             {/* Sección 2: Finalidad */}
+             <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200">
+               <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
+                 <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
+                 {t("privacy.purposeTitle")}
+               </h4>
+               <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+                 {t("privacy.purposeText")}
+               </p>
+               <div className="space-y-2">
+                 <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
+                   <span className="text-[#70A18E] font-bold">•</span>
+                   <span className="text-sm text-gray-700">{t("privacy.purpose1")}</span>
+                 </div>
+                 <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
+                   <span className="text-[#70A18E] font-bold">•</span>
+                   <span className="text-sm text-gray-700">{t("privacy.purpose2")}</span>
+                 </div>
+                 <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
+                   <span className="text-[#70A18E] font-bold">•</span>
+                   <span className="text-sm text-gray-700">{t("privacy.purpose3")}</span>
+                 </div>
+                 <div className="flex items-start gap-3 bg-white/70 p-3 rounded-lg">
+                   <span className="text-[#70A18E] font-bold">•</span>
+                   <span className="text-sm text-gray-700">{t("privacy.purpose4")}</span>
+                 </div>
+               </div>
+             </div>
 
-            {/* Sección 3: Términos y Condiciones */}
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200">
-              <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
-                <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
-                Términos y Condiciones de Uso
-              </h4>
-              <p className="text-sm text-gray-700 mb-3 leading-relaxed">
-                Al utilizar nuestro sistema, aceptas los siguientes términos:
-              </p>
-              <div className="space-y-2">
-                <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
-                  <p className="text-sm text-gray-700"><strong className="text-gray-800">Responsabilidad:</strong> Eres responsable de mantener la confidencialidad de tu contraseña y de todas las actividades realizadas desde tu cuenta.</p>
-                </div>
-                <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
-                  <p className="text-sm text-gray-700"><strong className="text-gray-800">Uso apropiado:</strong> Te comprometes a usar el sistema de manera responsable y conforme a las políticas establecidas.</p>
-                </div>
-                <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
-                  <p className="text-sm text-gray-700"><strong className="text-gray-800">Datos personales:</strong> Los datos proporcionados deben ser verídicos y actualizados.</p>
-                </div>
-                <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
-                  <p className="text-sm text-gray-700"><strong className="text-gray-800">Seguridad:</strong> Implementamos medidas de seguridad para proteger tus datos, pero también requieres mantener buenas prácticas de seguridad.</p>
-                </div>
-                <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
-                  <p className="text-sm text-gray-700"><strong className="text-gray-800">Modificaciones:</strong> Nos reservamos el derecho de modificar estos términos, notificándote con anticipación.</p>
-                </div>
-              </div>
-            </div>
+             {/* Sección 3: Términos y Condiciones */}
+             <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 border border-green-200">
+               <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
+                 <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
+                 {t("privacy.termsTitle")}
+               </h4>
+               <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+                 {t("privacy.termsText")}
+               </p>
+               <div className="space-y-2">
+                 <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
+                   <p className="text-sm text-gray-700"><strong className="text-gray-800">{t("privacy.term1Title")}</strong> {t("privacy.term1Text")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
+                   <p className="text-sm text-gray-700"><strong className="text-gray-800">{t("privacy.term2Title")}</strong> {t("privacy.term2Text")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
+                   <p className="text-sm text-gray-700"><strong className="text-gray-800">{t("privacy.term3Title")}</strong> {t("privacy.term3Text")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
+                   <p className="text-sm text-gray-700"><strong className="text-gray-800">{t("privacy.term4Title")}</strong> {t("privacy.term4Text")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg border-l-4 border-[#70A18E]">
+                   <p className="text-sm text-gray-700"><strong className="text-gray-800">{t("privacy.term5Title")}</strong> {t("privacy.term5Text")}</p>
+                 </div>
+               </div>
+             </div>
 
-            {/* Sección 4: Derechos ARCO */}
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 border border-purple-200">
-              <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
-                <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
-                Derechos ARCO
-              </h4>
-              <p className="text-sm text-gray-700 mb-4 leading-relaxed">
-                De acuerdo con la Ley Federal de Protección de Datos Personales, puedes ejercer tus derechos ARCO 
-                (Acceso, Rectificación, Cancelación y Oposición) sobre tu información personal.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
-                  <h5 className="font-bold text-gray-800 mb-1 text-sm">Acceso</h5>
-                  <p className="text-xs text-gray-600">Conocer tu información personal en nuestros registros</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
-                  <h5 className="font-bold text-gray-800 mb-1 text-sm">Rectificación</h5>
-                  <p className="text-xs text-gray-600">Actualizar o corregir datos inexactos</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
-                  <h5 className="font-bold text-gray-800 mb-1 text-sm">Cancelación</h5>
-                  <p className="text-xs text-gray-600">Eliminar tu información cuando ya no sea necesaria</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
-                  <h5 className="font-bold text-gray-800 mb-1 text-sm">Oposición</h5>
-                  <p className="text-xs text-gray-600">Oponerte a ciertos usos de tus datos</p>
-                </div>
-              </div>
-            </div>
+             {/* Sección 4: Derechos ARCO */}
+             <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 border border-purple-200">
+               <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
+                 <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
+                 {t("privacy.arcoTitle")}
+               </h4>
+               <p className="text-sm text-gray-700 mb-4 leading-relaxed">
+                 {t("privacy.arcoText")}
+               </p>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                 <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
+                   <h5 className="font-bold text-gray-800 mb-1 text-sm">{t("privacy.arcoAccess")}</h5>
+                   <p className="text-xs text-gray-600">{t("privacy.arcoAccessDesc")}</p>
+                 </div>
+                 <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
+                   <h5 className="font-bold text-gray-800 mb-1 text-sm">{t("privacy.arcoRectification")}</h5>
+                   <p className="text-xs text-gray-600">{t("privacy.arcoRectificationDesc")}</p>
+                 </div>
+                 <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
+                   <h5 className="font-bold text-gray-800 mb-1 text-sm">{t("privacy.arcoCancellation")}</h5>
+                   <p className="text-xs text-gray-600">{t("privacy.arcoCancellationDesc")}</p>
+                 </div>
+                 <div className="bg-white p-4 rounded-lg border-l-4 border-[#70A18E] shadow-sm">
+                   <h5 className="font-bold text-gray-800 mb-1 text-sm">{t("privacy.arcoOpposition")}</h5>
+                   <p className="text-xs text-gray-600">{t("privacy.arcoOppositionDesc")}</p>
+                 </div>
+               </div>
+             </div>
 
-            {/* Sección 5: Protección de Datos */}
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-5 border border-amber-200">
-              <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
-                <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
-                Protección de Datos
-              </h4>
-              <p className="text-sm text-gray-700 mb-3 leading-relaxed">
-                Tus datos están protegidos mediante:
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
-                  <p className="text-xs text-gray-700 font-medium">• Cifrado de contraseñas mediante algoritmos seguros</p>
-                </div>
-                <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
-                  <p className="text-xs text-gray-700 font-medium">• Protocolos de seguridad en la transmisión de datos</p>
-                </div>
-                <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
-                  <p className="text-xs text-gray-700 font-medium">• Acceso restringido a información sensible</p>
-                </div>
-                <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
-                  <p className="text-xs text-gray-700 font-medium">• Auditorías periódicas de seguridad</p>
-                </div>
-              </div>
-            </div>
+             {/* Sección 5: Protección de Datos */}
+             <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-5 border border-amber-200">
+               <h4 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
+                 <span className="w-2 h-2 bg-[#70A18E] rounded-full"></span>
+                 {t("privacy.protectionTitle")}
+               </h4>
+               <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+                 {t("privacy.protectionText")}
+               </p>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                 <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
+                   <p className="text-xs text-gray-700 font-medium">{t("privacy.protection1")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
+                   <p className="text-xs text-gray-700 font-medium">{t("privacy.protection2")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
+                   <p className="text-xs text-gray-700 font-medium">{t("privacy.protection3")}</p>
+                 </div>
+                 <div className="bg-white/70 p-3 rounded-lg text-center border border-amber-200">
+                   <p className="text-xs text-gray-700 font-medium">{t("privacy.protection4")}</p>
+                 </div>
+               </div>
+             </div>
 
           </div>
         </div>
 
-        {/* Footer con Botón */}
-        <div className="p-6 border-t border-gray-200 flex-shrink-0 bg-gray-50 rounded-b-2xl">
-          <button
-            onClick={() => setShowPrivacyModal(false)}
-            className="relative w-full bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 group overflow-hidden shadow-lg hover:shadow-xl"
-          >
-            {/* Efecto de brillo */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#B7F2DA]/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-            <span className="relative z-10 flex items-center justify-center gap-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              He leído y acepto los términos
-            </span>
-          </button>
-          <p className="text-center text-xs text-gray-500 mt-3">
-            Al continuar, aceptas el tratamiento de tus datos conforme a este aviso
-          </p>
-        </div>
+         {/* Footer con Botón */}
+         <div className="p-6 border-t border-gray-200 flex-shrink-0 bg-gray-50 rounded-b-2xl">
+           <button
+             onClick={() => setShowPrivacyModal(false)}
+             className="relative w-full bg-gradient-to-r from-[#70A18E] to-[#8ECAB2] hover:from-[#547A6B] hover:to-[#70A18E] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 group overflow-hidden shadow-lg hover:shadow-xl"
+           >
+             {/* Efecto de brillo */}
+             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#B7F2DA]/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+             <span className="relative z-10 flex items-center justify-center gap-2">
+               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+               </svg>
+               {t("privacy.acceptButton")}
+             </span>
+           </button>
+           <p className="text-center text-xs text-gray-500 mt-3">
+             {t("privacy.acceptFooter")}
+           </p>
+         </div>
       </div>
     </div>
   );

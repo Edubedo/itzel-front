@@ -27,7 +27,7 @@ const translations = {
     "header.noBranches": "No hay sucursales disponibles",
     "header.code": "Código:",
     "header.noResults": "No se encontraron resultados.",
-    
+
     // Navigation
     "nav.dashboard": "Dashboard",
     "nav.catalogues": "Catálogos",
@@ -47,7 +47,7 @@ const translations = {
     "nav.tables": "Tablas",
     "nav.uiElements": "Elementos UI",
     "nav.charts": "Gráficos",
-    
+
     // Common
     "common.save": "Guardar",
     "common.cancel": "Cancelar",
@@ -77,7 +77,7 @@ const translations = {
     "common.info": "Información",
     "common.viewMore": "Ver más",
     "common.clear": "Limpiar",
-    
+
     // Auth
     "auth.signIn": "Iniciar Sesión",
     "auth.signUp": "Registrarse",
@@ -115,13 +115,13 @@ const translations = {
     "auth.goToSignIn": "Ir a iniciar sesión",
     "auth.errorSendingCode": "Error al enviar el código",
     "auth.errorChangingPassword": "Error al cambiar la contraseña",
-    
+
     // User types
     "userType.administrator": "Administrador",
     "userType.executive": "Ejecutivo",
     "userType.client": "Cliente",
     "userType.advisor": "Asesor",
-    
+
     // Notifications
     "notifications.title": "Notificaciones",
     "notifications.newShifts": "Nuevos Turnos",
@@ -136,7 +136,7 @@ const translations = {
     "notifications.markAsRead": "Marcar como leída",
     "notifications.noNotifications": "No hay notificaciones",
     "notifications.close": "Cerrar",
-    
+
     // Dashboard
     "dashboard.clientsToday": "Clientes del Día",
     "dashboard.shiftsIssuedToday": "Turnos Emitidos Hoy",
@@ -153,7 +153,7 @@ const translations = {
     "dashboard.shiftsDistributionByArea": "Distribución de Turnos por Área",
     "dashboard.shifts": "Turnos",
     "dashboard.loading": "Cargando...",
-    
+
     // Service names (for chart labels)
     "services.collection": "Cobranza",
     "services.reports": "Reportes",
@@ -164,7 +164,7 @@ const translations = {
     "services.largeUsers": "Grandes usuarios",
     "services.energyEfficiency": "Eficiencia Energética",
     "services.industrial": "Industrial",
-    
+
     // Months
     "months.january": "Enero",
     "months.february": "Febrero",
@@ -178,7 +178,7 @@ const translations = {
     "months.october": "Octubre",
     "months.november": "Noviembre",
     "months.december": "Diciembre",
-    
+
     // Areas
     "areas.manageAndConsultAreas": "Gestiona y consulta las áreas del sistema",
     "areas.newArea": "Nueva Área",
@@ -206,7 +206,7 @@ const translations = {
     "areas.of": "de",
     "areas.areas": "áreas",
     "areas.areaList": "Lista de Áreas",
-    
+
     // Services
     "services.manageAndConsultServices": "Gestiona y consulta los servicios del sistema",
     "services.newService": "Nuevo Servicio",
@@ -223,7 +223,7 @@ const translations = {
     "services.clients": "Clientes",
     "services.nonClients": "No clientes",
     "services.serviceQuery": "Consulta de Servicios",
-    
+
     // Clients
     "clients.manageAndConsultClients": "Gestiona y consulta los clientes del sistema",
     "clients.newClient": "Nuevo Cliente",
@@ -258,7 +258,7 @@ const translations = {
     "clients.searchClient": "Buscar Cliente",
     "clients.searchByCodeNameSurname": "Buscar por código, nombre, apellido...",
     "clients.clientQuery": "Consulta de Clientes",
-    
+
     // Users
     "users.manageAndConsultUsers": "Gestiona y consulta los usuarios del sistema",
     "users.newUser": "Nuevo Usuario",
@@ -279,7 +279,7 @@ const translations = {
     "users.status": "Estado",
     "users.allStatuses": "Todos los estados",
     "users.userList": "Lista de Usuarios",
-    
+
     // Configuration
     "configuration.title": "Configuración",
     "configuration.successTitle": "¡Operación exitosa!",
@@ -307,7 +307,7 @@ const translations = {
     "configuration.fileReadError": "Error al leer el archivo",
     "configuration.saveError": "Error al guardar configuración:",
     "configuration.updateSuccess": "¡Configuración actualizada correctamente!",
-    
+
     // User dropdown translations
     "userDropdown.configuration": "Configuración",
     "userDropdown.myTurns": "Mis Turnos",
@@ -316,7 +316,7 @@ const translations = {
     "userDropdown.executive": "Ejecutivo",
     "userDropdown.advisor": "Asesor",
     "userDropdown.user": "Usuario",
-    
+
     // Starter page translations
     "starter.title": "Solicitud de Turnos",
     "starter.welcome": "EL SISTEMA ITZEL LES DA LA BIENVENIDA",
@@ -372,7 +372,7 @@ const translations = {
     "starter.yesCancel": "Sí, cancelar turno",
     "starter.turnCanceled": "Turno cancelado exitosamente",
     "starter.privacyNotice": "Aviso de Privacidad",
-    
+
     // Form translations - Areas
     "form.area.title": "Información del Área",
     "form.area.code": "Código del Área",
@@ -404,7 +404,7 @@ const translations = {
     "form.area.nameRequired": "El nombre del área es obligatorio",
     "form.area.descriptionRequired": "La descripción del área es obligatoria",
     "form.area.branchRequired": "Debe seleccionar una sucursal",
-    
+
     // Form translations - Services
     "form.service.title": "Información del Servicio",
     "form.service.name": "Nombre del Servicio",
@@ -442,7 +442,7 @@ const translations = {
     "form.service.codeRequired": "El código del servicio es requerido",
     "form.service.codeMaxLength": "El código del servicio no puede tener más de 6 caracteres",
     "form.service.areaRequired": "El área es requerida",
-    
+
     // Form translations - Branches
     "form.branch.name": "Nombre de la Sucursal",
     "form.branch.namePlaceholder": "Ej: Sucursal Centro",
@@ -493,7 +493,7 @@ const translations = {
     "form.branch.saved": "Sucursal guardada exitosamente!",
     "form.branch.updated": "Sucursal actualizada exitosamente!",
     "form.branch.error": "Error",
-    
+
     // Form translations - Users
     "form.user.personalInfo": "Información Personal",
     "form.user.contactInfo": "Información de Contacto y Acceso",
@@ -548,7 +548,7 @@ const translations = {
     "form.user.curpLength": "El CURP debe tener exactamente 18 caracteres",
     "form.user.addressRequired": "El domicilio es requerido",
     "form.user.phoneInvalid": "El teléfono debe tener 10 dígitos",
-    
+
     // Form translations - Clients
     "form.client.title": "Información del Cliente",
     "form.client.additionalInfo": "Información Adicional",
@@ -590,14 +590,14 @@ const translations = {
     "form.client.addressRequired": "El domicilio es obligatorio",
     "form.client.contractTypeRequired": "El tipo de contrato es obligatorio",
     "form.client.contractCodeRequired": "El código de contrato es obligatorio",
-    
+
     // Common form translations
     "form.cancel": "Cancelar",
     "form.saving": "Guardando...",
     "form.success": "¡Operación exitosa!",
     "form.correctErrors": "Por favor, corrija los errores en el formulario",
     "form.required": "obligatorio",
-    
+
     // Table translations - Common
     "table.loading": "Cargando...",
     "table.error": "Error al cargar",
@@ -622,7 +622,7 @@ const translations = {
     "table.success": "¡Éxito!",
     "table.errorTitle": "Error",
     "table.thisActionCannotBeUndone": "Esta acción no se puede deshacer.",
-    
+
     // Table translations - Users
     "table.users.photo": "Foto",
     "table.users.fullName": "Nombre Completo",
@@ -644,7 +644,7 @@ const translations = {
     "table.users.unknown": "Desconocido",
     "table.users.noDate": "No especificada",
     "table.users.invalidDate": "Fecha inválida",
-    
+
     // Table translations - Services
     "table.services.code": "Código",
     "table.services.name": "Nombre del Servicio",
@@ -663,7 +663,7 @@ const translations = {
     "table.services.showing": "Mostrando {start}-{end} de {total} servicios",
     "table.services.clients": "Clientes",
     "table.services.nonClients": "No clientes",
-    
+
     // Table translations - Branches
     "table.branches.name": "Nombre",
     "table.branches.address": "Domicilio",
@@ -679,7 +679,7 @@ const translations = {
     "table.branches.deleteBranch": "Eliminar sucursal",
     "table.branches.showing": "Mostrando {start}-{end} de {total} sucursales",
     "table.branches.noData": "No hay sucursales registradas en el sistema",
-    
+
     // Privacy Notice
     "privacy.title": "Aviso de Privacidad y Términos de Uso",
     "privacy.subtitle": "Su información es importante para nosotros. Por favor, lea los siguientes términos.",
@@ -721,7 +721,7 @@ const translations = {
     "privacy.protection4": "• Auditorías periódicas de seguridad",
     "privacy.acceptButton": "He leído y acepto los términos",
     "privacy.acceptFooter": "Al continuar, aceptas el tratamiento de tus datos conforme a este aviso",
-    
+
     // Contract Validation Modal
     "contractValidation.title": "Validación de Cliente",
     "contractValidation.subtitle": "Ingrese su número de contrato",
@@ -735,7 +735,7 @@ const translations = {
     "contractValidation.cancel": "Cancelar",
     "contractValidation.validate": "Validar",
     "contractValidation.validating": "Validando...",
-    
+
     // Branches
     "branches.branchQuery": "Consulta de Sucursales",
     "branches.branchCatalog": "Catálogo de Sucursales",
@@ -751,7 +751,7 @@ const translations = {
     "branches.allMunicipalities": "Todos los municipios",
     "branches.selectState": "Seleccione un estado",
     "branches.branchList": "Lista de Sucursales",
-    
+
     // Shifts
     "shifts.noBranchSelected": "No hay sucursal seleccionada",
     "shifts.selectBranchMessage": "Por favor seleccione una sucursal en el menú superior.",
@@ -784,12 +784,12 @@ const translations = {
     "shifts.viewAllShifts": "Ver todos los turnos",
     "shifts.errorAttendingShift": "Error al atender turno",
     "shifts.errorFinishingShift": "Error al finalizar turno",
-    
+
     // Language
     "language.spanish": "Español",
     "language.english": "English",
     "language.change": "Cambiar idioma",
-    
+
     // Areas translations
     "area.atencionCliente": "Atención al Cliente",
     "area.atencionClienteDesc": "Información, quejas y aclaraciones.",
@@ -812,7 +812,7 @@ const translations = {
     "area.reportesDesc": "Área para reportar incidentes",
     "shifts.pending": "pendientes",
     "shifts.pendingCount": "({count} pendientes)",
-    
+
     // Services translations
     "service.dictamenTecnico": "Dictamen Técnico",
     "service.dictamenTecnicoDesc": "Evaluación y certificación de instalaciones",
@@ -836,6 +836,12 @@ const translations = {
     "service.informacionTarifasElectricasDesc": "Consulta de tarifas residenciales, comerciales e industriales",
     "service.altaServicio": "Alta de Servicio",
     "service.altaServicioDesc": "Contratación de nuevo servicio eléctrico",
+    "service.aumentoCarga": "Aumento de Carga",
+    "service.aumentoCargaDesc": "Incremento de capacidad contratada",
+    "service.cambioTarifa": "Cambio de Tarifa",
+    "service.cambioTarifaDesc": "Modificación de tarifa u otras",
+    "service.cambioTitular": "Cambio de Titular",
+    "service.cambioTitularDesc": "Cambio de nombre por compraventa, herencia o donación",
   },
   en: {
     // Header
@@ -848,14 +854,14 @@ const translations = {
     "header.noBranches": "No branches available",
     "header.code": "Code:",
     "header.noResults": "No results found.",
-    
+
     // Navigation
     "nav.dashboard": "Dashboard",
     "nav.catalogues": "Catalogues",
     "nav.areas": "Areas",
     "nav.services": "Services",
     "nav.clients": "Clients",
-    
+
     // Configuration page translations
     "configuration.title": "Configuration",
     "configuration.successTitle": "Success",
@@ -883,7 +889,7 @@ const translations = {
     "configuration.fileReadError": "Error reading file",
     "configuration.saveError": "Error saving configuration:",
     "configuration.updateSuccess": "Configuration updated successfully!",
-    
+
     // User dropdown translations
     "userDropdown.configuration": "Configuration",
     "userDropdown.myTurns": "My Turns",
@@ -892,7 +898,7 @@ const translations = {
     "userDropdown.executive": "Executive",
     "userDropdown.advisor": "Advisor",
     "userDropdown.user": "User",
-    
+
     // Starter page translations
     "starter.title": "Turn Request",
     "starter.welcome": "WELCOME TO ITZEL",
@@ -948,7 +954,7 @@ const translations = {
     "starter.yesCancel": "Yes, cancel turn",
     "starter.turnCanceled": "Turn canceled successfully",
     "starter.privacyNotice": "Privacy Notice",
-    
+
     // Form translations - Areas
     "form.area.title": "Area Information",
     "form.area.code": "Area Code",
@@ -980,7 +986,7 @@ const translations = {
     "form.area.nameRequired": "Area name is required",
     "form.area.descriptionRequired": "Area description is required",
     "form.area.branchRequired": "You must select a branch",
-    
+
     // Form translations - Services
     "form.service.title": "Service Information",
     "form.service.name": "Service Name",
@@ -1018,7 +1024,7 @@ const translations = {
     "form.service.codeRequired": "Service code is required",
     "form.service.codeMaxLength": "Service code cannot exceed 6 characters",
     "form.service.areaRequired": "Area is required",
-    
+
     // Form translations - Branches
     "form.branch.name": "Branch Name",
     "form.branch.namePlaceholder": "Ex: Downtown Branch",
@@ -1069,7 +1075,7 @@ const translations = {
     "form.branch.saved": "Branch saved successfully!",
     "form.branch.updated": "Branch updated successfully!",
     "form.branch.error": "Error",
-    
+
     // Form translations - Users
     "form.user.personalInfo": "Personal Information",
     "form.user.contactInfo": "Contact and Access Information",
@@ -1124,7 +1130,7 @@ const translations = {
     "form.user.curpLength": "CURP must be exactly 18 characters",
     "form.user.addressRequired": "Address is required",
     "form.user.phoneInvalid": "Phone must have 10 digits",
-    
+
     // Form translations - Clients
     "form.client.title": "Client Information",
     "form.client.additionalInfo": "Additional Information",
@@ -1166,14 +1172,14 @@ const translations = {
     "form.client.addressRequired": "Address is required",
     "form.client.contractTypeRequired": "Contract type is required",
     "form.client.contractCodeRequired": "Contract code is required",
-    
+
     // Common form translations
     "form.cancel": "Cancel",
     "form.saving": "Saving...",
     "form.success": "Success!",
     "form.correctErrors": "Please correct the errors in the form",
     "form.required": "required",
-    
+
     // Table translations - Common
     "table.loading": "Loading...",
     "table.error": "Error loading",
@@ -1198,7 +1204,7 @@ const translations = {
     "table.success": "Success!",
     "table.errorTitle": "Error",
     "table.thisActionCannotBeUndone": "This action cannot be undone.",
-    
+
     // Table translations - Users
     "table.users.photo": "Photo",
     "table.users.fullName": "Full Name",
@@ -1220,7 +1226,7 @@ const translations = {
     "table.users.unknown": "Unknown",
     "table.users.noDate": "Not specified",
     "table.users.invalidDate": "Invalid date",
-    
+
     // Table translations - Services
     "table.services.code": "Code",
     "table.services.name": "Service Name",
@@ -1239,7 +1245,7 @@ const translations = {
     "table.services.showing": "Showing {start}-{end} of {total} services",
     "table.services.clients": "Clients",
     "table.services.nonClients": "Non-clients",
-    
+
     // Table translations - Branches
     "table.branches.name": "Name",
     "table.branches.address": "Address",
@@ -1255,7 +1261,7 @@ const translations = {
     "table.branches.deleteBranch": "Delete branch",
     "table.branches.showing": "Showing {start}-{end} of {total} branches",
     "table.branches.noData": "No branches registered in the system",
-    
+
     // Privacy Notice
     "privacy.title": "Privacy Notice and Terms of Use",
     "privacy.subtitle": "Your information is important to us. Please read the following terms.",
@@ -1297,7 +1303,7 @@ const translations = {
     "privacy.protection4": "• Periodic security audits",
     "privacy.acceptButton": "I have read and accept the terms",
     "privacy.acceptFooter": "By continuing, you accept the processing of your data in accordance with this notice",
-    
+
     // Contract Validation Modal
     "contractValidation.title": "Client Validation",
     "contractValidation.subtitle": "Enter your contract number",
@@ -1311,7 +1317,7 @@ const translations = {
     "contractValidation.cancel": "Cancel",
     "contractValidation.validate": "Validate",
     "contractValidation.validating": "Validating...",
-    
+
     "nav.branches": "Branches",
     "nav.users": "Users",
     "nav.operations": "Operations",
@@ -1325,7 +1331,7 @@ const translations = {
     "nav.tables": "Tables",
     "nav.uiElements": "UI Elements",
     "nav.charts": "Charts",
-    
+
     // Common
     "common.save": "Save",
     "common.cancel": "Cancel",
@@ -1355,7 +1361,7 @@ const translations = {
     "common.info": "Information",
     "common.viewMore": "View more",
     "common.clear": "Clean",
-    
+
     // Auth
     "auth.signIn": "Sign In",
     "auth.signUp": "Sign Up",
@@ -1393,13 +1399,13 @@ const translations = {
     "auth.goToSignIn": "Go to sign in",
     "auth.errorSendingCode": "Error sending code",
     "auth.errorChangingPassword": "Error changing password",
-    
+
     // User types
     "userType.administrator": "Administrator",
     "userType.executive": "Executive",
     "userType.client": "Client",
     "userType.advisor": "Advisor",
-    
+
     // Notifications
     "notifications.title": "Notifications",
     "notifications.newShifts": "New Shifts",
@@ -1414,7 +1420,7 @@ const translations = {
     "notifications.markAsRead": "Mark as read",
     "notifications.noNotifications": "No notifications",
     "notifications.close": "Close",
-    
+
     // Dashboard
     "dashboard.clientsToday": "Today's Clients",
     "dashboard.shiftsIssuedToday": "Shifts Issued Today",
@@ -1431,7 +1437,7 @@ const translations = {
     "dashboard.shiftsDistributionByArea": "Shifts Distribution by Area",
     "dashboard.shifts": "Shifts",
     "dashboard.loading": "Loading...",
-    
+
     // Service names (for chart labels)
     "services.collection": "Collection",
     "services.reports": "Reports",
@@ -1442,7 +1448,7 @@ const translations = {
     "services.largeUsers": "Large users",
     "services.energyEfficiency": "Energy Efficiency",
     "services.industrial": "Industrial",
-    
+
     // Months
     "months.january": "January",
     "months.february": "February",
@@ -1456,7 +1462,7 @@ const translations = {
     "months.october": "October",
     "months.november": "November",
     "months.december": "December",
-    
+
     // Areas
     "areas.manageAndConsultAreas": "Manage and consult system areas",
     "areas.newArea": "New Area",
@@ -1484,7 +1490,7 @@ const translations = {
     "areas.of": "of",
     "areas.areas": "areas",
     "areas.areaList": "Area List",
-    
+
     // Services
     "services.manageAndConsultServices": "Manage and consult system services",
     "services.newService": "New Service",
@@ -1501,7 +1507,7 @@ const translations = {
     "services.clients": "Clients",
     "services.nonClients": "Non-clients",
     "services.serviceQuery": "Service Query",
-    
+
     // Clients
     "clients.manageAndConsultClients": "Manage and consult system clients",
     "clients.newClient": "New Client",
@@ -1536,7 +1542,7 @@ const translations = {
     "clients.searchClient": "Search Client",
     "clients.searchByCodeNameSurname": "Search by code, name, surname...",
     "clients.clientQuery": "Client Query",
-    
+
     // Users
     "users.manageAndConsultUsers": "Manage and consult system users",
     "users.newUser": "New User",
@@ -1557,8 +1563,8 @@ const translations = {
     "users.status": "Status",
     "users.allStatuses": "All statuses",
     "users.userList": "User List",
-    
-    
+
+
     // Branches
     "branches.branchQuery": "Branch Query",
     "branches.branchCatalog": "Branch Catalog",
@@ -1574,7 +1580,7 @@ const translations = {
     "branches.allMunicipalities": "All municipalities",
     "branches.selectState": "Select a state",
     "branches.branchList": "Branch List",
-    
+
     // Shifts
     "shifts.noBranchSelected": "No branch selected",
     "shifts.selectBranchMessage": "Please select a branch from the top menu.",
@@ -1607,12 +1613,12 @@ const translations = {
     "shifts.viewAllShifts": "View all shifts",
     "shifts.errorAttendingShift": "Error attending shift",
     "shifts.errorFinishingShift": "Error finishing shift",
-    
+
     // Language
     "language.spanish": "Español",
     "language.english": "English",
     "language.change": "Change language",
-    
+
     // Areas translations
     "area.atencionCliente": "Customer Service",
     "area.atencionClienteDesc": "Information, complaints, and clarifications.",
@@ -1635,7 +1641,7 @@ const translations = {
     "area.reportesDesc": "Area to report incidents",
     "shifts.pending": "pending",
     "shifts.pendingCount": "({count} pending)",
-    
+
     // Services translations
     "service.dictamenTecnico": "Technical Opinion",
     "service.dictamenTecnicoDesc": "Evaluation and certification of installations",
@@ -1659,6 +1665,12 @@ const translations = {
     "service.informacionTarifasElectricasDesc": "Consultation of residential, commercial, and industrial rates",
     "service.altaServicio": "Service Registration",
     "service.altaServicioDesc": "New electrical service contracting",
+    "service.aumentoCarga": "Load Increase",
+    "service.aumentoCargaDesc": "Contracted capacity increase",
+    "service.cambioTarifa": "Rate Change",
+    "service.cambioTarifaDesc": "Rate modification or others",
+    "service.cambioTitular": "Ownership Change",
+    "service.cambioTitularDesc": "Name change due to sale, inheritance, or donation",
   }
 };
 

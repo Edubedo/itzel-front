@@ -828,6 +828,14 @@ const translations = {
     "service.postesPeligrososDesc": "Postes inclinados, cables sueltos, accidentes.",
     "service.transformadoresDanados": "Transformadores Dañados",
     "service.transformadoresDanadosDesc": "Fallas en equipos de distribución",
+    "service.asesoriaEficienciaEnergetica": "Asesoría en Eficiencia Energética",
+    "service.asesoriaEficienciaEnergeticaDesc": "Recomendaciones para ahorro de energía",
+    "service.consultaRequisitosServicioNuevo": "Consulta de Requisitos para Servicio Nuevo",
+    "service.consultaRequisitosServicioNuevoDesc": "Información sobre documentos necesarios",
+    "service.informacionTarifasElectricas": "Información de Tarifas Eléctricas",
+    "service.informacionTarifasElectricasDesc": "Consulta de tarifas residenciales, comerciales e industriales",
+    "service.altaServicio": "Alta de Servicio",
+    "service.altaServicioDesc": "Contratación de nuevo servicio eléctrico",
   },
   en: {
     // Header
@@ -1643,6 +1651,14 @@ const translations = {
     "service.postesPeligrososDesc": "Inclined poles, loose cables, accidents.",
     "service.transformadoresDanados": "Damaged Transformers",
     "service.transformadoresDanadosDesc": "Failures in distribution equipment",
+    "service.asesoriaEficienciaEnergetica": "Energy Efficiency Advisory",
+    "service.asesoriaEficienciaEnergeticaDesc": "Recommendations for energy saving",
+    "service.consultaRequisitosServicioNuevo": "Consultation of Requirements for New Service",
+    "service.consultaRequisitosServicioNuevoDesc": "Information about necessary documents",
+    "service.informacionTarifasElectricas": "Information on Electricity Rates",
+    "service.informacionTarifasElectricasDesc": "Consultation of residential, commercial, and industrial rates",
+    "service.altaServicio": "Service Registration",
+    "service.altaServicioDesc": "New electrical service contracting",
   }
 };
 

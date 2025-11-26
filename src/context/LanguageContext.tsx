@@ -842,6 +842,16 @@ const translations = {
     "service.cambioTarifaDesc": "Modificación de tarifa u otras",
     "service.cambioTitular": "Cambio de Titular",
     "service.cambioTitularDesc": "Cambio de nombre por compraventa, herencia o donación",
+    "service.aclaracionesFacturacion": "Aclaraciones de Facturación",
+    "service.aclaracionesFacturacionDesc": "Revisión de cobros y consumos",
+    "service.convenioPago": "Convenio de Pago",
+    "service.convenioPagoDesc": "Plan de pagos diferidos para adeudos",
+    "service.reconexionPago": "Reconexión por Pago",
+    "service.reconexionPagoDesc": "Reconexión del servicio tras liquidar adeudo",
+    "service.cambioMedidor": "Cambio de Medidor",
+    "service.cambioMedidorDesc": "Sustitución de medidor dañado o descalibrado",
+    "service.verificacionMedidor": "Verificación de Medidor",
+    "service.verificacionMedidorDesc": "Revisión de funcionamiento del medidor",
   },
   en: {
     // Header
@@ -1671,6 +1681,16 @@ const translations = {
     "service.cambioTarifaDesc": "Rate modification or others",
     "service.cambioTitular": "Ownership Change",
     "service.cambioTitularDesc": "Name change due to sale, inheritance, or donation",
+    "service.aclaracionesFacturacion": "Billing Clarifications",
+    "service.aclaracionesFacturacionDesc": "Review of charges and consumption",
+    "service.convenioPago": "Payment Agreement",
+    "service.convenioPagoDesc": "Deferred payment plan for debts",
+    "service.reconexionPago": "Reconnection by Payment",
+    "service.reconexionPagoDesc": "Service reconnection after debt settlement",
+    "service.cambioMedidor": "Meter Replacement",
+    "service.cambioMedidorDesc": "Replacement of damaged or miscalibrated meter",
+    "service.verificacionMedidor": "Meter Verification",
+    "service.verificacionMedidorDesc": "Review of meter operation",
   }
 };
 
